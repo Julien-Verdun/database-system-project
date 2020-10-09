@@ -43,6 +43,15 @@ class Home extends Component {
     return (
       <div className="main">
         <h1>Bienvenue sur la page d'accueil</h1>
+        <div>Contenu page d'accueil</div>
+        <div className="col">
+          <img
+            src="https://cdn.onlinewebfonts.com/svg/img_246830.png"
+            alt="home"
+            width="200px"
+            style={{ margin: "20px" }}
+          />
+        </div>
         <button className="btn btn-primary" onClick={this.handleClick}>
           Query
         </button>

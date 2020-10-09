@@ -9,50 +9,21 @@ class Footer extends Component {
           <div className="container text-center text-md-left">
             <div className="row">
               <div className="col-md-4 col-lg-3 mr-auto my-md-4 my-0 mt-4 mb-1">
-                <h5 className="font-weight-bold text-uppercase mb-4">About</h5>
+                <h5 className="font-weight-bold text-uppercase mb-4">
+                  &Agrave; propos
+                </h5>
                 <p>
-                  Here you can use rows and columns to organize your footer
-                  content.
+                  Cette application a été développée dans le cadre du MOD 4.6
+                  Systèmes de bases de données.
                 </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-                  Fugit amet numquam iure provident voluptate esse quasi,
-                  veritatis totam voluptas nostrum.
-                </p>
+                <p></p>
               </div>
 
               <hr className="clearfix w-100 d-md-none" />
 
-              <div className="col-md-2 col-lg-2 mx-auto my-md-4 my-0 mt-4 mb-1">
-                <h5 className="font-weight-bold text-uppercase mb-4">About</h5>
-
-                <ul className="list-unstyled">
-                  <li>
-                    <p>
-                      <a href="#!">PROJECTS</a>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <a href="#!">ABOUT US</a>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <a href="#!">BLOG</a>
-                    </p>
-                  </li>
-                  <li>
-                    <p>
-                      <a href="#!">AWARDS</a>
-                    </p>
-                  </li>
-                </ul>
-              </div>
-              <hr className="clearfix w-100 d-md-none" />
               <div className="col-md-4 col-lg-3 mx-auto my-md-4 my-0 mt-4 mb-1">
                 <h5 className="font-weight-bold text-uppercase mb-4">
-                  Address
+                  Maxime Peter
                 </h5>
 
                 <ul className="list-unstyled">
@@ -64,17 +35,49 @@ class Footer extends Component {
                   </li>
                   <li>
                     <p>
-                      <i className="fas fa-envelope mr-3"></i> info@example.com
+                      <i className="fas fa-envelope mr-3"></i>{" "}
+                      maxime.peter@ecl17.ec-lyon.fr
                     </p>
                   </li>
                   <li>
                     <p>
-                      <i className="fas fa-phone mr-3"></i> + 01 234 567 88
+                      <i className="fas fa-phone mr-3"></i> +33 6 46 23 45 64
                     </p>
                   </li>
+
                   <li>
                     <p>
-                      <i className="fas fa-print mr-3"></i> + 01 234 567 89
+                      <a
+                        type="button"
+                        className="btn-floating btn-tw"
+                        href="https://www.linkedin.com/in/maxime-peter-85b51a155/"
+                      >
+                        <img
+                          src="https://image.flaticon.com/icons/png/512/174/174857.png"
+                          alt="LinkedIn"
+                          width="24px"
+                          height="24px"
+                        />
+                        &nbsp;&nbsp;&nbsp;&nbsp;LinkedIn
+                      </a>
+                    </p>
+                  </li>
+
+                  <li>
+                    <p>
+                      <a
+                        type="button"
+                        className="btn-floating btn-tw"
+                        href="https://github.com/maximepeter"
+                      >
+                        <img
+                          src="https://pngimg.com/uploads/github/github_PNG40.png"
+                          alt="GitHub"
+                          width="24px"
+                          height="24px"
+                        />
+                        &nbsp;&nbsp;&nbsp;&nbsp;GitHub
+                      </a>
                     </p>
                   </li>
                 </ul>
@@ -82,38 +85,72 @@ class Footer extends Component {
 
               <hr className="clearfix w-100 d-md-none" />
 
-              <div className="col-md-2 col-lg-2 text-center mx-auto my-4">
+              <div className="col-md-4 col-lg-3 mx-auto my-md-4 my-0 mt-4 mb-1">
                 <h5 className="font-weight-bold text-uppercase mb-4">
-                  Follow Us
+                  Julien Verdun
                 </h5>
 
-                <a type="button" className="btn-floating btn-fb" href="/home">
-                  <i className="fab fa-facebook-f">Facebook</i>
-                </a>
-                <a type="button" className="btn-floating btn-tw" href="/home">
-                  <i className="fab fa-twitter">Twitter</i>
-                </a>
-                <a
-                  type="button"
-                  className="btn-floating btn-gplus"
-                  href="/home"
-                >
-                  <i className="fab fa-google-plus-g">Google +</i>
-                </a>
-                <a
-                  type="button"
-                  className="btn-floating btn-dribbble"
-                  href="/home"
-                >
-                  <i className="fab fa-dribbble">Dribbble</i>
-                </a>
+                <ul className="list-unstyled">
+                  <li>
+                    <p>
+                      <i className="fas fa-home mr-3"></i> New York, NY 10012,
+                      US
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <i className="fas fa-envelope mr-3"></i>{" "}
+                      julien.verdun@ecl17.ec-lyon.fr
+                    </p>
+                  </li>
+                  <li>
+                    <p>
+                      <i className="fas fa-phone mr-3"></i> + 33 6 34 54 23 95
+                    </p>
+                  </li>
+
+                  <li>
+                    <p>
+                      <a
+                        type="button"
+                        className="btn-floating btn-tw"
+                        href="https://www.linkedin.com/in/julien-verdun"
+                      >
+                        <img
+                          src="https://image.flaticon.com/icons/png/512/174/174857.png"
+                          alt="LinkedIn"
+                          width="24px"
+                          height="24px"
+                        />
+                        &nbsp;&nbsp;&nbsp;&nbsp;LinkedIn
+                      </a>
+                    </p>
+                  </li>
+
+                  <li>
+                    <p>
+                      <a
+                        type="button"
+                        className="btn-floating btn-tw"
+                        href="https://github.com/Julien-Verdun"
+                      >
+                        <img
+                          src="https://pngimg.com/uploads/github/github_PNG40.png"
+                          alt="GitHub"
+                          width="24px"
+                          height="24px"
+                        />
+                        &nbsp;&nbsp;&nbsp;&nbsp; GitHub
+                      </a>
+                    </p>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
 
           <div className="footer-copyright text-center py-3">
-            © 2020 Copyright:
-            <a href="https://mdbootstrap.com/"> MDBootstrap.com</a>
+            © 2020 Copyright
           </div>
         </footer>
       </div>

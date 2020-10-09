@@ -4,12 +4,14 @@ let mysql = require("mysql");
 
 let databaseName = "mydb";
 
+// connection à l'instance MySQL
 let con = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "mydbinstance",
 });
 
+// creation de la base de données
 con.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");
@@ -19,6 +21,7 @@ con.connect(function (err) {
   });
 });
 
+// connection à la base de données crées
 con = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -26,8 +29,7 @@ con = mysql.createConnection({
   database: databaseName,
 });
 
-// creer une table
-
+// creation des tables
 con.connect(function (err) {
   if (err) throw err;
   console.log("Connected!");

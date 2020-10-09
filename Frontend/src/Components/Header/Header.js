@@ -19,7 +19,7 @@ class Header extends Component {
       <div>
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <a className="navbar-brand" href="/home">
-            Navbar
+            Barre de navigation
           </a>
           <button
             className="navbar-toggler"
@@ -37,7 +37,7 @@ class Header extends Component {
             <ul className="navbar-nav mr-auto">
               <li className="nav-item active">
                 <a className="nav-link" href="/home">
-                  Home <span className="sr-only">(current)</span>
+                  Acceuil <span className="sr-only">(current)</span>
                 </a>
               </li>
               <li className="nav-item">
