@@ -8,7 +8,7 @@ let mysql = require("mysql");
 
 /*
 
-Créer un fichier database_coonection.js contenant le code suivant :
+Créer un fichier database_conection.js contenant le code suivant :
 
 
 const databasePwd = "votre_mot_de_passe";
