@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import "./Home.css";
 import axios from "axios";
+import Alerts from "../Alerts/Alerts";
 
 class Home extends Component {
   constructor(props) {
@@ -36,6 +37,14 @@ class Home extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
+        this.setState({
+          result: (
+            <Alerts
+              type="danger"
+              content="Aucun résultat, vérifier votre connection"
+            />
+          ),
+        });
       });
   }
 
@@ -55,7 +64,7 @@ class Home extends Component {
         <button className="btn btn-primary" onClick={this.handleClick}>
           Query
         </button>
-        <div>{this.state.result}</div>
+        <div className="result">{this.state.result}</div>
       </div>
     );
   }

@@ -5,7 +5,6 @@ class Error extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-    console.log(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
