@@ -37,90 +37,102 @@ con.connect(function (err) {
   else console.log("Connecté !");
 });
 
-// suppression des foreign keys
-liste_frg_key_drop = [
-  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_1;",
-  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_2;",
-  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_3;",
-  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_1;",
-  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_2;",
-  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_1;",
-  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_2;",
-];
+// on verifie d'abord que la base est vide avant de la remplir, sinon on supprime tout avant de la remplir
+let is_filled_in = false;
+let query =
+  "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'mydb';";
+con.query(query, (err, results, fields) => {
+  if (err) throw err;
+  else {
+    is_filled_in = results.length !== 0;
 
-liste_frg_key_drop.forEach((query) => {
-  utils.deleteTable(query, con);
-});
+    if (is_filled_in) {
+      // suppression des foreign keys
+      liste_frg_key_drop = [
+        "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_1;",
+        "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_2;",
+        "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_3;",
+        "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_1;",
+        "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_2;",
+        "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_1;",
+        "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_2;",
+      ];
 
-// on s'assure que la table n'existe pas en la supprimant dans un premier temps
-let drop_table_sql = "DROP TABLE IF EXISTS ";
-data.liste_tables.forEach((value, index) => {
-  utils.deleteTable(drop_table_sql + value, con);
-});
+      liste_frg_key_drop.forEach((query) => {
+        utils.deleteTable(query, con);
+      });
 
-liste_tables = [
-  "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, date_depart DATE, heure_depart TIME, date_arrivee DATE, heure_arrivee TIME, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
-  "CREATE TABLE appareils (id_app INT AUTO_INCREMENT PRIMARY KEY, id_cmp INT, id_avn INT) AUTO_INCREMENT = 100;",
-  "CREATE TABLE avions (id_avn INT AUTO_INCREMENT PRIMARY KEY, type VARCHAR(255), nb_place INT)  AUTO_INCREMENT = 100;",
-  "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
-  "CREATE TABLE aeroports (id_aer INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255), ville VARCHAR(255), pays VARCHAR(255)) AUTO_INCREMENT = 100;",
-  "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255)) AUTO_INCREMENT = 100;",
-  "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix INT, quantite INT) AUTO_INCREMENT = 100;",
-];
+      // on s'assure que la table n'existe pas en la supprimant dans un premier temps
+      let drop_table_sql = "DROP TABLE IF EXISTS ";
+      data.liste_tables.forEach((value, index) => {
+        utils.deleteTable(drop_table_sql + value, con);
+      });
+    }
 
-liste_tables.forEach((query) => {
-  utils.createTable(query, con);
-});
+    liste_tables = [
+      "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, date_depart DATE, heure_depart TIME, date_arrivee DATE, heure_arrivee TIME, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
+      "CREATE TABLE appareils (id_app INT AUTO_INCREMENT PRIMARY KEY, id_cmp INT, id_avn INT) AUTO_INCREMENT = 100;",
+      "CREATE TABLE avions (id_avn INT AUTO_INCREMENT PRIMARY KEY, type VARCHAR(255), nb_place INT)  AUTO_INCREMENT = 100;",
+      "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
+      "CREATE TABLE aeroports (id_aer INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255), ville VARCHAR(255), pays VARCHAR(255)) AUTO_INCREMENT = 100;",
+      "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255)) AUTO_INCREMENT = 100;",
+      "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix INT, quantite INT) AUTO_INCREMENT = 100;",
+    ];
 
-liste_frg_key = [
-  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
-  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
-  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
-  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
-  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
-];
+    liste_tables.forEach((query) => {
+      utils.createTable(query, con);
+    });
 
-// create link beetwen tables
-// vols
-liste_frg_key.forEach((query) => {
-  utils.createTable(query, con);
-});
+    liste_frg_key = [
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
+      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
+      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
+      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
+      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
+    ];
 
-// remplissages des tables avions, compagnies et aeroports
+    // create link beetwen tables
+    // vols
+    liste_frg_key.forEach((query) => {
+      utils.createTable(query, con);
+    });
 
-utils.insertElements(
-  "INSERT INTO avions (type, nb_place) VALUES ?",
-  data.avions,
-  con
-);
+    // remplissages des tables avions, compagnies et aeroports
 
-utils.insertElements(
-  "INSERT INTO compagnies (nom, code) VALUES ?",
-  data.compagnies,
-  con
-);
+    utils.insertElements(
+      "INSERT INTO avions (type, nb_place) VALUES ?",
+      data.avions,
+      con
+    );
 
-utils.insertElements(
-  "INSERT INTO aeroports (nom, code, ville, pays) VALUES ?",
-  data.aeroports,
-  con
-);
+    utils.insertElements(
+      "INSERT INTO compagnies (nom, code) VALUES ?",
+      data.compagnies,
+      con
+    );
 
-utils.insertElements(
-  "INSERT INTO appareils (id_cmp, id_avn) VALUES ?",
-  data.appareils,
-  con
-);
+    utils.insertElements(
+      "INSERT INTO aeroports (nom, code, ville, pays) VALUES ?",
+      data.aeroports,
+      con
+    );
 
-utils.insertElements(
-  "INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
-  data.vols,
-  con
-);
+    utils.insertElements(
+      "INSERT INTO appareils (id_cmp, id_avn) VALUES ?",
+      data.appareils,
+      con
+    );
 
-con.end(function (err) {
-  if (err) return console.log("error:" + err.message);
-  else console.log("Connection à la base de données fermée.");
+    utils.insertElements(
+      "INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
+      data.vols,
+      con
+    );
+    con.end(function (err) {
+      if (err) return console.log("error:" + err.message);
+      else console.log("Connection à la base de données fermée.");
+    });
+  }
 });
