@@ -3,11 +3,32 @@ var app = express();
 
 let mysql = require("mysql");
 
+/*
+
+Créer un fichier database_coonection.js contenant le code suivant :
+
+
+const databasePwd = "votre_mot_de_passe";
+
+module.exports = {
+  databasePwd,
+};
+
+
+Prener soin de renseigner votre mot de base
+
+*/
+
+let databasePwd = require("./database_creation//database_connection.js")
+  .databasePwd;
+
+let data = require("./database_creation/data.js");
+
 let con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "mydbinstance",
-  database: "schema1",
+  password: databasePwd,
+  database: data.databaseName,
 });
 
 app.use(function (req, res, next) {
@@ -20,18 +41,13 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get("/query", (req, res) => {
-  console.log("Query 2 ! ");
-  res.send({ caca: "pipi" });
-});
-
 con.connect(function (err, db) {
   if (err) throw err;
   else {
     console.log("Connected ! ");
-    app.get("/firstquery", (req, res) => {
-      console.log("Query ! ");
-      let query = "SELECT * FROM colocataire";
+
+    app.get("/getAllFlights", (req, res) => {
+      let query = "SELECT * FROM vols";
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         console.log(results);

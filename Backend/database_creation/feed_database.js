@@ -59,7 +59,7 @@ data.liste_tables.forEach((value, index) => {
 });
 
 liste_tables = [
-  "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, heure_depart DATE, heure_arrivee DATE, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
+  "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, date_depart DATE, heure_depart TIME, date_arrivee DATE, heure_arrivee TIME, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
   "CREATE TABLE appareils (id_app INT AUTO_INCREMENT PRIMARY KEY, id_cmp INT, id_avn INT) AUTO_INCREMENT = 100;",
   "CREATE TABLE avions (id_avn INT AUTO_INCREMENT PRIMARY KEY, type VARCHAR(255), nb_place INT)  AUTO_INCREMENT = 100;",
   "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
@@ -115,7 +115,7 @@ utils.insertElements(
 );
 
 utils.insertElements(
-  "INSERT INTO vols (id_app, heure_depart, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
+  "INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
   data.vols,
   con
 );
