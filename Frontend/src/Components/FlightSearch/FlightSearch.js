@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import "./Home.css";
+import "./FlightSearch.css";
 import axios from "axios";
 import Alerts from "../Alerts/Alerts";
 
-class Home extends Component {
+class FlightSearch extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -51,8 +51,8 @@ class Home extends Component {
   render() {
     return (
       <div className="main">
-        <h1>Bienvenue sur la page d'accueil</h1>
-        <div>Contenu page d'accueil</div>
+        <h1>Bienvenue sur la page de recherche</h1>
+        <div>Blabla</div>
         <div className="col">
           <img
             src="https://cdn.onlinewebfonts.com/svg/img_246830.png"
@@ -61,6 +61,13 @@ class Home extends Component {
             style={{ margin: "20px" }}
           />
         </div>
+        <form>
+          <div className="form-group">
+            <label>Departure date</label>
+            <input className="form-control" id="departure-input" placeholder="Enter a departure date"></input>
+            <small className="form-text text-muted">Please enter the date in the format YYYY:MM:DD</small>
+          </div>
+        </form>
         <div className="container">
           <div className="row justify-content-md-center" id ="test">
             <div className="col">
@@ -71,8 +78,8 @@ class Home extends Component {
           </div>
           <div className="row justify-content-md-center">
             <div className="col">
-              <button className="btn btn-primary" onClick={() => {this.props.history.push('/flightsearch')}}>
-                Flight Search
+              <button className="btn btn-primary" onClick={() => {this.props.history.push('/home')}}>
+                Home Page
               </button>
           </div>
         </div>
@@ -83,4 +90,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default FlightSearch;
