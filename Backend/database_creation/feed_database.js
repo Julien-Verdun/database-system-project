@@ -19,16 +19,26 @@ con.connect(function (err) {
   else console.log("Connecté !");
 });
 
+// suppression des foreign keys
+liste_frg_key_drop = [
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_1;",
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_2;",
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_3;",
+  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_1;",
+  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_2;",
+  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_1;",
+  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_2;",
+];
+
+liste_frg_key_drop.forEach((query) => {
+  utils.deleteTable(query, con);
+});
+
 // on s'assure que la table n'existe pas en la supprimant dans un premier temps
 let drop_table_sql = "DROP TABLE IF EXISTS ";
-// let drop_tables = "";
 data.liste_tables.forEach((value, index) => {
   utils.deleteTable(drop_table_sql + value, con);
-  // drop_tables += drop_table_sql + value + "; ";
 });
-// console.log(drop_tables);
-
-// utils.deleteTable(drop_tables, con);
 
 liste_tables = [
   "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, heure_depart DATE, heure_arrivee DATE, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
@@ -45,13 +55,13 @@ liste_tables.forEach((query) => {
 });
 
 liste_frg_key = [
-  "ALTER TABLE vols ADD FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
-  "ALTER TABLE vols ADD FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE vols ADD FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE appareils ADD FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
-  "ALTER TABLE appareils ADD FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
-  "ALTER TABLE reservations ADD FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
-  "ALTER TABLE reservations ADD FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
+  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
+  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
+  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
+  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
 ];
 
 // create link beetwen tables
