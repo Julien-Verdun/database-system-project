@@ -80,7 +80,7 @@ class Home extends Component {
           />
         </div>
         <div className="container">
-          <div className="row justify-content-md-center" id ="test">
+          <div className="row justify-content-md-center" id="test">
             <div className="col">
               <button className="btn btn-primary" onClick={this.handleClick}>
                 Query
@@ -89,13 +89,18 @@ class Home extends Component {
           </div>
           <div className="row justify-content-md-center">
             <div className="col">
-              <button className="btn btn-primary" onClick={() => {this.props.history.push('/flightsearch')}}>
+              <button
+                className="btn btn-primary"
+                onClick={() => {
+                  this.props.history.push("/flightsearch");
+                }}
+              >
                 Flight Search
               </button>
+            </div>
           </div>
         </div>
-        </div>
-        <div className="result">{this.state.result}</div>
+        <div className="result">{table}</div>
       </div>
     );
   }
