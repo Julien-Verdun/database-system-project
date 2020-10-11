@@ -78,7 +78,7 @@ Description technique de l'application, quelles sont les possibilit√©, les requ√
 
 Tables :
 
-- vols (id_vol,id_app, heure_depart, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre)
+- vols (id_vol,id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre)
 - appareils (id_app, id_cmp, id_avn)
 - avions (id_avn, type, nb_place)
 - compagnies (id_cmp, nom, code)
@@ -92,7 +92,9 @@ Vols :
 
 - id_vol
 - id_app
+- date_depart
 - heure_depart
+- date_arrivee
 - heure_arrive
 - id_aer_dep
 - id_aer_arr

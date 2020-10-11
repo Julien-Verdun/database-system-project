@@ -15,19 +15,21 @@ class Home extends Component {
   handleClick(event) {
     event.preventDefault();
     axios
-      .get("http://localhost:8080/firstquery")
+      .get("http://localhost:8080/getAllFlights")
       .then((response) => {
         // handle success
-        let coloc = response.data.map((obj) => {
-          return obj;
-        });
-        let result = coloc.map((elt, index) => {
+        let result = response.data.map((elt, index) => {
           return (
-            <div key={index} className="row">
-              <p className="col">{elt.surnom}</p>
-              <p className="col">{elt.nom}</p>
-              <p className="col">{elt.numero}</p>
-            </div>
+            <tr key={index}>
+              <th scope="row">{index}</th>
+              <td>
+                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
+              </td>
+              <td>
+                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
+              </td>
+              <td>{elt.prix + " €"}</td>
+            </tr>
           );
         });
         this.setState({
@@ -49,6 +51,22 @@ class Home extends Component {
   }
 
   render() {
+    let table =
+      this.state.result === "" ? (
+        this.state.result
+      ) : (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Départ</th>
+              <th scope="col">Arrivée</th>
+              <th scope="col">Prix</th>
+            </tr>
+          </thead>
+          <tbody>{this.state.result}</tbody>
+        </table>
+      );
     return (
       <div className="main">
         <h1>Bienvenue sur la page d'accueil</h1>

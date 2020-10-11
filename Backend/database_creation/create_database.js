@@ -1,15 +1,34 @@
 // ce fichier permet de créer la base de données
+
 let data = require("./data.js");
 
 let utils = require("./database_utils.js");
 
 let mysql = require("mysql");
 
+/*
+
+Créer un fichier database_coonection.js contenant le code suivant :
+
+
+const databasePwd = "votre_mot_de_passe";
+
+module.exports = {
+  databasePwd,
+};
+
+
+Prener soin de renseigner votre mot de base
+
+*/
+
+let databasePwd = require("./database_connection.js").databasePwd;
+
 // connection à l'instance MySQL
 let con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "mydbinstance",
+  password: databasePwd,
 });
 
 con.connect(function (err) {

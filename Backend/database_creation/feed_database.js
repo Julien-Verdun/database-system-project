@@ -6,11 +6,29 @@ let utils = require("./database_utils.js");
 
 let mysql = require("mysql");
 
+/*
+
+Créer un fichier database_coonection.js contenant le code suivant :
+
+
+const databasePwd = "votre_mot_de_passe";
+
+module.exports = {
+  databasePwd,
+};
+
+
+Prener soin de renseigner votre mot de base
+
+*/
+
+let databasePwd = require("./database_connection.js").databasePwd;
+
 // connection à la base de données crées
 con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "mydbinstance",
+  password: databasePwd,
   database: data.databaseName,
 });
 
@@ -19,19 +37,29 @@ con.connect(function (err) {
   else console.log("Connecté !");
 });
 
+// suppression des foreign keys
+liste_frg_key_drop = [
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_1;",
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_2;",
+  "ALTER TABLE vols DROP FOREIGN KEY vols_ibfk_3;",
+  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_1;",
+  "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_2;",
+  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_1;",
+  "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_2;",
+];
+
+liste_frg_key_drop.forEach((query) => {
+  utils.deleteTable(query, con);
+});
+
 // on s'assure que la table n'existe pas en la supprimant dans un premier temps
 let drop_table_sql = "DROP TABLE IF EXISTS ";
-// let drop_tables = "";
 data.liste_tables.forEach((value, index) => {
   utils.deleteTable(drop_table_sql + value, con);
-  // drop_tables += drop_table_sql + value + "; ";
 });
-// console.log(drop_tables);
-
-// utils.deleteTable(drop_tables, con);
 
 liste_tables = [
-  "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, heure_depart DATE, heure_arrivee DATE, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
+  "CREATE TABLE vols (id_vol INT AUTO_INCREMENT PRIMARY KEY, id_app INT, date_depart DATE, heure_depart TIME, date_arrivee DATE, heure_arrivee TIME, id_aer_dep INT, id_aer_arr INT, prix FLOAT, place_libre INT) AUTO_INCREMENT = 100;",
   "CREATE TABLE appareils (id_app INT AUTO_INCREMENT PRIMARY KEY, id_cmp INT, id_avn INT) AUTO_INCREMENT = 100;",
   "CREATE TABLE avions (id_avn INT AUTO_INCREMENT PRIMARY KEY, type VARCHAR(255), nb_place INT)  AUTO_INCREMENT = 100;",
   "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
@@ -45,13 +73,13 @@ liste_tables.forEach((query) => {
 });
 
 liste_frg_key = [
-  "ALTER TABLE vols ADD FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
-  "ALTER TABLE vols ADD FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE vols ADD FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
-  "ALTER TABLE appareils ADD FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
-  "ALTER TABLE appareils ADD FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
-  "ALTER TABLE reservations ADD FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
-  "ALTER TABLE reservations ADD FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
+  "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
+  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
+  "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
+  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
+  "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
 ];
 
 // create link beetwen tables
@@ -87,7 +115,7 @@ utils.insertElements(
 );
 
 utils.insertElements(
-  "INSERT INTO vols (id_app, heure_depart, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
+  "INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES ?",
   data.vols,
   con
 );
