@@ -34,14 +34,14 @@ class Header extends Component {
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav mr-auto">
-            <li className="nav-item active">
+            <li className="nav-item">
               <a className="nav-link" href="/home">
-                Acceuil <span className="sr-only">(current)</span>
+                Accueil <span className="sr-only">(current)</span>
               </a>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/home">
-                Link
+              <a className="nav-link" href="/myreservations">
+                Mes réservations
               </a>
             </li>
             <li className="nav-item dropdown">
@@ -54,7 +54,7 @@ class Header extends Component {
                 aria-haspopup="true"
                 aria-expanded="false"
               >
-                Dropdown
+                Réserver
               </a>
               <div className="dropdown-menu" aria-labelledby="navbarDropdown">
                 <a className="dropdown-item" href="/home">
@@ -68,11 +68,6 @@ class Header extends Component {
                   Something else here
                 </a>
               </div>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link disabled" href="/home">
-                Disabled
-              </a>
             </li>
           </ul>
           <form className="form-inline my-2 my-lg-0">

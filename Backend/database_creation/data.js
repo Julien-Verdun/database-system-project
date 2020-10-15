@@ -118,6 +118,18 @@ const vols = [
   ],
 ];
 
+clients = [
+  ["Julien", "Verdun", "julien.verdun@ecl17.ec-lyon.fr", "0678987656"],
+  ["Maxime", "Peter", "maxime.peter@ecl17.ec-lyon.fr", "0678657612"],
+];
+
+reservations = [
+  [100, 102, 345.9, 1],
+  [101, 102, 75.9, 4],
+  [100, 103, 415.9, 1],
+  [101, 103, 95.9, 1],
+];
+
 module.exports = {
   liste_tables,
   databaseName,
@@ -126,4 +138,6 @@ module.exports = {
   aeroports,
   appareils,
   vols,
+  clients,
+  reservations,
 };

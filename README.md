@@ -58,6 +58,27 @@ Le gestionnaire de package **npm** va se charger d'installer la bonne version de
 
 ## Lancement local de l'application
 
+Créez un fichier `database_connection.js` avec le contenu suivant :
+
+```
+const databasePwd = "votre_mot_de_passe";
+
+module.exports = {
+  databasePwd,
+};
+
+```
+
+dans le repertoire `database-system-project/Backend/database_creation`. Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et place de **votre_mot_de_passe**.
+
+Afin de lancer en local la partie back-end de l'application, ouvrez un invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend` et exécutez la ligne de commande :
+
+```
+npm start
+```
+
+Le serveur NodeJS se lance et écoute sur le port 8080.
+
 Afin de lancer en local la partie front-end de l'application, ouvrez un invité de commande, placez-vous au niveau du répertoire `database-system-project/Frontend` et exécutez la ligne de commande :
 
 ```
@@ -65,8 +86,6 @@ npm start
 ```
 
 Ouvrez ensuite un navigateur internet, de préférences **Google Chrome**, sur le port `http://localhost:3000/`.
-
-Réalisez la même opération dans le répertoire `database-system-project/Backend` afin de lancer le serveur Back-end. Le serveur NodeJS écoute sur le port 8080.
 
 ---
 

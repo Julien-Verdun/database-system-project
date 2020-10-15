@@ -40,7 +40,9 @@ con.connect(function (err) {
 // on verifie d'abord que la base est vide avant de la remplir, sinon on supprime tout avant de la remplir
 let is_filled_in = false;
 let query =
-  "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'mydb';";
+  "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '" +
+  data.databaseName +
+  "';";
 con.query(query, (err, results, fields) => {
   if (err) throw err;
   else {
@@ -76,7 +78,7 @@ con.query(query, (err, results, fields) => {
       "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE aeroports (id_aer INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255), ville VARCHAR(255), pays VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255)) AUTO_INCREMENT = 100;",
-      "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix INT, quantite INT) AUTO_INCREMENT = 100;",
+      "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix FLOAT, quantite INT) AUTO_INCREMENT = 100;",
     ];
 
     liste_tables.forEach((query) => {
@@ -84,17 +86,16 @@ con.query(query, (err, results, fields) => {
     });
 
     liste_frg_key = [
-      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES Appareils(id_app);",
-      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES Aeroports(id_aer);",
-      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES Aeroports(id_aer);",
-      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES Compagnies(id_cmp);",
-      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES Avions(id_avn);",
-      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES Clients(id_cli);",
-      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES Vols(id_vol);",
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_1 FOREIGN KEY (id_app) REFERENCES appareils(id_app);",
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_2 FOREIGN KEY (id_aer_dep) REFERENCES aeroports(id_aer);",
+      "ALTER TABLE vols ADD CONSTRAINT vols_ibfk_3 FOREIGN KEY (id_aer_arr) REFERENCES aeroports(id_aer);",
+      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_1 FOREIGN KEY (id_cmp) REFERENCES compagnies(id_cmp);",
+      "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES avions(id_avn);",
+      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES clients(id_cli);",
+      "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES vols(id_vol);",
     ];
 
     // create link beetwen tables
-    // vols
     liste_frg_key.forEach((query) => {
       utils.createTable(query, con);
     });
@@ -130,6 +131,19 @@ con.query(query, (err, results, fields) => {
       data.vols,
       con
     );
+
+    utils.insertElements(
+      "INSERT INTO clients (nom, prenom, mail, telephone) VALUES ?",
+      data.clients,
+      con
+    );
+
+    utils.insertElements(
+      "INSERT INTO reservations (id_cli, id_vol, prix, quantite) VALUES ?",
+      data.reservations,
+      con
+    );
+
     con.end(function (err) {
       if (err) return console.log("error:" + err.message);
       else console.log("Connection à la base de données fermée.");

@@ -40,21 +40,25 @@ class Home extends Component {
         // handle error
         console.log(error);
         this.setState({
-          result: (
-            <Alerts
-              type="danger"
-              content="Aucun résultat, vérifier votre connection"
-            />
-          ),
+          result: null,
         });
       });
   }
 
   render() {
-    let table =
-      this.state.result === "" ? (
-        this.state.result
-      ) : (
+    let table;
+
+    if (this.state.result === "") {
+      table = this.state.result;
+    } else if (this.state.result === null) {
+      table = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else {
+      table = (
         <table className="table table-striped">
           <thead>
             <tr>
@@ -67,6 +71,8 @@ class Home extends Component {
           <tbody>{this.state.result}</tbody>
         </table>
       );
+    }
+
     return (
       <div className="main">
         <h1>Bienvenue sur la page d'accueil</h1>
