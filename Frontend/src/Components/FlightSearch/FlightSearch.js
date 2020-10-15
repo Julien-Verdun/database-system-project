@@ -67,6 +67,18 @@ class FlightSearch extends Component {
             <input className="form-control" id="departure-input" placeholder="Enter a departure date"></input>
             <small className="form-text text-muted">Please enter the date in the format YYYY:MM:DD</small>
           </div>
+          <div className="form-group">
+            <label>From </label>
+            <input className="form-control" id="from-input" placeholder="Enter a city or an airport"></input>
+          </div>
+          <div className="form-group">
+            <label>To </label>
+            <input className="form-control" id="to-input" placeholder="Enter a city or an airport"></input>
+          </div>
+          <div className="form-group">
+            <label>Number of passengers </label>
+            <input className="form-control" id="nb-passengers-input" placeholder="Enter the number of passengers"></input>
+          </div>
         </form>
         <div className="container">
           <div className="row justify-content-md-center" id ="test">
