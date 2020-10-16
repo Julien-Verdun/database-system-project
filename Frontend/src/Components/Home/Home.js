@@ -86,7 +86,7 @@ class Home extends Component {
           />
         </div>
         <div className="container">
-          <div className="row justify-content-md-center" id="test">
+          <div className="row justify-content-md-center">
             <div className="col">
               <button className="btn btn-primary" onClick={this.handleClick}>
                 Query

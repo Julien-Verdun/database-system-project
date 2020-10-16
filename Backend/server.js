@@ -64,6 +64,14 @@ con.connect(function (err, db) {
       });
     });
 
+    app.get("/getAllAirportsIdName", (req, res) => {
+      let query = "SELECT id_aer, nom FROM aeroports;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
     // this query returns all the reservations in the database for the given client
     app.get("/getReservation/:id_cli/:id_res", (req, res) => {
       let id_cli = Number(decodeURI(req.params.id_cli));

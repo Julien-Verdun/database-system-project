@@ -8,47 +8,69 @@ class FlightSearch extends Component {
     super(props);
     this.state = {
       result: "",
+      listeAirportsOptions: null,
     };
-    this.handleClick = this.handleClick.bind(this);
+    //this.handleClick = this.handleClick.bind(this);
   }
-
-  handleClick(event) {
-    event.preventDefault();
+  componentDidMount() {
+    this.createSelectAirports();
+  }
+  createSelectAirports() {
     axios
-      .get("http://localhost:8080/firstquery")
+      .get("http://localhost:8080/getAllAirportsIdName")
       .then((response) => {
         // handle success
-        let coloc = response.data.map((obj) => {
-          return obj;
-        });
-        let result = coloc.map((elt, index) => {
+        console.log(response)
+        let listeAirportsOptions = response.data.map((elt, index) => {
           return (
-            <div key={index} className="row">
-              <p className="col">{elt.surnom}</p>
-              <p className="col">{elt.nom}</p>
-              <p className="col">{elt.numero}</p>
-            </div>
+            <option value={elt.id_aer} key={elt.id_aer}>
+              {elt.nom}
+            </option>
           );
         });
-        this.setState({
-          result: result,
-        });
+        this.setState({ listeAirportsOptions });
+        console.log(this.state.listeAirportsOptions);
       })
       .catch((error) => {
         // handle error
         console.log(error);
-        this.setState({
-          result: (
-            <Alerts
-              type="danger"
-              content="Aucun résultat, vérifier votre connection"
-            />
-          ),
-        });
+        this.setState({ listeAirportsOptions: null });
       });
   }
 
+  handleClickSearch(event) {
+    event.preventDefault();
+    let travelDate = encodeURI(document.getElementById("departure-input").value);
+    let departureAirportId = encodeURI(document.getElementById("from-airport").value); 
+    let arrivalAirportId = encodeURI(document.getElementById("to-airport").value);
+    let nbPassengers = encodeURI(document.getElementById("nb-passengers-input").value);
+    console.log(travelDate, departureAirportId, arrivalAirportId, nbPassengers)
+  }
   render() {
+    let table;
+
+    if (this.state.result === "") {
+      table = this.state.result;
+    } else if (this.state.result === null) {
+      table = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else {
+      table = (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Airport name</th>
+            </tr>
+          </thead>
+          <tbody>{this.state.result}</tbody>
+        </table>
+      );
+    }
     return (
       <div className="main">
         <h1>Bienvenue sur la page de recherche</h1>
@@ -69,11 +91,15 @@ class FlightSearch extends Component {
           </div>
           <div className="form-group">
             <label>From </label>
-            <input className="form-control" id="from-input" placeholder="Enter a city or an airport"></input>
-          </div>
+              <select name="from-airports" id="from-airport" className="custom-select">
+                {this.state.listeAirportsOptions}
+              </select>
+           </div>
           <div className="form-group">
             <label>To </label>
-            <input className="form-control" id="to-input" placeholder="Enter a city or an airport"></input>
+              <select name="to-airports" id="to-airport" className="custom-select">
+                {this.state.listeAirportsOptions}
+              </select>
           </div>
           <div className="form-group">
             <label>Number of passengers </label>
@@ -81,10 +107,10 @@ class FlightSearch extends Component {
           </div>
         </form>
         <div className="container">
-          <div className="row justify-content-md-center" id ="test">
+          <div className="row justify-content-md-center">
             <div className="col">
-              <button className="btn btn-primary" onClick={this.handleClick}>
-                Query
+              <button className="btn btn-primary" onClick={this.handleClickSearch}>
+                Search
               </button>
             </div>
           </div>
@@ -96,7 +122,7 @@ class FlightSearch extends Component {
           </div>
         </div>
         </div>
-        <div className="result">{this.state.result}</div>
+        <div className="result">{table}</div>
       </div>
     );
   }
