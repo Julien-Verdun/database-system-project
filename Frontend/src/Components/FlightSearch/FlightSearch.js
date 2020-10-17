@@ -10,7 +10,7 @@ class FlightSearch extends Component {
       result: "",
       listeAirportsOptions: null,
     };
-    //this.handleClick = this.handleClick.bind(this);
+    this.handleClickSearch = this.handleClickSearch.bind(this);
   }
   componentDidMount() {
     this.createSelectAirports();
@@ -44,7 +44,41 @@ class FlightSearch extends Component {
     let departureAirportId = encodeURI(document.getElementById("from-airport").value); 
     let arrivalAirportId = encodeURI(document.getElementById("to-airport").value);
     let nbPassengers = encodeURI(document.getElementById("nb-passengers-input").value);
-    console.log(travelDate, departureAirportId, arrivalAirportId, nbPassengers)
+    axios
+      .get(
+        "http://localhost:8080/getFlights/" +
+          encodeURI(travelDate) +
+          "/" +
+          encodeURI(departureAirportId) +
+          "/" +
+          encodeURI(arrivalAirportId) +
+          "/" +
+          encodeURI(nbPassengers)
+      )
+      .then((response) => {
+        // handle success
+        let flightsList = response.data.map((elt, index) => {
+          return (
+            <tr key={index}>
+              <th scope="row">{index}</th>
+              <td>
+                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
+              </td>
+              <td>
+                {elt.aeroport_depart}
+              </td>
+              <td>
+                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
+              </td>
+              <td>
+                {elt.aeroport_arrivee}
+              </td>
+              <td>{elt.prix + " €"}</td>
+            </tr>
+          );
+        });
+        this.setState({result: flightsList});
+      });
   }
   render() {
     let table;
@@ -64,7 +98,11 @@ class FlightSearch extends Component {
           <thead>
             <tr>
               <th scope="col">#</th>
-              <th scope="col">Airport name</th>
+              <th scope="col">Date d'arrivée</th>
+              <th scope="col">Aéroport de départ</th>
+              <th scope="col">Date d'arrivée</th>
+              <th scope="col">Aéroport d'arrivée</th>
+              <th scope="col">Prix</th>
             </tr>
           </thead>
           <tbody>{this.state.result}</tbody>
@@ -85,24 +123,24 @@ class FlightSearch extends Component {
         </div>
         <form>
           <div className="form-group">
-            <label>Departure date</label>
+            <label>Date de départ</label>
             <input className="form-control" id="departure-input" placeholder="Enter a departure date"></input>
-            <small className="form-text text-muted">Please enter the date in the format YYYY:MM:DD</small>
+            <small className="form-text text-muted">Entrez la date sous le formatYYYY-MM-DD</small>
           </div>
           <div className="form-group">
-            <label>From </label>
+            <label>Depuis </label>
               <select name="from-airports" id="from-airport" className="custom-select">
                 {this.state.listeAirportsOptions}
               </select>
            </div>
           <div className="form-group">
-            <label>To </label>
+            <label>Vers </label>
               <select name="to-airports" id="to-airport" className="custom-select">
                 {this.state.listeAirportsOptions}
               </select>
           </div>
           <div className="form-group">
-            <label>Number of passengers </label>
+            <label>Nombre de passagers </label>
             <input className="form-control" id="nb-passengers-input" placeholder="Enter the number of passengers"></input>
           </div>
         </form>
@@ -110,17 +148,10 @@ class FlightSearch extends Component {
           <div className="row justify-content-md-center">
             <div className="col">
               <button className="btn btn-primary" onClick={this.handleClickSearch}>
-                Search
+                Recherche
               </button>
             </div>
           </div>
-          <div className="row justify-content-md-center">
-            <div className="col">
-              <button className="btn btn-primary" onClick={() => {this.props.history.push('/home')}}>
-                Home Page
-              </button>
-          </div>
-        </div>
         </div>
         <div className="result">{table}</div>
       </div>
