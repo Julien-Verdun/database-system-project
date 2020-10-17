@@ -5,3 +5,8 @@
     align-items: flex-start;
     text-align: start;
 }
+
+#quantity-ticket {
+    margin-left:5%;
+    padding-left: 1%;
+}

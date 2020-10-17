@@ -95,6 +95,11 @@ Description technique de l'application, quelles sont les possibilité, les requ�
 
 ### Structure de la base de données
 
+La figure suivante, obtenue avec le logiciel **DBeaver**, représente les différentes tables de la base de données.
+
+Les liens entre les tables, les clés primaires et les autres clés sont également représentés.
+
+![Vue de la base de données](database_view.PNG)
 Tables :
 
 - vols (id_vol,id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre)

@@ -3,6 +3,9 @@ var app = express();
 
 let mysql = require("mysql");
 
+let utils = require("./utils.js");
+
+let bodyParser = require("body-parser").json();
 /*
 
 Créer un fichier database_coonection.js contenant le code suivant :
@@ -40,6 +43,8 @@ app.use(function (req, res, next) {
   );
   next();
 });
+
+app.use(bodyParser);
 
 con.connect(function (err, db) {
   if (err) throw err;
@@ -109,6 +114,8 @@ con.connect(function (err, db) {
         `;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
+        results[0].date_depart = utils.processDate(results[0].date_depart);
+        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
         res.send(results);
       });
     });
@@ -152,6 +159,93 @@ con.connect(function (err, db) {
         JOIN aeroports aer_arr ON aer_arr.id_aer= vol.id_aer_arr
         ORDER BY vol.date_depart ASC, vol.heure_depart ASC;
         `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        results[0].date_depart = utils.processDate(results[0].date_depart);
+        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
+        res.send(results);
+      });
+    });
+
+    // this query returns the flight in the database for the given client and the given flight id
+    app.get("/getVol/:id_vol", (req, res) => {
+      let id_vol = Number(decodeURI(req.params.id_vol));
+      let query =
+        `
+        SELECT vol.date_depart, 
+          vol.heure_depart, 
+          vol.date_arrivee, 
+          vol.heure_arrivee,
+          vol.prix as 'prix_vol', 
+          vol.place_libre, 
+          aer_arr.nom AS 'aer_arr_nom', 
+          aer_arr.ville AS 'aer_arr_ville', 
+          aer_arr.pays AS 'aer_arr_pays',
+          aer_dep.nom AS 'aer_dep_nom', 
+          aer_dep.ville AS 'aer_dep_ville', 
+          aer_dep.pays AS 'aer_dep_pays', 
+          avn.type, 
+          avn.nb_place, 
+          cmp.nom AS 'cmp_nom'
+        FROM vols vol
+        JOIN appareils app ON app.id_app = vol.id_app
+        JOIN avions avn ON avn.id_avn = app.id_avn
+        JOIN compagnies cmp ON cmp.id_cmp = app.id_cmp
+        JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
+        JOIN aeroports aer_arr ON aer_arr.id_aer= vol.id_aer_arr
+        WHERE vol.id_vol = ` +
+        id_vol +
+        `
+        LIMIT 1
+        `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        results[0].date_depart = utils.processDate(results[0].date_depart);
+        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
+        res.send(results);
+      });
+    });
+
+    // this query delete the reservation id_res in the table reservations
+    app.post("/deleteReservation", (req, res) => {
+      let id_res = req.body.id_res;
+      console.log("id_res : ", id_res);
+      let query =
+        `
+        DELETE FROM reservations res
+        WHERE res.id_res = 
+      ` +
+        id_res +
+        `
+      LIMIT 1;
+      `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query add a reservation with all information id_res in the table reservations
+    app.post("/addReservation", function (req, res) {
+      let reqBody = req.body;
+      const id_cli = reqBody.id_cli,
+        id_vol = reqBody.id_vol,
+        prix = reqBody.prix,
+        quantite = reqBody.quantite;
+
+      console.log("reqBody : ", reqBody);
+      let query =
+        `INSERT INTO reservations (id_cli, id_vol, prix, quantite) VALUES (` +
+        id_cli +
+        `, ` +
+        id_vol +
+        `, ` +
+        prix +
+        `, ` +
+        quantite +
+        `);`;
+      //('"+id_cli+"', '"+id_vol+"', '"+prix+"', '"+quantite+"');`;
+
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);

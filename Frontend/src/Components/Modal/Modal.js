@@ -44,9 +44,8 @@ class Modal extends Component {
               <button
                 type="button"
                 className="btn btn-primary"
-                onClick={() => {
-                  console.log("Confirmer");
-                }}
+                data-dismiss="modal"
+                onClick={this.props.onClick}
               >
                 Confirmer
               </button>
