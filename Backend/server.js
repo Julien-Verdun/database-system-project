@@ -79,7 +79,7 @@ con.connect(function (err, db) {
       let nbPassengers = Number(decodeURI(req.params.nbPassengers));
       let query =
         `
-        SELECT v.date_depart, v.heure_depart, v.date_arrivee, v.heure_arrivee, v.prix, a_dep.nom AS aeroport_depart, a_arr.nom AS aeroport_arrivee
+        SELECT v.date_depart, v.heure_depart, v.date_arrivee, v.heure_arrivee, v.prix, v.id_vol, a_dep.nom AS aeroport_depart, a_arr.nom AS aeroport_arrivee
         FROM vols v
         JOIN aeroports a_dep ON v.id_aer_dep = a_dep.id_aer
         JOIN aeroports a_arr ON v.id_aer_dep = a_arr.id_aer

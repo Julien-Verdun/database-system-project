@@ -57,10 +57,17 @@ class FlightSearch extends Component {
       )
       .then((response) => {
         // handle success
+        let id_cli = 12;
+        //let id_cli = Number(window.location.pathname.split("/")[2]);
         let flightsList = response.data.map((elt, index) => {
+          let url = "url_de_sthaze/" + elt.id_vol + "/" + id_cli;
           return (
-            <tr key={index}>
-              <th scope="row">{index}</th>
+            <tr key={index}
+            onClick={() => {
+              this.props.history.push("/" + url);
+            }}>
+              <th scope="row">{index}
+              </th>
               <td>
                 {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
               </td>

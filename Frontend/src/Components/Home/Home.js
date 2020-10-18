@@ -18,6 +18,7 @@ class Home extends Component {
       .get("http://localhost:8080/getAllFlights")
       .then((response) => {
         // handle success
+        console.log(response)
         let result = response.data.map((elt, index) => {
           return (
             <tr key={index}>
