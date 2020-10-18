@@ -18,6 +18,7 @@ class App extends Component {
         <Header />
         <Switch>
           <Route exact path="/home" component={Home} />
+          <Route exact path="/" component={Home} />
           <Route exact path="/flightsearch" component={FlightSearch} />
           <Route
             exact

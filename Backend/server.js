@@ -60,6 +60,32 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query returns all the airports in the table aeroports from the database
+    app.get("/getAllAirports", (req, res) => {
+      let query = "SELECT * FROM aeroports;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query returns all the apparals in the table appareils from the database
+    app.get("/getAllAppareils", (req, res) => {
+      let query = `
+        SELECT app.id_app,
+          avi.type AS 'type_avion', 
+          avi.nb_place AS 'nb_place', 
+          cmp.nom AS 'nom_compagnie' 
+        FROM appareils app
+        JOIN avions avi ON avi.id_avn = app.id_avn
+        JOIN compagnies cmp ON cmp.id_cmp = app.id_cmp;
+      `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
     // this query returns all the users in the table clients from the database
     app.get("/getAllClients", (req, res) => {
       let query = "SELECT * FROM clients;";
@@ -245,6 +271,47 @@ con.connect(function (err, db) {
         quantite +
         `);`;
       //('"+id_cli+"', '"+id_vol+"', '"+prix+"', '"+quantite+"');`;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query add a reservation with all information id_res in the table reservations
+    app.post("/addVol", function (req, res) {
+      let reqBody = req.body;
+      const id_app = reqBody.id_app,
+        date_depart = reqBody.date_depart,
+        heure_depart = reqBody.heure_depart,
+        date_arrivee = reqBody.date_arrivee,
+        heure_arrivee = reqBody.heure_arrivee,
+        id_aer_dep = reqBody.id_aer_dep,
+        id_aer_arr = reqBody.id_aer_arr,
+        prix = reqBody.prix,
+        place_libre = reqBody.place_libre;
+
+      console.log("reqBody : ", reqBody);
+      let query =
+        `INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES (` +
+        id_app +
+        `, ` +
+        date_depart +
+        `, ` +
+        heure_depart +
+        `, ` +
+        date_arrivee +
+        `, ` +
+        heure_arrivee +
+        `, ` +
+        id_aer_dep +
+        `, ` +
+        id_aer_arr +
+        `, ` +
+        prix +
+        `, ` +
+        place_libre +
+        `);`;
 
       con.query(query, (err, results, fields) => {
         if (err) throw err;
