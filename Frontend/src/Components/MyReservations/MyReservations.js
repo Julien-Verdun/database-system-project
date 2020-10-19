@@ -12,6 +12,9 @@ class MyReservations extends Component {
     };
     this.handleClick = this.handleClick.bind(this);
     this.handleChangeClient = this.handleChangeClient.bind(this);
+  }
+
+  componentDidMount() {
     this.createSelectClients();
   }
 
