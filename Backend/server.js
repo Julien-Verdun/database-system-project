@@ -251,6 +251,38 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query delete the vol id_vol in the table vols
+    app.post("/deleteVol", (req, res) => {
+      // in order to delete a flight, we first need to delete the associated reservations
+      let id_vol = req.body.id_vol;
+      console.log("id_vol : ", id_vol);
+      let query_res =
+        `
+        DELETE FROM reservations res
+        WHERE res.id_vol = 
+        ` +
+        id_vol +
+        `;`;
+
+      let query_vol =
+        `
+        DELETE FROM vols vol
+        WHERE vol.id_vol = 
+        ` +
+        id_vol +
+        `
+        LIMIT 1;
+        `;
+      con.query(query_res, (err_res, results_res, fields_res) => {
+        if (err_res) throw err_res;
+        // res.send(results_res);
+        con.query(query_vol, (err, results, fields) => {
+          if (err) throw err;
+          res.send({ results_res: results_res, results: results });
+        });
+      });
+    });
+
     // this query add a reservation with all information id_res in the table reservations
     app.post("/addReservation", function (req, res) {
       let reqBody = req.body;
@@ -295,15 +327,15 @@ con.connect(function (err, db) {
       let query =
         `INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES (` +
         id_app +
-        `, ` +
+        `, "` +
         date_depart +
-        `, ` +
+        `", "` +
         heure_depart +
-        `, ` +
+        `", "` +
         date_arrivee +
-        `, ` +
+        `", "` +
         heure_arrivee +
-        `, ` +
+        `", ` +
         id_aer_dep +
         `, ` +
         id_aer_arr +

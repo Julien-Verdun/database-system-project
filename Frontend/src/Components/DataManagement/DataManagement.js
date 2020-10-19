@@ -3,13 +3,14 @@ import "./DataManagement.css";
 import axios from "axios";
 import Alerts from "../Alerts/Alerts";
 import { dateToDateTimeLocal } from "../utils.js";
+import DeleteIcon from "@material-ui/icons/Delete";
 
 class DataManagement extends Component {
   constructor(props) {
     super(props);
     let date = dateToDateTimeLocal(new Date());
     this.state = {
-      new_vol: true, //mettre false
+      newVol: true, //mettre false
       aeroportList: null,
       allFlights: null,
       appareilsList: null,
@@ -22,11 +23,13 @@ class DataManagement extends Component {
       id_aer_arr: null,
       prix: 0.0,
       place_libre: 0,
+      hasError: false,
     };
-    this.handleClick = this.handleClick.bind(this);
+    this.handleAddVol = this.handleAddVol.bind(this);
     this.getFlights = this.getFlights.bind(this);
     this.getAirports = this.getAirports.bind(this);
     this.getAppareils = this.getAppareils.bind(this);
+    this.handleDeleteVol = this.handleDeleteVol.bind(this);
   }
 
   getFlights() {
@@ -45,6 +48,13 @@ class DataManagement extends Component {
                 {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
               </td>
               <td>{elt.prix + " €"}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteVol(elt.id_vol);
+                  }}
+                />
+              </td>
             </tr>
           );
         });
@@ -101,8 +111,8 @@ class DataManagement extends Component {
                 " - " +
                 elt.type_avion +
                 " (" +
-                elt.type_avion +
-                ")"}
+                elt.nb_place +
+                " places)"}
             </option>
           );
         });
@@ -129,7 +139,25 @@ class DataManagement extends Component {
     this.getAppareils();
   }
 
-  handleClick(event) {
+  handleDeleteVol(id_vol) {
+    let data = {
+      id_vol: id_vol,
+    };
+
+    axios
+      .post("http://localhost:8080/deleteVol", data)
+      .then((response) => {
+        // handle success
+        console.log(response);
+        this.getFlights();
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  handleAddVol(event) {
     event.preventDefault();
     let data = {
       id_app: this.state.id_app,
@@ -143,15 +171,25 @@ class DataManagement extends Component {
       place_libre: this.state.place_libre,
     };
     console.log(data);
-    // axios
-    //   .post("http://localhost:8080/addReservation", data)
-    //   .then((response) => {
-    //     // handle success
-    //   })
-    //   .catch((error) => {
-    //     // handle error
-    //     console.log(error);
-    //   });
+    if (
+      (data.date_depart === data.date_arrivee &&
+        data.heure_depart === data.heure_arrivee) ||
+      data.id_aer_dep === data.id_aer_arr
+    ) {
+      console.log("Erreur avec les données d'entrées");
+      this.setState({ hasError: true });
+    } else {
+      axios
+        .post("http://localhost:8080/addVol", data)
+        .then((response) => {
+          this.setState({ hasError: false, newVol: false });
+          // handle success
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
+        });
+    }
   }
 
   render() {
@@ -175,6 +213,7 @@ class DataManagement extends Component {
               <th scope="col">Départ</th>
               <th scope="col">Arrivée</th>
               <th scope="col">Prix</th>
+              <th scope="col">Supprimer</th>
             </tr>
           </thead>
           <tbody>{this.state.allFlights}</tbody>
@@ -182,12 +221,12 @@ class DataManagement extends Component {
       );
     }
     let reservation_table =
-      this.state.new_vol === false ? (
+      this.state.newVol === false ? (
         <button
           type="button"
           className="btn btn-primary"
           onClick={() => {
-            this.setState({ new_vol: true });
+            this.setState({ newVol: true });
           }}
         >
           Ajouter un vol
@@ -203,7 +242,7 @@ class DataManagement extends Component {
                   id="appareil"
                   onChange={() => {
                     this.setState({
-                      id_app: document.getElementById("appareil").value,
+                      id_app: Number(document.getElementById("appareil").value),
                     });
                   }}
                 >
@@ -220,9 +259,9 @@ class DataManagement extends Component {
                   id="aeroport-depart-select"
                   onChange={() => {
                     this.setState({
-                      id_aer_dep: document.getElementById(
-                        "aeroport-depart-select"
-                      ).value,
+                      id_aer_dep: Number(
+                        document.getElementById("aeroport-depart-select").value
+                      ),
                     });
                   }}
                 >
@@ -262,9 +301,9 @@ class DataManagement extends Component {
                   id="aeroport-arrivee-select"
                   onChange={() => {
                     this.setState({
-                      id_aer_arr: document.getElementById(
-                        "aeroport-arrivee-select"
-                      ).value,
+                      id_aer_arr: Number(
+                        document.getElementById("aeroport-arrivee-select").value
+                      ),
                     });
                   }}
                 >
@@ -308,7 +347,7 @@ class DataManagement extends Component {
                   max="5"
                   onChange={() => {
                     this.setState({
-                      prix: document.getElementById("price").value,
+                      prix: Number(document.getElementById("price").value),
                     });
                   }}
                 />
@@ -325,7 +364,9 @@ class DataManagement extends Component {
                   max="5"
                   onChange={() => {
                     this.setState({
-                      place_libre: document.getElementById("nb-place").value,
+                      place_libre: Number(
+                        document.getElementById("nb-place").value
+                      ),
                     });
                   }}
                 />
@@ -337,7 +378,7 @@ class DataManagement extends Component {
               <button
                 type="button"
                 className="btn btn-success"
-                onClick={this.handleClick}
+                onClick={this.handleAddVol}
               >
                 Ajouter ce vol
               </button>
@@ -348,7 +389,7 @@ class DataManagement extends Component {
                 type="button"
                 className="btn btn-warning"
                 onClick={() => {
-                  this.setState({ new_vol: false });
+                  this.setState({ newVol: false });
                 }}
               >
                 Annuler
@@ -358,12 +399,19 @@ class DataManagement extends Component {
         </div>
       );
 
+    let errorDiv = this.state.hasError ? (
+      <Alerts
+        type="warning"
+        content="Les données entrées ne sont pas cohérentes, vérifier les dates et heures de départ et arrivée ainsi que les aéroports"
+      />
+    ) : null;
+
     return (
       <div className="main col">
         <h1>Les vols</h1>
 
         <div className="flights-table">{flightsTable}</div>
-
+        {errorDiv}
         {reservation_table}
       </div>
     );
