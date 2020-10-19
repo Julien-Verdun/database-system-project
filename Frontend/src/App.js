@@ -5,31 +5,79 @@ import Header from "./Components/Header/Header";
 import Footer from "./Components/Footer/Footer";
 import Error from "./Components/Error/Error";
 import Home from "./Components/Home/Home";
-import FlightSearch from "./Components/FlightSearch/FlightSearch";
-import FlightBooking from "./Components/FlightBooking/FlightBooking";
-import MyReservations from "./Components/MyReservations/MyReservations";
-import Reservation from "./Components/Reservation/Reservation";
+import Profil from "./Components/Profil/Profil";
+import FlightSearch from "./Components/Booking/FlightSearch/FlightSearch";
+import FlightBooking from "./Components/Booking/FlightBooking/FlightBooking";
+import MyReservations from "./Components/Booking/MyReservations/MyReservations";
+import Reservation from "./Components/Booking/Reservation/Reservation";
 import DataManagement from "./Components/DataManagement/DataManagement";
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      id_cli: 100,
+    };
+    this.changeCli = this.changeCli.bind(this);
+  }
+
+  changeCli(id_cli) {
+    this.setState({ id_cli: id_cli });
+  }
+
   render() {
     return (
       <BrowserRouter>
-        <Header />
+        <Header id_cli={this.state.id_cli} />
         <Switch>
-          <Route exact path="/home" component={Home} />
-          <Route exact path="/" component={Home} />
+          <Route
+            exact
+            path="/home"
+            component={(props) => (
+              <Home
+                id_cli={this.state.id_cli}
+                changeCli={this.changeCli}
+                {...props}
+              />
+            )}
+          />
+          <Route
+            exact
+            path="/"
+            component={(props) => (
+              <Home
+                id_cli={this.state.id_cli}
+                changeCli={this.changeCli}
+                {...props}
+              />
+            )}
+          />
           <Route exact path="/flightsearch" component={FlightSearch} />
           <Route
             exact
             path="/flightbooking/:id_cli/:id_vol"
             component={FlightBooking}
           />
-          <Route exact path="/myreservations" component={MyReservations} />
           <Route
             exact
-            path="/reservation/:id_cli/:id_res"
-            component={Reservation}
+            path="/myreservations"
+            component={(props) => (
+              <MyReservations id_cli={this.state.id_cli} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/profil"
+            component={(props) => (
+              <Profil id_cli={this.state.id_cli} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/reservation/:id_res"
+            component={(props) => (
+              <Reservation id_cli={this.state.id_cli} {...props} />
+            )}
           />
           <Route exact path="/datamanagement" component={DataManagement} />
           <Route path="/*" component={Error} />

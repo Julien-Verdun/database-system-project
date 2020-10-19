@@ -95,34 +95,50 @@ con.connect(function (err, db) {
       });
     });
 
-    app.get("/getAllAirportsIdName", (req, res) => {
-      let query = "SELECT id_aer, nom FROM aeroports;";
+    // this query returns the client in the table clients from the database with id id_cli
+    app.get("/getClient/:id_cli", (req, res) => {
+      let id_cli = Number(decodeURI(req.params.id_cli));
+      let query =
+        "SELECT * FROM clients WHERE id_cli = " + id_cli + " LIMIT 1;";
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);
       });
     });
 
-    app.get("/getFlights/:travelDate/:departureAirportId/:arrivalAirportId/:nbPassengers", (req, res) => {
-      let travelDate = decodeURI(req.params.travelDate);
-      let departureAirportId = Number(decodeURI(req.params.departureAirportId));
-      let arrivalAirportId = Number(decodeURI(req.params.arrivalAirportId));
-      let nbPassengers = Number(decodeURI(req.params.nbPassengers));
-      let query =
-        `
+    app.get(
+      "/getFlights/:travelDate/:departureAirportId/:arrivalAirportId/:nbPassengers",
+      (req, res) => {
+        let travelDate = decodeURI(req.params.travelDate);
+        let departureAirportId = Number(
+          decodeURI(req.params.departureAirportId)
+        );
+        let arrivalAirportId = Number(decodeURI(req.params.arrivalAirportId));
+        let nbPassengers = Number(decodeURI(req.params.nbPassengers));
+        let query =
+          `
         SELECT v.date_depart, v.heure_depart, v.date_arrivee, v.heure_arrivee, v.prix, v.id_vol, a_dep.nom AS aeroport_depart, a_arr.nom AS aeroport_arrivee
         FROM vols v
         JOIN aeroports a_dep ON v.id_aer_dep = a_dep.id_aer
         JOIN aeroports a_arr ON v.id_aer_dep = a_arr.id_aer
-        WHERE date_depart = '` + travelDate + `'
-          AND id_aer_dep = ` + departureAirportId + `
-          AND id_aer_arr = ` + arrivalAirportId + `
-          AND place_libre >= ` + nbPassengers + `;`
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send(results);
-      });
-    });
+        WHERE date_depart = '` +
+          travelDate +
+          `'
+          AND id_aer_dep = ` +
+          departureAirportId +
+          `
+          AND id_aer_arr = ` +
+          arrivalAirportId +
+          `
+          AND place_libre >= ` +
+          nbPassengers +
+          `;`;
+        con.query(query, (err, results, fields) => {
+          if (err) throw err;
+          res.send(results);
+        });
+      }
+    );
 
     // this query returns all the reservations in the database for the given client
     app.get("/getReservation/:id_cli/:id_res", (req, res) => {

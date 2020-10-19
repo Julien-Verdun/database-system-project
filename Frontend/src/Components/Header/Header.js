@@ -1,18 +1,8 @@
 import React, { Component } from "react";
 import "./Header.css";
+import AccountCircleIcon from "@material-ui/icons/AccountCircle";
 
 class Header extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-    this.handleClick = this.handleClick.bind(this);
-  }
-
-  handleClick(event) {
-    event.preventDefault();
-    this.props.history.push("/home");
-  }
-
   render() {
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
@@ -69,20 +59,11 @@ class Header extends Component {
               </div>
             </li>
           </ul>
-          <form className="form-inline my-2 my-lg-0">
-            <input
-              className="form-control mr-sm-2"
-              type="search"
-              placeholder="Search"
-              aria-label="Search"
-            />
-            <button
-              className="btn btn-outline-success my-2 my-sm-0"
-              type="submit"
-            >
-              Search
-            </button>
-          </form>
+          <div>
+            <a href="/profil">
+              <AccountCircleIcon />
+            </a>
+          </div>
         </div>
       </nav>
     );

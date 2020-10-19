@@ -1,32 +1,38 @@
 import React, { Component } from "react";
-import "./Reservation.css";
+import "./FlightBooking.css";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
-import Modal from "../Modal/Modal";
+import Modal from "../../ToolsComponent/Modal/Modal";
 
-class Reservation extends Component {
+class FlightBooking extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id_cli: window.location.pathname.split("/")[2],
-      id_res: window.location.pathname.split("/")[3],
+      id_vol: Number(window.location.pathname.split("/")[2]),
       reservation: null,
       modalContent: "",
+      prix: null,
+      quantite: 1,
     };
-    this.handleCancelReservation = this.handleCancelReservation.bind(this);
+    this.handleBookFlight = this.handleBookFlight.bind(this);
   }
 
-  handleCancelReservation(event) {
+  handleBookFlight(event) {
     event.preventDefault();
     let data = {
-      id_res: this.state.id_res,
+      id_cli: this.props.id_cli,
+      id_vol: this.state.id_vol,
+      prix: this.state.prix,
+      quantite: Number(document.getElementById("quantity-ticket").value),
     };
     console.log("data : ", data);
     axios
-      .post("http://localhost:8080/deleteReservation", data)
+      .post("http://localhost:8080/addReservation", data)
       .then((response) => {
         // handle success
-        this.props.history.push("/myreservations");
+        console.log("RESPONSE : ", response.data.insertId);
+        let id_res = response.data.insertId;
+        this.props.history.push("/reservation/" + id_res);
       })
       .catch((error) => {
         // handle error
@@ -36,12 +42,7 @@ class Reservation extends Component {
 
   componentDidMount() {
     axios
-      .get(
-        "http://localhost:8080/getReservation/" +
-          encodeURI(this.state.id_cli) +
-          "/" +
-          encodeURI(this.state.id_res)
-      )
+      .get("http://localhost:8080/getVol/" + encodeURI(this.state.id_vol))
       .then((response) => {
         // handle success
         let resObj = response.data[0];
@@ -58,7 +59,7 @@ class Reservation extends Component {
         let modalContent = (
           <div className="col">
             <div className="raw modal-div">
-              {"Vous vous apprêtez à annuler votre réservation du " +
+              {"Vous vous apprêtez à réserver le vol du " +
                 resObj.date_depart +
                 " à " +
                 resObj.heure_depart +
@@ -72,9 +73,9 @@ class Reservation extends Component {
               </p>
             </div>
             <div className="raw modal-div">
-              {
-                "Cette opération est irréversible et peut engendrer des frais supplémentaires."
-              }
+              {"Cette opération est irréversible et vous sera facturée " +
+                resObj.prix_vol +
+                " €."}
             </div>
             <div className="raw modal-div">
               {" "}
@@ -82,7 +83,11 @@ class Reservation extends Component {
             </div>
           </div>
         );
-        this.setState({ reservation, modalContent });
+        this.setState({
+          reservation,
+          modalContent,
+          prix: resObj.prix_vol,
+        });
       })
       .catch((error) => {
         // handle error
@@ -92,33 +97,50 @@ class Reservation extends Component {
   render() {
     return (
       <div className="main col">
-        <h1>Ma réservation</h1>
+        <div className="row justify-content-center">
+          <h1>Réserver un vol</h1>
+        </div>
 
         {this.state.reservation === null ? (
           <CircularProgress />
         ) : (
           this.state.reservation
         )}
-        <button
-          type="button"
-          className="btn btn-danger"
-          data-toggle="modal"
-          data-target="#annulation-modal"
-          onClick={() => {
-            console.log("Annuler le téléchargement");
-          }}
-        >
-          Annuler cette réservation
-        </button>
+
+        <div className="row justify-content-center">
+          <label htmlFor="quantity-ticket">Quantité </label>
+          <input
+            type="number"
+            id="quantity-ticket"
+            name="quantity-ticket"
+            min="1"
+            max="100"
+            defaultValue="1"
+          />
+        </div>
+        <div className="row  justify-content-center">
+          <button
+            type="button"
+            className="btn btn-success"
+            data-toggle="modal"
+            data-target="#annulation-modal"
+            onClick={() => {
+              console.log("Réservation");
+            }}
+          >
+            Réserver ce vol
+          </button>
+        </div>
+
         <Modal
           idModal={"annulation-modal"}
           title={"Annuler la réservation"}
           body={this.state.modalContent}
-          onClick={this.handleCancelReservation}
+          onClick={this.handleBookFlight}
         />
       </div>
     );
   }
 }
 
-export default Reservation;
+export default FlightBooking;

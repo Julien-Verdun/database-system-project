@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./DataManagement.css";
 import axios from "axios";
-import Alerts from "../Alerts/Alerts";
-import { dateToDateTimeLocal } from "../utils.js";
+import Alerts from "../ToolsComponent/Alerts/Alerts";
+import { dateToDateTimeLocal } from "../ToolsComponent/utils.js";
 import DeleteIcon from "@material-ui/icons/Delete";
 
 class DataManagement extends Component {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
-import Alerts from "../Alerts/Alerts";
+import Alerts from "../../ToolsComponent/Alerts/Alerts";
 
 class FlightSearch extends Component {
   constructor(props) {
@@ -17,10 +17,10 @@ class FlightSearch extends Component {
   }
   createSelectAirports() {
     axios
-      .get("http://localhost:8080/getAllAirportsIdName")
+      .get("http://localhost:8080/getAllAirports")
       .then((response) => {
         // handle success
-        console.log(response)
+        console.log(response);
         let listeAirportsOptions = response.data.map((elt, index) => {
           return (
             <option value={elt.id_aer} key={elt.id_aer}>
@@ -29,7 +29,6 @@ class FlightSearch extends Component {
           );
         });
         this.setState({ listeAirportsOptions });
-        console.log(this.state.listeAirportsOptions);
       })
       .catch((error) => {
         // handle error
@@ -40,10 +39,19 @@ class FlightSearch extends Component {
 
   handleClickSearch(event) {
     event.preventDefault();
-    let travelDate = encodeURI(document.getElementById("departure-input").value);
-    let departureAirportId = encodeURI(document.getElementById("from-airport").value); 
-    let arrivalAirportId = encodeURI(document.getElementById("to-airport").value);
-    let nbPassengers = encodeURI(document.getElementById("nb-passengers-input").value);
+    console.log("Search");
+    let travelDate = encodeURI(
+      document.getElementById("departure-input").value
+    );
+    let departureAirportId = encodeURI(
+      document.getElementById("from-airport").value
+    );
+    let arrivalAirportId = encodeURI(
+      document.getElementById("to-airport").value
+    );
+    let nbPassengers = encodeURI(
+      document.getElementById("nb-passengers-input").value
+    );
     axios
       .get(
         "http://localhost:8080/getFlights/" +
@@ -57,34 +65,28 @@ class FlightSearch extends Component {
       )
       .then((response) => {
         // handle success
-        let id_cli = 12;
-        //let id_cli = Number(window.location.pathname.split("/")[2]);
         let flightsList = response.data.map((elt, index) => {
-          let url = "url_de_sthaze/" + elt.id_vol + "/" + id_cli;
           return (
-            <tr key={index}
-            onClick={() => {
-              this.props.history.push("/" + url);
-            }}>
-              <th scope="row">{index}
-              </th>
+            <tr
+              key={index}
+              onClick={() => {
+                this.props.history.push("/flightbooking/" + elt.id_vol);
+              }}
+            >
+              <th scope="row">{index}</th>
               <td>
                 {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
               </td>
-              <td>
-                {elt.aeroport_depart}
-              </td>
+              <td>{elt.aeroport_depart}</td>
               <td>
                 {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
               </td>
-              <td>
-                {elt.aeroport_arrivee}
-              </td>
+              <td>{elt.aeroport_arrivee}</td>
               <td>{elt.prix + " €"}</td>
             </tr>
           );
         });
-        this.setState({result: flightsList});
+        this.setState({ result: flightsList });
       });
   }
   render() {
@@ -104,7 +106,7 @@ class FlightSearch extends Component {
         <table className="table table-striped">
           <thead>
             <tr>
-              <th scope="col">#</th>
+              <th scope="col"></th>
               <th scope="col">Date d'arrivée</th>
               <th scope="col">Aéroport de départ</th>
               <th scope="col">Date d'arrivée</th>
@@ -131,30 +133,51 @@ class FlightSearch extends Component {
         <form>
           <div className="form-group">
             <label>Date de départ</label>
-            <input className="form-control" id="departure-input" placeholder="Enter a departure date"></input>
-            <small className="form-text text-muted">Entrez la date sous le formatYYYY-MM-DD</small>
+            <input
+              className="form-control"
+              id="departure-input"
+              placeholder="Enter a departure date"
+            ></input>
+            <small className="form-text text-muted">
+              Entrez la date sous le formatYYYY-MM-DD
+            </small>
           </div>
           <div className="form-group">
             <label>Depuis </label>
-              <select name="from-airports" id="from-airport" className="custom-select">
-                {this.state.listeAirportsOptions}
-              </select>
-           </div>
+            <select
+              name="from-airports"
+              id="from-airport"
+              className="custom-select"
+            >
+              {this.state.listeAirportsOptions}
+            </select>
+          </div>
           <div className="form-group">
             <label>Vers </label>
-              <select name="to-airports" id="to-airport" className="custom-select">
-                {this.state.listeAirportsOptions}
-              </select>
+            <select
+              name="to-airports"
+              id="to-airport"
+              className="custom-select"
+            >
+              {this.state.listeAirportsOptions}
+            </select>
           </div>
           <div className="form-group">
             <label>Nombre de passagers </label>
-            <input className="form-control" id="nb-passengers-input" placeholder="Enter the number of passengers"></input>
+            <input
+              className="form-control"
+              id="nb-passengers-input"
+              placeholder="Enter the number of passengers"
+            ></input>
           </div>
         </form>
         <div className="container">
           <div className="row justify-content-md-center">
             <div className="col">
-              <button className="btn btn-primary" onClick={this.handleClickSearch}>
+              <button
+                className="btn btn-primary"
+                onClick={this.handleClickSearch}
+              >
                 Recherche
               </button>
             </div>
