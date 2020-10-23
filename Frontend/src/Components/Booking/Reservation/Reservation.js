@@ -3,13 +3,14 @@ import "./Reservation.css";
 import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
+import Billet from "../Billet/Billet";
 
 class Reservation extends Component {
   constructor(props) {
     super(props);
     this.state = {
       id_res: window.location.pathname.split("/")[2],
-      reservation: null,
+      dataBillet: null,
       modalContent: "",
     };
     this.handleCancelReservation = this.handleCancelReservation.bind(this);
@@ -43,31 +44,21 @@ class Reservation extends Component {
       )
       .then((response) => {
         // handle success
-        let resObj = response.data[0];
-        console.log(resObj);
-        let reservation = Object.keys(resObj).map((key, index) => {
-          return (
-            <div key={index} className="row">
-              <div className="col">{key}</div>
-              <div className="col">{resObj[key]}</div>
-            </div>
-          );
-        });
-        // console.log(resObj)
+        let dataBillet = response.data[0];
         let modalContent = (
           <div className="col">
             <div className="raw modal-div">
               {"Vous vous apprêtez à annuler votre réservation du " +
-                resObj.date_depart +
+                dataBillet.date_depart +
                 " à " +
-                resObj.heure_depart +
+                dataBillet.heure_depart +
                 " au départ de : "}
               <p className="bold-p">
-                {resObj.aer_dep_nom + ", " + resObj.aer_dep_pays}
+                {dataBillet.aer_dep_nom + ", " + dataBillet.aer_dep_pays}
               </p>
               {"à destination de : "}
               <p className="bold-p">
-                {resObj.aer_arr_nom + ", " + resObj.aer_arr_pays + "."}
+                {dataBillet.aer_arr_nom + ", " + dataBillet.aer_arr_pays + "."}
               </p>
             </div>
             <div className="raw modal-div">
@@ -81,7 +72,7 @@ class Reservation extends Component {
             </div>
           </div>
         );
-        this.setState({ reservation, modalContent });
+        this.setState({ dataBillet, modalContent });
       })
       .catch((error) => {
         // handle error
@@ -93,10 +84,10 @@ class Reservation extends Component {
       <div className="main col">
         <h1>Ma réservation</h1>
 
-        {this.state.reservation === null ? (
+        {this.state.dataBillet === null ? (
           <CircularProgress />
         ) : (
-          this.state.reservation
+          <Billet dataBillet={this.state.dataBillet} />
         )}
         <button
           type="button"
