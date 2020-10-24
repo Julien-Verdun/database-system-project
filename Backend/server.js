@@ -69,13 +69,32 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query returns all the avions in the table avions from the database
+    app.get("/getAllAvions", (req, res) => {
+      let query = "SELECT * FROM avions;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query returns all the compagnies in the table compagnies from the database
+    app.get("/getAllCompagnies", (req, res) => {
+      let query = "SELECT * FROM compagnies;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
     // this query returns all the apparals in the table appareils from the database
     app.get("/getAllAppareils", (req, res) => {
       let query = `
         SELECT app.id_app,
           avi.type AS 'type_avion', 
           avi.nb_place AS 'nb_place', 
-          cmp.nom AS 'nom_compagnie' 
+          cmp.nom AS 'nom_compagnie',
+          cmp.code AS 'code_compagnie' 
         FROM appareils app
         JOIN avions avi ON avi.id_avn = app.id_avn
         JOIN compagnies cmp ON cmp.id_cmp = app.id_cmp;
@@ -296,6 +315,29 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query delete the appareil id_app in the table appareils
+    app.post("/deleteAppareil", (req, res) => {
+      // in order to delete an apparals
+      let id_app = req.body.id_app;
+      console.log("id_app : ", id_app);
+      let query_app =
+        `
+        DELETE FROM appareils app
+        WHERE app.id_app = 
+        ` +
+        id_app +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query_app, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+
     // this query delete the vol id_vol in the table vols
     app.post("/deleteVol", (req, res) => {
       // in order to delete a flight, we first need to delete the associated reservations
@@ -396,6 +438,74 @@ con.connect(function (err, db) {
       });
     });
   }
+
+
+
+
+  // this query add an appareils with all information id_app in the table appareils
+  app.post("/addAppareil", function (req, res) {
+    let reqBody = req.body;
+    const id_cmp = reqBody.id_cmp,
+      id_avn = reqBody.id_avn;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO appareils (id_cmp, id_avn) VALUES (` +
+      id_cmp +
+      `, ` +
+      id_avn +
+      `);`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+  // this query add an avion with all information id_avn in the table avions
+  app.post("/addAvion", function (req, res) {
+    let reqBody = req.body;
+    const type = reqBody.type,
+      nb_place = reqBody.nb_place;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO avions (type, nb_place) VALUES ("` +
+      type +
+      `", ` +
+      nb_place +
+      `);`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+  // this query add a compagnie with all information id_cmp in the table compagnies
+  app.post("/addCompagnie", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      code = reqBody.code;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO compagnies (nom, code) VALUES ("` +
+      nom +
+      `", "` +
+      code +
+      `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+
 });
 
 app.listen(8080);
