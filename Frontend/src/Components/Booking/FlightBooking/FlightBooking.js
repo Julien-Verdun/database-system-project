@@ -4,6 +4,7 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import Billet from "../Billet/Billet";
+import {SERVERPATH} from "../../../serverParams.js";
 
 class FlightBooking extends Component {
   constructor(props) {
@@ -28,7 +29,7 @@ class FlightBooking extends Component {
     };
     console.log("data : ", data);
     axios
-      .post("http://localhost:8080/addReservation", data)
+      .post(SERVERPATH + "/addReservation", data)
       .then((response) => {
         // handle success
         console.log("RESPONSE : ", response.data.insertId);
@@ -43,7 +44,7 @@ class FlightBooking extends Component {
 
   componentDidMount() {
     axios
-      .get("http://localhost:8080/getVol/" + encodeURI(this.state.id_vol))
+      .get(SERVERPATH + "/getVol/" + encodeURI(this.state.id_vol))
       .then((response) => {
         // handle success
         let dataBillet = response.data[0];

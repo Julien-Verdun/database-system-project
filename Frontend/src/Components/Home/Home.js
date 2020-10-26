@@ -1,15 +1,19 @@
 import React, { Component } from "react";
 import "./Home.css";
 import axios from "axios";
+import {SERVERPATH} from "../../serverParams.js";
+
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       result: "",
+      nom_client : null,
       listeClientOptions: null,
     };
     this.handleChangeClient = this.handleChangeClient.bind(this);
+    this.getClient = this.getClient.bind(this);
   }
 
   handleChangeClient(event) {
@@ -19,13 +23,28 @@ class Home extends Component {
     );
   }
 
+  getClient(id_cli){
+    axios
+    .get(SERVERPATH + "/getClient/" + encodeURI(id_cli))
+    .then((response) => {
+      // handle success
+      this.setState({nom_client: response.data[0].nom});
+    })
+    .catch((error) => {
+      // handle error
+      console.log(error);
+      this.setState({nom_client:null});
+    });
+}
+
   componentDidMount() {
     this.createSelectClients();
+    this.getClient(this.props.id_cli);
   }
 
   createSelectClients() {
     axios
-      .get("http://localhost:8080/getAllClients")
+      .get(SERVERPATH + "/getAllClients")
       .then((response) => {
         // handle success
         // on place en premiere position l'option dont l'id est celui du client selectionné
@@ -62,6 +81,20 @@ class Home extends Component {
   }
 
   render() {
+
+    let managementButton = (this.state.nom_client === "admin" ?
+      <div className="col">
+          <button
+            className="btn btn-warning"
+            onClick={() => {
+              this.props.history.push("/datamanagement");
+            }}
+          >
+            Management
+          </button>
+        </div>
+        :
+        null);
     return (
       <div className="main">
         <h1>Bienvenue sur la page d'accueil</h1>
@@ -87,16 +120,7 @@ class Home extends Component {
             Flight Search
           </button>
         </div>
-        <div className="col">
-          <button
-            className="btn btn-warning"
-            onClick={() => {
-              this.props.history.push("/datamanagement");
-            }}
-          >
-            Management
-          </button>
-        </div>
+        {managementButton}
       </div>
     );
   }

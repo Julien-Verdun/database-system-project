@@ -1,6 +1,6 @@
 .title {
-padding:2%;
-}
+    padding:2%;
+  }
 
 .container {
     justify-content: center;
@@ -9,7 +9,6 @@ padding:2%;
     justify-self: center;
 }
 
-
 .form-margin {
-margin-top:5%;
+    margin-top:5%;
 }

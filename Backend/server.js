@@ -53,7 +53,24 @@ con.connect(function (err, db) {
 
     // this query returns all the flights in the table vols from the database
     app.get("/getAllFlights", (req, res) => {
-      let query = "SELECT * FROM vols;";
+      let query = `
+        SELECT vol.date_depart, 
+          vol.heure_depart, 
+          vol.date_arrivee, 
+          vol.heure_arrivee,
+          vol.prix, 
+          vol.place_libre, 
+          aer_arr.nom AS 'aer_arr_nom', 
+          aer_arr.ville AS 'aer_arr_ville', 
+          aer_arr.pays AS 'aer_arr_pays',
+          aer_dep.nom AS 'aer_dep_nom', 
+          aer_dep.ville AS 'aer_dep_ville', 
+          aer_dep.pays AS 'aer_dep_pays'
+        FROM vols vol
+        JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
+        JOIN aeroports aer_arr ON aer_arr.id_aer = vol.id_aer_arr
+        ORDER BY vol.date_depart;      
+      `; 
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);
@@ -317,10 +334,9 @@ con.connect(function (err, db) {
 
     // this query delete the appareil id_app in the table appareils
     app.post("/deleteAppareil", (req, res) => {
-      // in order to delete an apparals
       let id_app = req.body.id_app;
       console.log("id_app : ", id_app);
-      let query_app =
+      let query =
         `
         DELETE FROM appareils app
         WHERE app.id_app = 
@@ -330,11 +346,59 @@ con.connect(function (err, db) {
         LIMIT 1;
         `;
 
-      con.query(query_app, (err, results, fields) => {
+      con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send( results );
       });
     });
+
+    
+    // this query delete the airport id_aer in the table aeroports
+    app.post("/deleteAirport", (req, res) => {
+      let id_aer = req.body.id_aer;
+      console.log("id_aer : ", id_aer);
+      let query =
+        `
+        DELETE FROM aeroports aer
+        WHERE aer.id_aer = 
+        ` +
+        id_aer +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+
+
+
+    // this query delete the client id_cli in the table clients
+    app.post("/deleteClient", (req, res) => {
+      let id_cli = req.body.id_cli;
+      console.log("id_cli : ", id_cli);
+      let query =
+        `
+        DELETE FROM clients cli
+        WHERE cli.id_cli = 
+        ` +
+        id_cli +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+    
 
 
 
@@ -496,6 +560,62 @@ con.connect(function (err, db) {
       `", "` +
       code +
       `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+  // this query add an airport with all information id_aer in the table aeroports
+  app.post("/addAirport", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      code = reqBody.code,
+      ville = reqBody.ville,
+      pays = reqBody.pays;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO aeroports (nom, code, ville, pays) VALUES ("` +
+      nom +
+      `", "` +
+      code +
+      `", "` +
+      ville +
+      `", "` +
+      pays +
+      `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+
+  // this query add a client with all information id_cli in the table clients
+  app.post("/addClient", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      prenom = reqBody.prenom,
+      mail = reqBody.mail,
+      telephone = reqBody.telephone;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO clients (nom, prenom, mail, telephone) VALUES ("` +
+      nom +
+      `", "` +
+      prenom +
+      `", "` +
+      mail +
+      `", "` +
+      telephone + `");`;
 
     con.query(query, (err, results, fields) => {
       if (err) throw err;

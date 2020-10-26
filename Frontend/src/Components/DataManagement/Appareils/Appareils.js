@@ -3,6 +3,7 @@ import "./Appareils.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import DeleteIcon from "@material-ui/icons/Delete";
+import {SERVERPATH} from "../../../serverParams.js";
 
 class Appareils extends Component {
   constructor(props) {
@@ -12,13 +13,13 @@ class Appareils extends Component {
       id_avn: null,
       id_cmp : null,
 
-      type:"A321",
-      nb_place : 0,
+      type:null,
+      nb_place : null,
+      nom:null,
+      code:null,
 
-      nom:"EasyJet",
-      code:"EAJ",
-
-      hasError: false,
+      hasErrorAvn: false,
+      hasErrorCmp: false,
     };
     this.handleAddAppareil = this.handleAddAppareil.bind(this);
     this.handleAddAvion = this.handleAddAvion.bind(this);
@@ -32,7 +33,7 @@ class Appareils extends Component {
 
   getAppareils() {
     axios
-      .get("http://localhost:8080/getAllAppareils")
+      .get(SERVERPATH + "/getAllAppareils")
       .then((response) => {
         // handle success
         let appareilsList = response.data.map((elt, index) => {
@@ -73,7 +74,7 @@ class Appareils extends Component {
 
   getAvions() {
     axios
-      .get("http://localhost:8080/getAllAvions")
+      .get(SERVERPATH + "/getAllAvions")
       .then((response) => {
         // handle success
         let initial_id = response.data[0].id_avn;
@@ -101,7 +102,7 @@ class Appareils extends Component {
 
   getCompagnies() {
     axios
-      .get("http://localhost:8080/getAllCompagnies")
+      .get(SERVERPATH + "/getAllCompagnies")
       .then((response) => {
         // handle success
         let initial_id = response.data[0].id_cmp;
@@ -142,9 +143,8 @@ class Appareils extends Component {
     let data = {
       id_app: id_app,
     };
-
     axios
-      .post("http://localhost:8080/deleteAppareil", data)
+      .post(SERVERPATH + "/deleteAppareil", data)
       .then((response) => {
         // handle success
         console.log(response);
@@ -164,9 +164,9 @@ class Appareils extends Component {
     };
     console.log(data);
     axios
-    .post("http://localhost:8080/addAppareil", data)
+    .post(SERVERPATH + "/addAppareil", data)
     .then((response) => {
-        this.setState({ hasError: false });
+        this.setState({ hasErrorAvn: false, hasErrorCmp:false });
         // handle success
         this.getAppareils();
     })
@@ -183,17 +183,23 @@ class Appareils extends Component {
       nb_place: this.state.nb_place
     };
     console.log(data);
-    axios
-    .post("http://localhost:8080/addAvion", data)
-    .then((response) => {
-        this.setState({ hasError: false });
-        // handle success
-        this.getAvions();
-    })
-    .catch((error) => {
-        // handle error
-        console.log(error);
-    });
+    if (
+      data.type === null || data.nb_place === null
+    ) {
+      this.setState({ hasErrorAvn: true, hasErrorCmp:false });
+    } else {
+      axios
+      .post(SERVERPATH + "/addAvion", data)
+      .then((response) => {
+          this.setState({ hasErrorAvn: false, hasErrorCmp:false });
+          // handle success
+          this.getAvions();
+      })
+      .catch((error) => {
+          // handle error
+          console.log(error);
+      });
+  }
   }
 
 
@@ -204,17 +210,23 @@ class Appareils extends Component {
       code: this.state.code
     };
     console.log(data);
-    axios
-    .post("http://localhost:8080/addCompagnie", data)
-    .then((response) => {
-        this.setState({ hasError: false });
-        // handle success
-        this.getCompagnies();
-    })
-    .catch((error) => {
-        // handle error
-        console.log(error);
-    });
+    if (
+      data.nom === null || data.code === null
+    ) {
+      this.setState({ hasErrorAvn: false, hasErrorCmp:true });
+    } else {
+      axios
+      .post(SERVERPATH + "/addCompagnie", data)
+      .then((response) => {
+          this.setState({ hasErrorAvn: false, hasErrorCmp:false });
+          // handle success
+          this.getCompagnies();
+      })
+      .catch((error) => {
+          // handle error
+          console.log(error);
+      });
+    }
   }
 
   render() {
@@ -328,7 +340,7 @@ class Appareils extends Component {
                     className="form-control"
                     id="type"
                     name="type"
-                    defaultValue={this.state.type}
+                    placeholder="A321"
                     onChange={() => {
                     this.setState({
                         type: 
@@ -346,7 +358,7 @@ class Appareils extends Component {
                         className="form-control"
                         id="nb-place"
                         name="nb-place"
-                        defaultValue={this.state.nb_place}
+                        placeholder="0"
                         min="0"
                         max="1000"
                         onChange={() => {
@@ -399,7 +411,7 @@ class Appareils extends Component {
                     className="form-control"
                     id="nom"
                     name="nom"
-                    defaultValue={this.state.nom}
+                    placeholder="EasyJet"
                     onChange={() => {
                     this.setState({
                         nom:document.getElementById("nom").value
@@ -416,7 +428,7 @@ class Appareils extends Component {
                         className="form-control"
                         id="code"
                         name="code"
-                        defaultValue={this.state.code}
+                        placeholder="EAJ"
                         onChange={() => {
                         this.setState({
                             code: document.getElementById("code").value
@@ -445,14 +457,52 @@ class Appareils extends Component {
       );
 
 
-
-
-    let errorDiv = this.state.hasError ? (
-      <Alerts
-        type="warning"
-        content="Les données entrées ne sont pas cohérentes, vérifier les dates et heures de départ et arrivée ainsi que les aéroports"
+    let errorDiv = this.state.hasErrorAvn 
+      ? (this.state.hasErrorCmp 
+        ? <Alerts
+        type="danger"
+        content={
+          <div className="col">
+            <div className="row">
+              Les données soumises ne sont pas cohérentes :
+            </div>
+            <div className="row">
+              - vérifiez que l'ensemble des champs sont completés.
+            </div>
+          </div>}
       />
-    ) : null;
+        : <Alerts
+        type="danger"
+        content={
+          <div className="col">
+            <div className="row">
+              Les données soumises ne sont pas cohérentes avec l'ajout d'un avion :
+            </div>
+            <div className="row">
+              - vérifiez que l'ensemble des champs sont completés
+            </div>
+            <div className="row">
+              - vérifiez que le nombre de place est un nombre entier.
+            </div>
+          </div>}
+      />) 
+      : (this.state.hasErrorCmp 
+        ? <Alerts
+        type="danger"
+        content={
+          <div className="col">
+            <div className="row">
+              Les données soumises ne sont pas cohérentes avec l'ajout d'une compagnie :
+            </div>
+            <div className="row">
+              - vérifiez que l'ensemble des champs sont completés
+            </div>
+            <div className="row">
+              - vérifiez que le code compagnie est un trigramme composé de 3 lettres (exemple : CDG).
+            </div>
+          </div>}
+      /> 
+        : null);
 
     return (
       <div className="main col">

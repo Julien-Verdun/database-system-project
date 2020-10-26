@@ -4,6 +4,8 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import Billet from "../Billet/Billet";
+import {SERVERPATH} from "../../../serverParams.js";
+
 
 class Reservation extends Component {
   constructor(props) {
@@ -23,7 +25,7 @@ class Reservation extends Component {
     };
     console.log("data : ", data);
     axios
-      .post("http://localhost:8080/deleteReservation", data)
+      .post(SERVERPATH + "/deleteReservation", data)
       .then((response) => {
         // handle success
         this.props.history.push("/myreservations");
@@ -37,7 +39,7 @@ class Reservation extends Component {
   componentDidMount() {
     axios
       .get(
-        "http://localhost:8080/getReservation/" +
+        SERVERPATH + "/getReservation/" +
           encodeURI(this.props.id_cli) +
           "/" +
           encodeURI(this.state.id_res)

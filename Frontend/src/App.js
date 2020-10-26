@@ -11,7 +11,6 @@ import FlightBooking from "./Components/Booking/FlightBooking/FlightBooking";
 import MyReservations from "./Components/Booking/MyReservations/MyReservations";
 import Reservation from "./Components/Booking/Reservation/Reservation";
 import DataManagement from "./Components/DataManagement/DataManagement";
-import Appareils from "./Components/DataManagement/Appareils/Appareils";
 
 class App extends Component {
   constructor(props) {
@@ -75,8 +74,8 @@ class App extends Component {
           />
            {/* <Route
             exact
-            path="/appareils"
-            component={Appareils}
+            path="/aeroports"
+            component={Aeroports}
           /> */}
           <Route
             exact

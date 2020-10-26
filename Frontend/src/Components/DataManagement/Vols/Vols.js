@@ -4,6 +4,7 @@ import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import { dateToDateTimeLocal } from "../../ToolsComponent/utils.js";
 import DeleteIcon from "@material-ui/icons/Delete";
+import {SERVERPATH} from "../../../serverParams.js";
 
 class Vols extends Component {
   constructor(props) {
@@ -20,8 +21,8 @@ class Vols extends Component {
       heure_arrivee: date.split("T")[1],
       id_aer_dep: null,
       id_aer_arr: null,
-      prix: 0.0,
-      place_libre: 0,
+      prix: null,
+      place_libre: null,
       hasError: false,
     };
     this.handleAddVol = this.handleAddVol.bind(this);
@@ -33,7 +34,7 @@ class Vols extends Component {
 
   getFlights() {
     axios
-      .get("http://localhost:8080/getAllFlights")
+      .get(SERVERPATH + "/getAllFlights")
       .then((response) => {
         // handle success
         let allFlights = response.data.map((elt, index) => {
@@ -41,12 +42,13 @@ class Vols extends Component {
             <tr key={index}>
               <th scope="row">{index}</th>
               <td>
-                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
+                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart + " de " + elt.aer_dep_nom}
               </td>
               <td>
-                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
+                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee + " de " + elt.aer_arr_nom}
               </td>
               <td>{elt.prix + " €"}</td>
+              <td>{elt.place_libre }</td>
               <td>
                 <DeleteIcon
                   onClick={() => {
@@ -72,7 +74,7 @@ class Vols extends Component {
 
   getAirports() {
     axios
-      .get("http://localhost:8080/getAllAirports")
+      .get(SERVERPATH + "/getAllAirports")
       .then((response) => {
         // handle success
         let initial_id = response.data[0].id_aer;
@@ -100,7 +102,7 @@ class Vols extends Component {
 
   getAppareils() {
     axios
-      .get("http://localhost:8080/getAllAppareils")
+      .get(SERVERPATH + "/getAllAppareils")
       .then((response) => {
         // handle success
         let appareilsList = response.data.map((elt, index) => {
@@ -145,7 +147,7 @@ class Vols extends Component {
     };
 
     axios
-      .post("http://localhost:8080/deleteVol", data)
+      .post(SERVERPATH + "/deleteVol", data)
       .then((response) => {
         // handle success
         console.log(response);
@@ -174,13 +176,13 @@ class Vols extends Component {
     if (
       (data.date_depart === data.date_arrivee &&
         data.heure_depart === data.heure_arrivee) ||
-      data.id_aer_dep === data.id_aer_arr
+      data.id_aer_dep === data.id_aer_arr || data.prix === null 
+      || data.place_libre === null
     ) {
-      console.log("Erreur avec les données d'entrées");
       this.setState({ hasError: true });
     } else {
       axios
-        .post("http://localhost:8080/addVol", data)
+        .post(SERVERPATH+ "/addVol", data)
         .then((response) => {
           this.setState({ hasError: false });
           // handle success
@@ -196,9 +198,8 @@ class Vols extends Component {
   render() {
     let flightsTable;
 
-    if (this.state.result === "") {
-      flightsTable = this.state.result;
-    } else if (this.state.result === null) {
+
+    if (this.state.allFlights === null) {
       flightsTable = (
         <Alerts
           type="danger"
@@ -214,6 +215,7 @@ class Vols extends Component {
               <th scope="col">Départ</th>
               <th scope="col">Arrivée</th>
               <th scope="col">Prix</th>
+              <th scope="col">Place libre</th>
               <th scope="col">Supprimer</th>
             </tr>
           </thead>
@@ -223,6 +225,11 @@ class Vols extends Component {
     }
     let reservation_table = (
       <div className="container">
+        <div className="row">
+            <div className="col">
+            <h3>Ajouter un vol</h3>
+            </div>
+        </div>
         <div className="row">
         <div className="col">
           <form className="form-main">
@@ -331,7 +338,7 @@ class Vols extends Component {
                 className="form-control"
                 id="price"
                 name="price"
-                defaultValue={this.state.prix}
+                placeholder="0.0"
                 min="1"
                 max="5"
                 onChange={() => {
@@ -348,7 +355,7 @@ class Vols extends Component {
                 className="form-control"
                 id="nb-place"
                 name="nb-place"
-                defaultValue={this.state.place_libre}
+                placeholder="0"
                 min="1"
                 max="5"
                 onChange={() => {
@@ -379,8 +386,23 @@ class Vols extends Component {
 
     let errorDiv = this.state.hasError ? (
       <Alerts
-        type="warning"
-        content="Les données entrées ne sont pas cohérentes, vérifier les dates et heures de départ et arrivée ainsi que les aéroports"
+        type="danger"
+        content={
+          <div className="col">
+            <div className="row">
+              Les données soumises ne sont pas cohérentes :
+            </div>
+            <div className="row">
+              - vérifiez les dates et heures de départ et d'arrivé
+            </div>
+            <div className="row">
+              - vérifiez les aéroports de départ et d'arrivée
+            </div>
+            <div className="row">
+              - vérifiez que l'ensemble des champs sont completés.
+            </div>
+          </div>}
+        // content="Les données entrées ne sont pas cohérentes. Vérifiez que les dates et heures de départ et d'arrivée ainsi que les aéroports. Vérifiez que l'ensemble des champs sont completés."
       />
     ) : null;
 
@@ -390,7 +412,9 @@ class Vols extends Component {
 
         <div className="flights-table">{flightsTable}</div>
         {errorDiv}
+        <div className="form-margin">
         {reservation_table}
+        </div>
       </div>
     );
   }
