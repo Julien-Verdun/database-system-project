@@ -33,30 +33,11 @@ class Header extends Component {
                 Mes réservations
               </a>
             </li>
-            <li className="nav-item dropdown">
-              <a
-                className="nav-link dropdown-toggle"
-                href="/home"
-                id="navbarDropdown"
-                role="button"
-                data-toggle="dropdown"
-                aria-haspopup="true"
-                aria-expanded="false"
-              >
-                Réserver
+
+            <li className="nav-item">
+              <a className="nav-link" href="/flightsearch">
+                Réserver un vol
               </a>
-              <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a className="dropdown-item" href="/home">
-                  Action
-                </a>
-                <a className="dropdown-item" href="/home">
-                  Another action
-                </a>
-                <div className="dropdown-divider"></div>
-                <a className="dropdown-item" href="/home">
-                  Something else here
-                </a>
-              </div>
             </li>
           </ul>
           <div>

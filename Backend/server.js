@@ -53,7 +53,24 @@ con.connect(function (err, db) {
 
     // this query returns all the flights in the table vols from the database
     app.get("/getAllFlights", (req, res) => {
-      let query = "SELECT * FROM vols;";
+      let query = `
+        SELECT vol.date_depart, 
+          vol.heure_depart, 
+          vol.date_arrivee, 
+          vol.heure_arrivee,
+          vol.prix, 
+          vol.place_libre, 
+          aer_arr.nom AS 'aer_arr_nom', 
+          aer_arr.ville AS 'aer_arr_ville', 
+          aer_arr.pays AS 'aer_arr_pays',
+          aer_dep.nom AS 'aer_dep_nom', 
+          aer_dep.ville AS 'aer_dep_ville', 
+          aer_dep.pays AS 'aer_dep_pays'
+        FROM vols vol
+        JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
+        JOIN aeroports aer_arr ON aer_arr.id_aer = vol.id_aer_arr
+        ORDER BY vol.date_depart;      
+      `; 
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);
@@ -69,13 +86,32 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query returns all the avions in the table avions from the database
+    app.get("/getAllAvions", (req, res) => {
+      let query = "SELECT * FROM avions;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query returns all the compagnies in the table compagnies from the database
+    app.get("/getAllCompagnies", (req, res) => {
+      let query = "SELECT * FROM compagnies;";
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
     // this query returns all the apparals in the table appareils from the database
     app.get("/getAllAppareils", (req, res) => {
       let query = `
         SELECT app.id_app,
           avi.type AS 'type_avion', 
           avi.nb_place AS 'nb_place', 
-          cmp.nom AS 'nom_compagnie' 
+          cmp.nom AS 'nom_compagnie',
+          cmp.code AS 'code_compagnie' 
         FROM appareils app
         JOIN avions avi ON avi.id_avn = app.id_avn
         JOIN compagnies cmp ON cmp.id_cmp = app.id_cmp;
@@ -296,6 +332,76 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query delete the appareil id_app in the table appareils
+    app.post("/deleteAppareil", (req, res) => {
+      let id_app = req.body.id_app;
+      console.log("id_app : ", id_app);
+      let query =
+        `
+        DELETE FROM appareils app
+        WHERE app.id_app = 
+        ` +
+        id_app +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+    
+    // this query delete the airport id_aer in the table aeroports
+    app.post("/deleteAirport", (req, res) => {
+      let id_aer = req.body.id_aer;
+      console.log("id_aer : ", id_aer);
+      let query =
+        `
+        DELETE FROM aeroports aer
+        WHERE aer.id_aer = 
+        ` +
+        id_aer +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+
+
+
+    // this query delete the client id_cli in the table clients
+    app.post("/deleteClient", (req, res) => {
+      let id_cli = req.body.id_cli;
+      console.log("id_cli : ", id_cli);
+      let query =
+        `
+        DELETE FROM clients cli
+        WHERE cli.id_cli = 
+        ` +
+        id_cli +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+    
+
+
+
     // this query delete the vol id_vol in the table vols
     app.post("/deleteVol", (req, res) => {
       // in order to delete a flight, we first need to delete the associated reservations
@@ -396,6 +502,130 @@ con.connect(function (err, db) {
       });
     });
   }
+
+
+
+
+  // this query add an appareils with all information id_app in the table appareils
+  app.post("/addAppareil", function (req, res) {
+    let reqBody = req.body;
+    const id_cmp = reqBody.id_cmp,
+      id_avn = reqBody.id_avn;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO appareils (id_cmp, id_avn) VALUES (` +
+      id_cmp +
+      `, ` +
+      id_avn +
+      `);`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+  // this query add an avion with all information id_avn in the table avions
+  app.post("/addAvion", function (req, res) {
+    let reqBody = req.body;
+    const type = reqBody.type,
+      nb_place = reqBody.nb_place;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO avions (type, nb_place) VALUES ("` +
+      type +
+      `", ` +
+      nb_place +
+      `);`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+  // this query add a compagnie with all information id_cmp in the table compagnies
+  app.post("/addCompagnie", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      code = reqBody.code;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO compagnies (nom, code) VALUES ("` +
+      nom +
+      `", "` +
+      code +
+      `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+  // this query add an airport with all information id_aer in the table aeroports
+  app.post("/addAirport", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      code = reqBody.code,
+      ville = reqBody.ville,
+      pays = reqBody.pays;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO aeroports (nom, code, ville, pays) VALUES ("` +
+      nom +
+      `", "` +
+      code +
+      `", "` +
+      ville +
+      `", "` +
+      pays +
+      `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+
+  // this query add a client with all information id_cli in the table clients
+  app.post("/addClient", function (req, res) {
+    let reqBody = req.body;
+    const nom = reqBody.nom,
+      prenom = reqBody.prenom,
+      mail = reqBody.mail,
+      telephone = reqBody.telephone;
+
+    console.log("reqBody : ", reqBody);
+    let query =
+      `INSERT INTO clients (nom, prenom, mail, telephone) VALUES ("` +
+      nom +
+      `", "` +
+      prenom +
+      `", "` +
+      mail +
+      `", "` +
+      telephone + `");`;
+
+    con.query(query, (err, results, fields) => {
+      if (err) throw err;
+      res.send(results);
+    });
+  });
+
+
+
+
 });
 
 app.listen(8080);

@@ -118,12 +118,13 @@ const vols = [
   ],
 ];
 
-clients = [
+const clients = [
   ["Julien", "Verdun", "julien.verdun@ecl17.ec-lyon.fr", "0678987656"],
   ["Maxime", "Peter", "maxime.peter@ecl17.ec-lyon.fr", "0678657612"],
+  ["superuser","admin","superuser@admin","xxxxxxxxxx"]
 ];
 
-reservations = [
+const reservations = [
   [100, 102, 345.9, 1],
   [101, 102, 75.9, 4],
   [100, 103, 415.9, 1],

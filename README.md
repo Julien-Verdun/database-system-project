@@ -167,3 +167,23 @@ Reservations :
 - id_vol
 - prix
 - quantite
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# TODO 
+
+- faire la gestion des places restantes (- 1 dès qu'une reservation est faite, +/- une si on ajoute supprimer une réservation)
+- rendre les vols complets quand plus de place disponible
+- possibilité d'annuler un vol

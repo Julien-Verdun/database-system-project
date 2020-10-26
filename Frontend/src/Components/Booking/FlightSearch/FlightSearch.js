@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import {SERVERPATH} from "../../../serverParams.js";
 
 class FlightSearch extends Component {
   constructor(props) {
@@ -17,7 +18,7 @@ class FlightSearch extends Component {
   }
   createSelectAirports() {
     axios
-      .get("http://localhost:8080/getAllAirports")
+      .get(SERVERPATH + "/getAllAirports")
       .then((response) => {
         // handle success
         console.log(response);
@@ -54,7 +55,7 @@ class FlightSearch extends Component {
     );
     axios
       .get(
-        "http://localhost:8080/getFlights/" +
+        SERVERPATH + "/getFlights/" +
           encodeURI(travelDate) +
           "/" +
           encodeURI(departureAirportId) +

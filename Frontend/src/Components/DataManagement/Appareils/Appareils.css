@@ -1,0 +1,14 @@
+.title {
+    padding:2%;
+  }
+
+.container {
+    justify-content: center;
+    align-items: center;
+    align-self: center;
+    justify-self: center;
+}
+
+.form-margin {
+    margin-top:5%;
+}

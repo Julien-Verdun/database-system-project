@@ -72,6 +72,11 @@ class App extends Component {
               <Profil id_cli={this.state.id_cli} {...props} />
             )}
           />
+           {/* <Route
+            exact
+            path="/aeroports"
+            component={Aeroports}
+          /> */}
           <Route
             exact
             path="/reservation/:id_res"

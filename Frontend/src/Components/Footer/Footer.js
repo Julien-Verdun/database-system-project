@@ -27,7 +27,7 @@ class Footer extends Component {
 
               <ul className="list-unstyled">
                 <li>
-                  <p>Etudiant en Data Science</p>
+                  <p>Etudiant à l'&Eacute;cole Centrale de Lyon</p>
                 </li>
                 <li>
                   <p>maxime.peter@ecl17.ec-lyon.fr</p>
@@ -80,7 +80,7 @@ class Footer extends Component {
 
               <ul className="list-unstyled">
                 <li>
-                  <p>Etudiant en Data Science</p>
+                  <p>Etudiant à l'&Eacute;cole Centrale de Lyon</p>
                 </li>
                 <li>
                   <p>julien.verdun@ecl17.ec-lyon.fr</p>

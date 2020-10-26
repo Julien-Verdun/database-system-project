@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./MyReservations.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import {SERVERPATH} from "../../../serverParams.js";
 
 class MyReservations extends Component {
   constructor(props) {
@@ -14,7 +15,7 @@ class MyReservations extends Component {
   componentDidMount() {
     axios
       .get(
-        "http://localhost:8080/getAllReservations/" +
+        SERVERPATH + "/getAllReservations/" +
           encodeURI(this.props.id_cli)
       )
       .then((response) => {

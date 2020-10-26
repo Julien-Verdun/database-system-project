@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./Profil.css";
 import axios from "axios";
+import {SERVERPATH} from "../../serverParams.js";
+
 
 class Profil extends Component {
   constructor(props) {
@@ -12,7 +14,7 @@ class Profil extends Component {
 
   componentDidMount() {
     axios
-      .get("http://localhost:8080/getClient/" + encodeURI(this.props.id_cli))
+      .get(SERVERPATH + "/getClient/" + encodeURI(this.props.id_cli))
       .then((response) => {
         // handle success
         this.setState({ profil: response.data[0] });
