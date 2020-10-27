@@ -28,7 +28,7 @@ class Home extends Component {
     .get(SERVERPATH + "/getClient/" + encodeURI(id_cli))
     .then((response) => {
       // handle success
-      this.setState({nom_client: response.data[0].nom});
+      this.setState({nom_client: response.data[0].prenom});
     })
     .catch((error) => {
       // handle error
@@ -81,7 +81,6 @@ class Home extends Component {
   }
 
   render() {
-
     let managementButton = (this.state.nom_client === "admin" ?
       <div className="col">
           <button
