@@ -1,0 +1,11 @@
+.main-billet {
+    border-color: black;
+    border-radius: 10px;
+    border-style: groove;
+    border-collapse: collapse;
+    padding:2%;
+    margin:2%;
+    margin-left:auto;
+    margin-right:auto;
+    width:90%;
+}

@@ -3,34 +3,37 @@ var app = express();
 
 let mysql = require("mysql");
 
-let utils = require("./utils.js");
-
 let bodyParser = require("body-parser").json();
 /*
 
 Créer un fichier database_coonection.js contenant le code suivant :
 
 
-const databasePwd = "votre_mot_de_passe";
+const databaseParams = 
+  { 
+    databasePwd : "votre_mot_de_passe",
+    host : "localhost",
+    user : "root"
+  };
 
 module.exports = {
-  databasePwd,
+  databaseParams
 };
+
 
 
 Prener soin de renseigner votre mot de base
 
 */
 
-let databasePwd = require("./database_creation//database_connection.js")
-  .databasePwd;
+let databaseParams = require("./database_creation/database_connection.js").databaseParams;
 
 let data = require("./database_creation/data.js");
 
 let con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: databasePwd,
+  host: databaseParams.host,
+  user: databaseParams.user,
+  password: databaseParams.databasePwd,
   database: data.databaseName,
 });
 
@@ -54,9 +57,10 @@ con.connect(function (err, db) {
     // this query returns all the flights in the table vols from the database
     app.get("/getAllFlights", (req, res) => {
       let query = `
-        SELECT vol.date_depart, 
+        SELECT vol.id_vol, 
+          DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart",
           vol.heure_depart, 
-          vol.date_arrivee, 
+          DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
           vol.heure_arrivee,
           vol.prix, 
           vol.place_libre, 
@@ -69,7 +73,7 @@ con.connect(function (err, db) {
         FROM vols vol
         JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
         JOIN aeroports aer_arr ON aer_arr.id_aer = vol.id_aer_arr
-        ORDER BY vol.date_depart;      
+        ORDER BY vol.date_depart, vol.heure_depart;      
       `; 
       con.query(query, (err, results, fields) => {
         if (err) throw err;
@@ -153,7 +157,14 @@ con.connect(function (err, db) {
         let nbPassengers = Number(decodeURI(req.params.nbPassengers));
         let query =
           `
-        SELECT v.date_depart, v.heure_depart, v.date_arrivee, v.heure_arrivee, v.prix, v.id_vol, a_dep.nom AS aeroport_depart, a_arr.nom AS aeroport_arrivee
+        SELECT DATE_FORMAT(v.date_depart, "%d-%m-%Y") AS "date_depart",
+            v.heure_depart,
+            DATE_FORMAT(v.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
+            v.heure_arrivee, 
+            v.prix, 
+            v.id_vol, 
+            a_dep.nom AS aeroport_depart, 
+            a_arr.nom AS aeroport_arrivee
         FROM vols v
         JOIN aeroports a_dep ON v.id_aer_dep = a_dep.id_aer
         JOIN aeroports a_arr ON v.id_aer_dep = a_arr.id_aer
@@ -189,9 +200,9 @@ con.connect(function (err, db) {
           cli.prenom, 
           cli.mail, 
           cli.telephone,
-          vol.date_depart, 
+          DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart",
           vol.heure_depart, 
-          vol.date_arrivee, 
+          DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee", 
           vol.heure_arrivee,
           vol.prix as 'prix_vol', 
           vol.place_libre, 
@@ -217,12 +228,10 @@ con.connect(function (err, db) {
         WHERE res.id_res = ` +
         id_res +
         `
-        ORDER BY vol.date_depart ASC, vol.heure_depart ASC;
+        ORDER BY vol.date_depart, vol.heure_depart;
         `;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
-        results[0].date_depart = utils.processDate(results[0].date_depart);
-        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
         res.send(results);
       });
     });
@@ -239,9 +248,9 @@ con.connect(function (err, db) {
           cli.prenom, 
           cli.mail, 
           cli.telephone,
-          vol.date_depart, 
+          DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart", 
           vol.heure_depart, 
-          vol.date_arrivee, 
+          DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
           vol.heure_arrivee,
           vol.prix as 'prix_vol', 
           vol.place_libre, 
@@ -264,12 +273,10 @@ con.connect(function (err, db) {
         JOIN compagnies cmp ON cmp.id_cmp = app.id_cmp
         JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
         JOIN aeroports aer_arr ON aer_arr.id_aer= vol.id_aer_arr
-        ORDER BY vol.date_depart ASC, vol.heure_depart ASC;
+        ORDER BY vol.date_depart, vol.heure_depart;
         `;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
-        results[0].date_depart = utils.processDate(results[0].date_depart);
-        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
         res.send(results);
       });
     });
@@ -279,9 +286,9 @@ con.connect(function (err, db) {
       let id_vol = Number(decodeURI(req.params.id_vol));
       let query =
         `
-        SELECT vol.date_depart, 
+        SELECT DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart",
           vol.heure_depart, 
-          vol.date_arrivee, 
+          DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee", 
           vol.heure_arrivee,
           vol.prix as 'prix_vol', 
           vol.place_libre, 
@@ -307,8 +314,6 @@ con.connect(function (err, db) {
         `;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
-        results[0].date_depart = utils.processDate(results[0].date_depart);
-        results[0].date_arrivee = utils.processDate(results[0].date_arrivee);
         res.send(results);
       });
     });
@@ -443,7 +448,7 @@ con.connect(function (err, db) {
         quantite = reqBody.quantite;
 
       console.log("reqBody : ", reqBody);
-      let query =
+      let queryRes =
         `INSERT INTO reservations (id_cli, id_vol, prix, quantite) VALUES (` +
         id_cli +
         `, ` +
@@ -453,11 +458,25 @@ con.connect(function (err, db) {
         `, ` +
         quantite +
         `);`;
-      //('"+id_cli+"', '"+id_vol+"', '"+prix+"', '"+quantite+"');`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send(results);
+        let queryVol = 
+        `
+        UPDATE vols 
+        SET place_libre = place_libre - ` + quantite +
+        `
+        WHERE id_vol = `+ id_vol;
+
+      con.query(queryRes, (errRes, resultsRes, fieldsRes) => {
+        if (errRes) {throw errRes}
+        else {
+          con.query(queryVol, (errVol, resultsVol, fieldsVol) => {
+            if (errVol) throw errVol;
+            res.send({
+              resultsRes: resultsRes, 
+              resultsVol : resultsVol
+            });
+          });
+        }
       });
     });
 

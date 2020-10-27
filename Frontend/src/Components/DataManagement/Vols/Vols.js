@@ -42,10 +42,10 @@ class Vols extends Component {
             <tr key={index}>
               <th scope="row">{index}</th>
               <td>
-                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart + " de " + elt.aer_dep_nom}
+                {elt.date_depart + " à " + elt.heure_depart + " de " + elt.aer_dep_nom}
               </td>
               <td>
-                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee + " de " + elt.aer_arr_nom}
+                {elt.date_arrivee + " à " + elt.heure_arrivee + " de " + elt.aer_arr_nom}
               </td>
               <td>{elt.prix + " €"}</td>
               <td>{elt.place_libre }</td>
@@ -282,8 +282,8 @@ class Vols extends Component {
                     .getElementById("date-depart")
                     .value.split("T");
                   this.setState({
-                    date_arrivee: dateDepart[0],
-                    heure_arrivee: dateDepart[1],
+                    date_depart: dateDepart[0],
+                    heure_depart: dateDepart[1],
                   });
                 }}
               />

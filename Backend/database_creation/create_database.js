@@ -11,24 +11,32 @@ let mysql = require("mysql");
 Créer un fichier database_coonection.js contenant le code suivant :
 
 
-const databasePwd = "votre_mot_de_passe";
+const databaseParams = 
+  { 
+    databasePwd : "votre_mot_de_passe",
+    host : "localhost",
+    user : "root"
+  };
 
 module.exports = {
-  databasePwd,
+  databaseParams
 };
+
 
 
 Prener soin de renseigner votre mot de base
 
 */
 
-let databasePwd = require("./database_connection.js").databasePwd;
+
+let databaseParams = require("./database_connection.js").databaseParams;
 
 // connection à l'instance MySQL
-let con = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: databasePwd,
+con = mysql.createConnection({
+  host: databaseParams.host,
+  user: databaseParams.user,
+  password: databaseParams.databasePwd,
+  database: data.databaseName,
 });
 
 con.connect(function (err) {

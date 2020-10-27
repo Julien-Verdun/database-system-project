@@ -54,22 +54,60 @@ Réaliser la même opération dans le répertoire `database-system-project/Backe
 
 Le gestionnaire de package **npm** va se charger d'installer la bonne version des packages nécessaires au bon fonctionnement de l'application.
 
----
 
-## Lancement local de l'application
 
-Créez un fichier `database_connection.js` avec le contenu suivant :
+### Création de la base de données
+
+
+Dans le repertoire `database-system-project/Backend/database_creation`, créez un fichier `database_connection.js` avec le contenu suivant :
 
 ```
-const databasePwd = "votre_mot_de_passe";
+const databasePwd = "votre_mot_de_passe",
+  host = "localhost",
+  user = "root";
 
 module.exports = {
   databasePwd,
+  host,
+  user
 };
 
 ```
 
-dans le repertoire `database-system-project/Backend/database_creation`. Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et place de **votre_mot_de_passe**.
+Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et place de **votre_mot_de_passe**.
+
+
+/!\ /!\ /!\ Si votre instance MySQL n'a pas été créée avec les paramètres **host** et **user** localhost et root, prenez soin de les remplacer par leurs valeurs.
+
+
+Ces paramètres nous permettent de nous connecter à notre base de données locale.
+Nous allons maintenant nous y connecter et générer une base de données contenant quelques données.
+
+Pour ce faire, ouvrez une invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend/database_creation` et exécutez successivement les lignes de commande :
+
+```
+node create_database.js
+```
+
+puis :
+
+```
+node feed_database.js
+```
+
+Une base de données MySQL portant le nom **mydb** est créée et contient les tables, les relations, et quelques données nécessaires à la manipulation de l'application.
+
+
+
+
+
+
+---
+
+## Lancement local de l'application
+
+
+
 
 Afin de lancer en local la partie back-end de l'application, ouvrez un invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend` et exécutez la ligne de commande :
 
@@ -91,7 +129,6 @@ Ouvrez ensuite un navigateur internet, de préférences **Google Chrome**, sur l
 
 ## Description de l'application
 
-Description technique de l'application, quelles sont les possibilité, les requêtes réalises, suppression, ajout, modification, etc **\*\*\*\***\*\***\*\*\*\***
 
 ### Structure de la base de données
 
@@ -100,77 +137,28 @@ La figure suivante, obtenue avec le logiciel **DBeaver**, représente les diffé
 Les liens entre les tables, les clés primaires et les autres clés sont également représentés.
 
 ![Vue de la base de données](database_view.PNG)
-Tables :
 
-- vols (id_vol,id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre)
-- appareils (id_app, id_cmp, id_avn)
-- avions (id_avn, type, nb_place)
-- compagnies (id_cmp, nom, code)
-- aeroports (id_aer, nom, code, ville, pays)
-- clients (id_cli, nom, prenom, mail, telephone)
-- reservations (id_res, id_cli, id_vol, prix, quantite)
 
-[inserer un schema UML]
+La **base de données** est composée de 7 tables.
 
-Vols :
+Les tables **avions** et **compagnies** contiennent les informations relatives aux avions (type d'avion, nombre de place) et aux compagnies aériennes. 
+Elles sont liées par la table **appareils** qui permet de connaître les avions possédés par chaque compagnie aérienne. 
 
-- id_vol
-- id_app
-- date_depart
-- heure_depart
-- date_arrivee
-- heure_arrive
-- id_aer_dep
-- id_aer_arr
-- duree
-- prix
-- place_libre
 
-Appareils :
+Une table **aeroports** contient les données des aéroports et une table **clients** les données des passagers.
 
-- id_app
-- id_cmp
-- id_avn
+Les vols sont stockés dans une table **vols**. Elle est aux tables **appareils** et **aeroports** et permet ainsi de connaître avec quel appareil (avion et compagnie) le vol sera réalisé, de quel aéroport le vol partira et dans quel aéroport le vol atterira, mais également des informations relatives au prix du billet, au nombre de place disponible et aux horaires de départ et d'arrivée.
 
-Avions :
-
-- id_avn
-- type
-- nb_place
-
-Compagnies :
-
-- id_cmp
-- nom
-- code
-
-Aeroports :
-
-- id_aer
-- nom
-- code
-- ville
-- Pays
-
-Clients :
-
-- id_cli
-- nom
-- prenom
-- mail
-- telephone
-
-Reservations :
-
-- id_res
-- id_cli
-- id_vol
-- prix
-- quantite
+Finalement, la table **reservations** fait le lien entre les tables **clients** et **avions** et permet de connaître les vols qu'ont réservé les clients, où les passagers de chaque vols, ainsi que le prix payé par chaque passager. 
 
 
 
 
+### L'application
+
+#### Système de management des données
+#### Possibilité de choisir un utilisateur
+#### Pour chaque utilisateur, réservation d'un avion, annulation de réservation, etc
 
 
 

@@ -76,11 +76,11 @@ class FlightSearch extends Component {
             >
               <th scope="row">{index}</th>
               <td>
-                {elt.date_depart.split("T")[0] + " à " + elt.heure_depart}
+                {elt.date_depart + " à " + elt.heure_depart}
               </td>
               <td>{elt.aeroport_depart}</td>
               <td>
-                {elt.date_arrivee.split("T")[0] + " à " + elt.heure_arrivee}
+                {elt.date_arrivee + " à " + elt.heure_arrivee}
               </td>
               <td>{elt.aeroport_arrivee}</td>
               <td>{elt.prix + " €"}</td>
