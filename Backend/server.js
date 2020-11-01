@@ -357,6 +357,48 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query delete the avion id_avn in the table avions
+    app.post("/deleteAvion", (req, res) => {
+      let id_avn = req.body.id_avn;
+      console.log("id_avn : ", id_avn);
+      let query =
+        `
+        DELETE FROM avions avn
+        WHERE avn.id_avn = 
+        ` +
+        id_avn +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
+
+
+    // this query delete the compagnie id_cmp in the table compagnies
+    app.post("/deleteCompagnie", (req, res) => {
+      let id_cmp = req.body.id_cmp;
+      console.log("id_cmp : ", id_cmp);
+      let query =
+        `
+        DELETE FROM compagnies cmp
+        WHERE cmp.id_cmp = 
+        ` +
+        id_cmp +
+        `
+        LIMIT 1;
+        `;
+
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send( results );
+      });
+    });
+
     
     // this query delete the airport id_aer in the table aeroports
     app.post("/deleteAirport", (req, res) => {

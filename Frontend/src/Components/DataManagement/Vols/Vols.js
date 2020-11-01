@@ -2,9 +2,12 @@ import React, { Component } from "react";
 import "./Vols.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Table from "../../ToolsComponent/Table/Table";
 import { dateToDateTimeLocal } from "../../ToolsComponent/utils.js";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {SERVERPATH} from "../../../serverParams.js";
+import {reverseDate} from "./../../ToolsComponent/utils";
+
 
 class Vols extends Component {
   constructor(props) {
@@ -29,6 +32,7 @@ class Vols extends Component {
     this.getFlights = this.getFlights.bind(this);
     this.getAirports = this.getAirports.bind(this);
     this.getAppareils = this.getAppareils.bind(this);
+    this.resetInputs = this.resetInputs.bind(this);
     this.handleDeleteVol = this.handleDeleteVol.bind(this);
   }
 
@@ -38,8 +42,10 @@ class Vols extends Component {
       .then((response) => {
         // handle success
         let allFlights = response.data.map((elt, index) => {
+          let backgroundColor = new Date(reverseDate(elt.date_depart)) < new Date() ? "bisque" : null;
+          
           return (
-            <tr key={index}>
+            <tr key={index} style={{"backgroundColor":backgroundColor}}>
               <th scope="row">{index}</th>
               <td>
                 {elt.date_depart + " à " + elt.heure_depart + " de " + elt.aer_dep_nom}
@@ -141,6 +147,23 @@ class Vols extends Component {
     console.log("VOLS PAGE LOADED");
   }
 
+  resetInputs(){
+    let date = dateToDateTimeLocal(new Date());
+
+    document.getElementById("price").value = 0.00;
+    document.getElementById("nb-place-vol").value = 0;
+    document.getElementById("date-depart").value = date;
+    document.getElementById("date-arrivee").value = date;
+
+
+    this.setState({prix: null,
+      place_libre: null,
+      date_depart: date.split("T")[0],
+      heure_depart: date.split("T")[1],
+      date_arrivee: date.split("T")[0],
+      heure_arrivee: date.split("T")[1],});
+  }
+
   handleDeleteVol(id_vol) {
     let data = {
       id_vol: id_vol,
@@ -187,6 +210,7 @@ class Vols extends Component {
           this.setState({ hasError: false });
           // handle success
           this.getFlights();
+          this.resetInputs();
         })
         .catch((error) => {
           // handle error
@@ -207,21 +231,7 @@ class Vols extends Component {
         />
       );
     } else {
-      flightsTable = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Départ</th>
-              <th scope="col">Arrivée</th>
-              <th scope="col">Prix</th>
-              <th scope="col">Place libre</th>
-              <th scope="col">Supprimer</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.allFlights}</tbody>
-        </table>
-      );
+      flightsTable = <Table listHeaders = {["Départ","Arrivée","Prix","Place libre","Supprimer"]} listItems={this.state.allFlights}/>;
     }
     let reservation_table = (
       <div className="container">
@@ -349,19 +359,19 @@ class Vols extends Component {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="nb-place">Nombre de places</label>
+              <label htmlFor="nb-place-vol">Nombre de places</label>
               <input
                 type="number"
                 className="form-control"
-                id="nb-place"
-                name="nb-place"
+                id="nb-place-vol"
+                name="nb-place-vol"
                 placeholder="0"
                 min="1"
                 max="5"
                 onChange={() => {
                   this.setState({
                     place_libre: Number(
-                      document.getElementById("nb-place").value
+                      document.getElementById("nb-place-vol").value
                     ),
                   });
                 }}

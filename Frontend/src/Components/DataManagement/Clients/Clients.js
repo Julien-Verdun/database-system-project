@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Clients.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {SERVERPATH} from "../../../serverParams.js";
 
@@ -10,7 +11,7 @@ class Clients extends Component {
     super(props);
     this.state = {
       clientsList: null,
-      nom:null,
+      namecli:null,
       prenom:null,
       mail: null,
       telephone: null,
@@ -18,6 +19,7 @@ class Clients extends Component {
     };
     this.handleAddClient = this.handleAddClient.bind(this);
     this.getClients = this.getClients.bind(this);
+    this.resetInputs = this.resetInputs.bind(this);
     this.handleDeleteClient = this.handleDeleteClient.bind(this);
   }
 
@@ -70,6 +72,18 @@ class Clients extends Component {
     console.log("CLIENTS PAGE LOADED");
   }
 
+  resetInputs(){
+    document.getElementById("namecli").value = "";
+    document.getElementById("prenom").value = "";
+    document.getElementById("mail").value = "";
+    document.getElementById("telephone").value = "";
+
+    this.setState({namecli:null,
+      prenom:null,
+      mail: null,
+      telephone: null});
+  }
+
   handleDeleteClient(id_cli) {
     let data = {
       id_cli: id_cli,
@@ -91,7 +105,7 @@ class Clients extends Component {
   handleAddClient(event) {
     event.preventDefault();
     let data = {
-      nom: this.state.nom,
+      nom: this.state.namecli,
       prenom: this.state.prenom,
       mail: this.state.mail,
       telephone: this.state.telephone,
@@ -106,9 +120,12 @@ class Clients extends Component {
       axios
       .post(SERVERPATH + "/addClient", data)
       .then((response) => {
-          this.setState({ hasError: false });
+          this.setState({ 
+            hasError: false,
+            });
           // handle success
           this.getClients();
+          this.resetInputs();
       })
       .catch((error) => {
           // handle error
@@ -128,21 +145,7 @@ class Clients extends Component {
         />
       );
     } else {
-      clientsTable = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Nom</th>
-              <th scope="col">Prénom</th>
-              <th scope="col">Mail</th>
-              <th scope="col">Téléphone</th>
-              <th scope="col">Supprimer</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.clientsList}</tbody>
-        </table>
-      );
+      clientsTable = <Table listHeaders = {["Nom","Prénom","Mail","Téléphone","Supprimer"]} listItems={this.state.clientsList}/>
     }
     let clientForm = (
       <div className="container">
@@ -156,17 +159,17 @@ class Clients extends Component {
             <form className="form-main">
                 
                 <div className="form-group">
-                    <label htmlFor="nom">Nom</label>
+                    <label htmlFor="namecli">Nom</label>
                     <input
                         type="input"
                         className="form-control"
-                        id="nom"
-                        name="nom"
+                        id="namecli"
+                        name="namecli"
                         placeholder="Raymond"
                         onChange={() => {
                         this.setState({
-                            nom: 
-                            document.getElementById("nom").value
+                          namecli: 
+                            document.getElementById("namecli").value
                             ,
                         });
                         }}

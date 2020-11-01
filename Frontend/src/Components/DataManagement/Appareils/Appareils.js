@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Appareils.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {SERVERPATH} from "../../../serverParams.js";
 
@@ -13,10 +14,15 @@ class Appareils extends Component {
       id_avn: null,
       id_cmp : null,
 
-      type:null,
-      nb_place : null,
-      nom:null,
-      code:null,
+      avionsList: null,
+      avionsOption : null,
+      typeavn:null,
+      nb_placeavn : null,
+
+      compagniesList: null,
+      compagniesOption: null,
+      nomcmp:null,
+      codecmp:null,
 
       hasErrorAvn: false,
       hasErrorCmp: false,
@@ -28,7 +34,12 @@ class Appareils extends Component {
     this.getAppareils = this.getAppareils.bind(this);
     this.getAvions = this.getAvions.bind(this);
     this.getCompagnies = this.getCompagnies.bind(this);
+    this.resetInputsAvion = this.resetInputsAvion.bind(this);
+    this.resetInputsCompagnie = this.resetInputsCompagnie.bind(this);
+
     this.handleDeleteAppareil = this.handleDeleteAppareil.bind(this);
+    this.handleDeleteAvion = this.handleDeleteAvion.bind(this);
+    this.handleDeleteCompagnie = this.handleDeleteCompagnie.bind(this);
   }
 
   getAppareils() {
@@ -78,14 +89,37 @@ class Appareils extends Component {
       .then((response) => {
         // handle success
         let initial_id = response.data[0].id_avn;
-        let avionsList = response.data.map((elt, index) => {
+        let avionsOption = response.data.map((elt, index) => {
           return (
             <option value={elt.id_avn} key={elt.id_avn}>
               {elt.type + " (" + elt.nb_place + " places)"}
             </option>
           );
         });
+
+        let avionsList = response.data.map((elt, index) => {
+          return (
+            <tr key={index}>
+            <th scope="row">{index}</th>
+            <td>
+              {elt.type}
+            </td>
+            <td>
+              {elt.nb_place}
+            </td>
+            <td>
+              <DeleteIcon
+                onClick={() => {
+                  this.handleDeleteAvion(elt.id_avn);
+                }}
+              />
+            </td>
+          </tr>
+          );
+        });
+
         this.setState({
+          avionsOption,
           avionsList,
           id_avn: initial_id,
         });
@@ -94,7 +128,8 @@ class Appareils extends Component {
         // handle error
         console.log(error);
         this.setState({
-          avionsList: null,
+          avionsOption: null,
+          avionsList:null
         });
       });
   }
@@ -106,14 +141,32 @@ class Appareils extends Component {
       .then((response) => {
         // handle success
         let initial_id = response.data[0].id_cmp;
-        let compagniesList = response.data.map((elt, index) => {
+        let compagniesOption = response.data.map((elt, index) => {
           return (
             <option value={elt.id_cmp} key={elt.id_cmp}>
               {elt.nom + " - " + elt.code}
             </option>
           );
         });
+
+        let compagniesList = response.data.map((elt, index) => {
+          return (
+            <tr key={index}>
+            <th scope="row">{index}</th>
+            <td>{elt.nom}</td>
+            <td>{elt.code}</td>
+            <td>
+              <DeleteIcon
+                onClick={() => {
+                  this.handleDeleteCompagnie(elt.id_cmp);
+                }}
+              />
+            </td>
+          </tr>
+          );
+        });
         this.setState({
+          compagniesOption,
           compagniesList,
           id_cmp: initial_id,
         });
@@ -122,7 +175,8 @@ class Appareils extends Component {
         // handle error
         console.log(error);
         this.setState({
-          compagniesList: null,
+          compagniesOption: null,
+          compagniesList:null
         });
       });
   }
@@ -139,6 +193,28 @@ class Appareils extends Component {
     console.log("APPAREILS PAGE LOADED");
   }
 
+
+  resetInputsAvion(){
+    document.getElementById("typeavn").value = "";
+    document.getElementById("nb-place-avn").value = 0;
+
+    this.setState({typeavn:null,
+      nb_placeavn : null,
+    });
+  }
+
+  resetInputsCompagnie(){
+    document.getElementById("nomcmp").value = "";
+    document.getElementById("codecmp").value = "";
+
+    this.setState({
+      nomcmp:null,
+      codecmp:null,
+    });
+  }
+
+
+
   handleDeleteAppareil(id_app) {
     let data = {
       id_app: id_app,
@@ -149,6 +225,41 @@ class Appareils extends Component {
         // handle success
         console.log(response);
         this.getAppareils();
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+  handleDeleteAvion(id_avn) {
+    let data = {
+      id_avn: id_avn,
+    };
+    axios
+      .post(SERVERPATH + "/deleteAvion", data)
+      .then((response) => {
+        // handle success
+        console.log(response);
+        this.getAvions();
+      })
+      .catch((error) => {
+        // handle error
+        console.log(error);
+      });
+  }
+
+
+  handleDeleteCompagnie(id_cmp) {
+    let data = {
+      id_cmp: id_cmp,
+    };
+    axios
+      .post(SERVERPATH + "/deleteCompagnie", data)
+      .then((response) => {
+        // handle success
+        console.log(response);
+        this.getCompagnies();
       })
       .catch((error) => {
         // handle error
@@ -179,8 +290,8 @@ class Appareils extends Component {
   handleAddAvion(event) {
     event.preventDefault();
     let data = {
-      type: this.state.type,
-      nb_place: this.state.nb_place
+      type: this.state.typeavn,
+      nb_place: this.state.nb_placeavn
     };
     console.log(data);
     if (
@@ -194,6 +305,7 @@ class Appareils extends Component {
           this.setState({ hasErrorAvn: false, hasErrorCmp:false });
           // handle success
           this.getAvions();
+          this.resetInputsAvion();
       })
       .catch((error) => {
           // handle error
@@ -206,8 +318,8 @@ class Appareils extends Component {
   handleAddCompagnie(event) {
     event.preventDefault();
     let data = {
-      nom: this.state.nom,
-      code: this.state.code
+      nom: this.state.nomcmp,
+      code: this.state.codecmp
     };
     console.log(data);
     if (
@@ -220,7 +332,7 @@ class Appareils extends Component {
       .then((response) => {
           this.setState({ hasErrorAvn: false, hasErrorCmp:false });
           // handle success
-          this.getCompagnies();
+          this.getCompagnies();this.resetInputsCompagnie();
       })
       .catch((error) => {
           // handle error
@@ -230,11 +342,9 @@ class Appareils extends Component {
   }
 
   render() {
-    let appareilsTable;
+    let appareilsTable, avionsTable, compagniesTable;
 
-    if (this.state.result === "") {
-      appareilsTable = this.state.result;
-    } else if (this.state.result === null) {
+     if (this.state.appareilsList === null) {
       appareilsTable = (
         <Alerts
           type="danger"
@@ -242,22 +352,35 @@ class Appareils extends Component {
         />
       );
     } else {
-      appareilsTable = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Type avion</th>
-              <th scope="col">Capacité</th>
-              <th scope="col">Compagnie</th>
-              <th scope="col">Code compagnie</th>
-              <th scope="col">Supprimer</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.appareilsList}</tbody>
-        </table>
-      );
+      appareilsTable = <Table listHeaders = {["Type avion","Capacité","Compagnie","Code compagnie","Supprimer"]} listItems={this.state.appareilsList}/>;
     }
+
+
+    if (this.state.avionsList === null) {
+      avionsTable = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else {
+      avionsTable = <Table listHeaders = {["Type avion","Nombre de places","Supprimer"]} listItems={this.state.avionsList}/>;
+    }
+
+
+
+
+    if (this.state.compagniesList === null) {
+      compagniesTable = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else {
+      compagniesTable = <Table listHeaders = {["Compagnie","Code compagnie","Supprimer"]} listItems={this.state.compagniesList}/>;
+    }
+
     let appareilForm = (
       <div className="container">
           <div className="row">
@@ -282,7 +405,7 @@ class Appareils extends Component {
                     });
                     }}
                 >
-                    {this.state.avionsList}
+                    {this.state.avionsOption}
                 </select>
                 </div>
                 
@@ -301,7 +424,7 @@ class Appareils extends Component {
                     });
                     }}
                 >
-                    {this.state.compagniesList}
+                    {this.state.compagniesOption}
                 </select>
                 </div>
             </form>
@@ -334,17 +457,17 @@ class Appareils extends Component {
               <form className="form-main">
                   
               <div className="form-group">
-                <label htmlFor="type">Type d'appareil</label>
+                <label htmlFor="typeavn">Type d'appareil</label>
                 <input
                     type="input"
                     className="form-control"
-                    id="type"
-                    name="type"
+                    id="typeavn"
+                    name="typeavn"
                     placeholder="A321"
                     onChange={() => {
                     this.setState({
-                        type: 
-                        document.getElementById("type").value
+                      typeavn: 
+                        document.getElementById("typeavn").value
                         ,
                     });
                     }}
@@ -352,19 +475,19 @@ class Appareils extends Component {
                 </div>
                   
                   <div className="form-group">
-                    <label htmlFor="nb-place">Nombre de places</label>
+                    <label htmlFor="nb-place-avn">Nombre de places</label>
                     <input
                         type="number"
                         className="form-control"
-                        id="nb-place"
-                        name="nb-place"
+                        id="nb-place-avn"
+                        name="nb-place-avn"
                         placeholder="0"
                         min="0"
                         max="1000"
                         onChange={() => {
                         this.setState({
-                            nb_place: Number(
-                            document.getElementById("nb-place").value
+                            nb_placeavn: Number(
+                            document.getElementById("nb-place-avn").value
                             ),
                         });
                         }}
@@ -405,16 +528,16 @@ class Appareils extends Component {
               <form className="form-main">
                   
               <div className="form-group">
-                <label htmlFor="nom">Nom de la compagnie</label>
+                <label htmlFor="nomcmp">Nom de la compagnie</label>
                 <input
                     type="input"
                     className="form-control"
-                    id="nom"
-                    name="nom"
+                    id="nomcmp"
+                    name="nomcmp"
                     placeholder="EasyJet"
                     onChange={() => {
                     this.setState({
-                        nom:document.getElementById("nom").value
+                      nomcmp:document.getElementById("nomcmp").value
                         ,
                     });
                     }}
@@ -422,16 +545,16 @@ class Appareils extends Component {
                 </div>
                   
                   <div className="form-group">
-                    <label htmlFor="code">Code compagnie (trigramme)</label>
+                    <label htmlFor="codecmp">Code compagnie (trigramme)</label>
                     <input
                         type="input"
                         className="form-control"
-                        id="code"
-                        name="code"
+                        id="codecmp"
+                        name="codecmp"
                         placeholder="EAJ"
                         onChange={() => {
                         this.setState({
-                            code: document.getElementById("code").value
+                          codecmp: document.getElementById("codecmp").value
                             ,
                         });
                         }}
@@ -510,17 +633,19 @@ class Appareils extends Component {
 
         <div className="flights-table">{appareilsTable}</div>
         {errorDiv}
+
         <div className="form-margin">
-            
         {appareilForm}
         </div>
+
         <div className="form-margin">
-        {avionForm}
-            
+          {avionsTable}
+          {avionForm} 
         </div>
+
         <div className="form-margin">
-        {compagnieForm}
-            
+          {compagniesTable}
+          {compagnieForm}
         </div>
       </div>
     );

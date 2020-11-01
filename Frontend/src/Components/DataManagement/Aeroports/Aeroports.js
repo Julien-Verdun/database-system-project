@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Aeroports.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import {SERVERPATH} from "../../../serverParams.js";
 
@@ -10,14 +11,15 @@ class Aeroports extends Component {
     super(props);
     this.state = {
       aeroportsList: null,
-      nom: null,
-      code:null,
+      nameaer: null,
+      codeaer:null,
       ville:null,
       pays:null,
       hasError: false,
     };
     this.handleAddAeroport = this.handleAddAeroport.bind(this);
     this.getAeroports = this.getAeroports.bind(this);
+    this.resetInputs = this.resetInputs.bind(this);
     this.handleDeleteAeroport = this.handleDeleteAeroport.bind(this);
   }
 
@@ -69,6 +71,18 @@ class Aeroports extends Component {
     console.log("CLIENTS PAGE LOADED");
   }
 
+  resetInputs(){
+    document.getElementById("nameaer").value = "";
+    document.getElementById("codeaer").value = "";
+    document.getElementById("ville").value = "";
+    document.getElementById("pays").value = "";
+
+    this.setState({nameaer:null,
+      codeaer:null,
+      ville: null,
+      pays: null});
+  }
+
   handleDeleteAeroport(id_aer) {
     let data = {
       id_aer: id_aer,
@@ -90,8 +104,8 @@ class Aeroports extends Component {
   handleAddAeroport(event) {
     event.preventDefault();
     let data = {
-      nom: this.state.nom,
-      code: this.state.code,
+      nom: this.state.nameaer,
+      code: this.state.codeaer,
       ville: this.state.ville,
       pays: this.state.pays,
     };
@@ -108,6 +122,7 @@ class Aeroports extends Component {
           this.setState({  hasError: false });
           // handle success
           this.getAeroports();
+          this.resetInputs();
       })
       .catch((error) => {
           // handle error
@@ -129,21 +144,7 @@ class Aeroports extends Component {
         />
       );
     } else {
-      aeroportsTable = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Nom</th>
-              <th scope="col">Code</th>
-              <th scope="col">Ville</th>
-              <th scope="col">Pays</th>
-              <th scope="col">Supprimer</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.aeroportsList}</tbody>
-        </table>
-      );
+      aeroportsTable = <Table listHeaders = {["Nom","Code","Ville","Pays","Supprimer"]} listItems={this.state.aeroportsList}/>
     }
     let clientForm = (
       <div className="container">
@@ -157,34 +158,34 @@ class Aeroports extends Component {
             <form className="form-main">
                 
                 <div className="form-group">
-                    <label htmlFor="nom">Nom</label>
+                    <label htmlFor="nameaer">Nom</label>
                     <input
                         type="input"
                         className="form-control"
-                        id="nom"
-                        name="nom"
+                        id="nameaer"
+                        name="nameaer"
                         placeholder="Aéroport de Miami"
                         onChange={() => {
                         this.setState({
-                            nom: 
-                            document.getElementById("nom").value
+                          nameaer: 
+                            document.getElementById("nameaer").value
                             ,
                         });
                         }}
                     />
                 </div>
                 <div className="form-group">
-                    <label htmlFor="code">Code</label>
+                    <label htmlFor="codeaer">Code</label>
                     <input
                         type="input"
                         className="form-control"
-                        id="code"
-                        name="code"
+                        id="codeaer"
+                        name="codeaer"
                         placeholder="ADM"
                         onChange={() => {
                         this.setState({
-                            code: 
-                            document.getElementById("code").value
+                            codeaer: 
+                            document.getElementById("codeaer").value
                             ,
                         });
                         }}
