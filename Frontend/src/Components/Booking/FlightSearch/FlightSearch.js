@@ -2,14 +2,22 @@ import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import { dateToDateTimeLocal } from "../../ToolsComponent/utils.js";
 import { SERVERPATH } from "../../../serverParams.js";
 
 class FlightSearch extends Component {
   constructor(props) {
     super(props);
+    let date = dateToDateTimeLocal(new Date());
     this.state = {
       result: "",
       listeAirportsOptions: null,
+      date_depart: date.split("T")[0],
+      heure_depart: date.split("T")[1],
+      id_aer_dep: null,
+      id_aer_arr: null,
+      nb_places: null,
+      hasError: false,
     };
     this.handleClickSearch = this.handleClickSearch.bind(this);
   }
@@ -21,7 +29,7 @@ class FlightSearch extends Component {
       .get(SERVERPATH + "/getAllAirports")
       .then((response) => {
         // handle success
-        console.log(response);
+        let initial_id = response.data[0].id_aer;
         let listeAirportsOptions = response.data.map((elt, index) => {
           return (
             <option value={elt.id_aer} key={elt.id_aer}>
@@ -29,7 +37,11 @@ class FlightSearch extends Component {
             </option>
           );
         });
-        this.setState({ listeAirportsOptions });
+        this.setState({
+          listeAirportsOptions,
+          id_aer_dep: initial_id,
+          id_aer_arr: initial_id,
+        });
       })
       .catch((error) => {
         // handle error
@@ -41,53 +53,57 @@ class FlightSearch extends Component {
   handleClickSearch(event) {
     event.preventDefault();
     console.log("Search");
-    let travelDate = encodeURI(
-      document.getElementById("departure-input").value
-    );
-    let departureAirportId = encodeURI(
-      document.getElementById("from-airport").value
-    );
-    let arrivalAirportId = encodeURI(
-      document.getElementById("to-airport").value
-    );
-    let nbPassengers = encodeURI(
-      document.getElementById("nb-passengers-input").value
-    );
-    axios
-      .get(
-        SERVERPATH +
-          "/getFlights/" +
-          encodeURI(travelDate) +
-          "/" +
-          encodeURI(departureAirportId) +
-          "/" +
-          encodeURI(arrivalAirportId) +
-          "/" +
-          encodeURI(nbPassengers)
-      )
-      .then((response) => {
-        // handle success
-        let flightsList = response.data.map((elt, index) => {
-          return (
-            <tr
-              key={index}
-              onClick={() => {
-                this.props.history.push(
-                  "/flightbooking/" + encodeURI(elt.id_vol)
-                );
-              }}
-            >
-              <th scope="row">{index}</th>
-              <td>{elt.date_depart + " à " + elt.heure_depart}</td>
-              <td>{elt.aeroport_depart}</td>
-              <td>{elt.date_arrivee + " à " + elt.heure_arrivee}</td>
-              <td>{elt.aeroport_arrivee}</td>
-              <td>{elt.prix + " €"}</td>
-            </tr>
-          );
+    let travelDate = this.state.date_depart;
+    let departureAirportId = this.state.id_aer_dep;
+    let arrivalAirportId = this.state.id_aer_arr;
+    let nbPassengers = this.state.nb_places;
+    if (nbPassengers <= 0) {
+      this.setState({ hasError: true });
+    } else {
+      axios
+        .get(
+          SERVERPATH +
+            "/getFlights/" +
+            encodeURI(travelDate) +
+            "/" +
+            encodeURI(departureAirportId) +
+            "/" +
+            encodeURI(arrivalAirportId) +
+            "/" +
+            encodeURI(nbPassengers)
+        )
+        .then((response) => {
+          // handle success
+          if (response.data.length === 0) {
+            this.setState({ result: "Pas de résultats" });
+          } else {
+            let flightsList = response.data.map((elt, index) => {
+              return (
+                <tr
+                  key={index}
+                  onClick={() => {
+                    this.props.history.push(
+                      "/flightbooking/" + encodeURI(elt.id_vol)
+                    );
+                  }}
+                >
+                  <th scope="row">{index}</th>
+                  <td>{elt.date_depart + " à " + elt.heure_depart}</td>
+                  <td>{elt.aeroport_depart}</td>
+                  <td>{elt.date_arrivee + " à " + elt.heure_arrivee}</td>
+                  <td>{elt.aeroport_arrivee}</td>
+                  <td>{elt.prix + " €"}</td>
+                </tr>
+              );
+            });
+            this.setState({ result: flightsList });
+          }
+        })
+        .catch((error) => {
+          // handle error
+          console.log(error);
         });
-        this.setState({ result: flightsList });
-      });
+    }
   }
   render() {
     let table;
@@ -100,6 +116,13 @@ class FlightSearch extends Component {
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.result === "Pas de résultats") {
+      table = (
+        <div className="alert alert-warning">
+          <strong>Attention !</strong> Aucuns vols ne correspondent à vos
+          critères. Essayez une autre date ou un autre voyage.
+        </div>
       );
     } else {
       table = (
@@ -121,10 +144,10 @@ class FlightSearch extends Component {
     return (
       <div className="main">
         <h1>Bienvenue sur la page de recherche</h1>
-        <div>Blabla</div>
+        <div>Entrez ci-dessous vos critères de recherche. Bon voyage !</div>
         <div className="col">
           <img
-            src="https://cdn.onlinewebfonts.com/svg/img_246830.png"
+            src="https://st3.depositphotos.com/1000193/12754/v/450/depositphotos_127545178-stock-illustration-search-airplane-pictogram.jpg"
             alt="home"
             width="200px"
             style={{ margin: "20px" }}
@@ -135,12 +158,26 @@ class FlightSearch extends Component {
             <label>Date de départ</label>
             <input
               className="form-control"
+              type="datetime-local"
               id="departure-input"
               placeholder="Enter a departure date"
+              defaultValue={
+                this.state.date_depart + "T" + this.state.heure_depart
+              }
+              min={dateToDateTimeLocal(new Date())}
+              max={dateToDateTimeLocal(
+                new Date(new Date().getTime() + 365 * 3600 * 24 * 1000)
+              )}
+              onChange={() => {
+                let dateDepart = document
+                  .getElementById("departure-input")
+                  .value.split("T");
+                this.setState({
+                  date_depart: dateDepart[0],
+                  heure_depart: dateDepart[1],
+                });
+              }}
             ></input>
-            <small className="form-text text-muted">
-              Entrez la date sous le format YYYY-MM-DD
-            </small>
           </div>
           <div className="form-group">
             <label>Depuis </label>
@@ -148,6 +185,13 @@ class FlightSearch extends Component {
               name="from-airports"
               id="from-airport"
               className="custom-select"
+              onChange={() => {
+                this.setState({
+                  id_aer_dep: Number(
+                    document.getElementById("from-airport").value
+                  ),
+                });
+              }}
             >
               {this.state.listeAirportsOptions}
             </select>
@@ -158,6 +202,13 @@ class FlightSearch extends Component {
               name="to-airports"
               id="to-airport"
               className="custom-select"
+              onChange={() => {
+                this.setState({
+                  id_aer_arr: Number(
+                    document.getElementById("to-airport").value
+                  ),
+                });
+              }}
             >
               {this.state.listeAirportsOptions}
             </select>
@@ -166,8 +217,18 @@ class FlightSearch extends Component {
             <label>Nombre de passagers </label>
             <input
               className="form-control"
+              type="number"
               id="nb-passengers-input"
-              placeholder="Enter the number of passengers"
+              placeholder="0"
+              min="1"
+              max="20"
+              onChange={() => {
+                this.setState({
+                  nb_places: Number(
+                    document.getElementById("nb-passengers-input").value
+                  ),
+                });
+              }}
             ></input>
           </div>
         </form>
