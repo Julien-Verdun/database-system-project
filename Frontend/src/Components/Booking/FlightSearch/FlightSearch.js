@@ -140,7 +140,7 @@ class FlightSearch extends Component {
               placeholder="Enter a departure date"
             ></input>
             <small className="form-text text-muted">
-              Entrez la date sous le formatYYYY-MM-DD
+              Entrez la date sous le format YYYY-MM-DD
             </small>
           </div>
           <div className="form-group">
