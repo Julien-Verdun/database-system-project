@@ -5,6 +5,8 @@ import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { SERVERPATH } from "../../../serverParams.js";
+import Modal from "../../ToolsComponent/Modal/Modal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Appareils extends Component {
   constructor(props) {
@@ -14,15 +16,24 @@ class Appareils extends Component {
       id_avn: null,
       id_cmp: null,
 
+      modalAppContent: "",
+      idAppToRemove: null,
+
       avionsList: null,
       avionsOption: null,
       typeavn: null,
       nb_placeavn: null,
 
+      modalAvnContent: "",
+      idAvnToRemove: null,
+
       compagniesList: null,
       compagniesOption: null,
       nomcmp: null,
       codecmp: null,
+
+      modalCmpContent: "",
+      idCmpToRemove: null,
 
       hasErrorAvn: false,
       hasErrorCmp: false,
@@ -57,8 +68,39 @@ class Appareils extends Component {
               <td>{elt.code_compagnie}</td>
               <td>
                 <DeleteIcon
+                  data-toggle="modal"
+                  data-target="#remove-app-modal"
                   onClick={() => {
-                    this.handleDeleteAppareil(elt.id_app);
+                    this.setState({
+                      idAppToRemove: elt.id_app,
+                      modalAppContent: (
+                        <div className="col">
+                          <div className="raw modal-div">
+                            {"Vous vous apprêtez à supprimer l'appareil :"}
+                            <p className="bold-p">
+                              {elt.type_avion +
+                                " (" +
+                                elt.nb_place +
+                                " places)"}
+                            </p>
+                            {"de la compagnie : "}
+                            <p className="bold-p">
+                              {elt.nom_compagnie +
+                                " (" +
+                                elt.code_compagnie +
+                                ")"}
+                            </p>
+                          </div>
+                          <div className="raw modal-div">
+                            {"Cette opération est irréversible."}
+                          </div>
+                          <div className="raw modal-div">
+                            {" "}
+                            &Ecirc;tes-vous sûr de vouloir continuer ?
+                          </div>
+                        </div>
+                      ),
+                    });
                   }}
                 />
               </td>
@@ -74,6 +116,7 @@ class Appareils extends Component {
         // handle error
         console.log(error);
         this.setState({
+          appareilsList: false,
           aeroportList: null,
         });
       });
@@ -101,8 +144,29 @@ class Appareils extends Component {
               <td>{elt.nb_place}</td>
               <td>
                 <DeleteIcon
+                  data-toggle="modal"
+                  data-target="#remove-avn-modal"
                   onClick={() => {
-                    this.handleDeleteAvion(elt.id_avn);
+                    this.setState({
+                      idAvnToRemove: elt.id_avn,
+                      modalAvnContent: (
+                        <div className="col">
+                          <div className="raw modal-div">
+                            {"Vous vous apprêtez à supprimer l'avion :"}
+                            <p className="bold-p">
+                              {elt.type + " (" + elt.nb_place + " places)"}
+                            </p>
+                          </div>
+                          <div className="raw modal-div">
+                            {"Cette opération est irréversible."}
+                          </div>
+                          <div className="raw modal-div">
+                            {" "}
+                            &Ecirc;tes-vous sûr de vouloir continuer ?
+                          </div>
+                        </div>
+                      ),
+                    });
                   }}
                 />
               </td>
@@ -121,7 +185,7 @@ class Appareils extends Component {
         console.log(error);
         this.setState({
           avionsOption: null,
-          avionsList: null,
+          avionsList: false,
         });
       });
   }
@@ -148,8 +212,29 @@ class Appareils extends Component {
               <td>{elt.code}</td>
               <td>
                 <DeleteIcon
+                  data-toggle="modal"
+                  data-target="#remove-cmp-modal"
                   onClick={() => {
-                    this.handleDeleteCompagnie(elt.id_cmp);
+                    this.setState({
+                      idCmpToRemove: elt.id_cmp,
+                      modalCmpContent: (
+                        <div className="col">
+                          <div className="raw modal-div">
+                            {"Vous vous apprêtez à supprimer la compagnie :"}
+                            <p className="bold-p">
+                              {elt.nom + " (" + elt.code + ")"}
+                            </p>
+                          </div>
+                          <div className="raw modal-div">
+                            {"Cette opération est irréversible."}
+                          </div>
+                          <div className="raw modal-div">
+                            {" "}
+                            &Ecirc;tes-vous sûr de vouloir continuer ?
+                          </div>
+                        </div>
+                      ),
+                    });
                   }}
                 />
               </td>
@@ -167,7 +252,7 @@ class Appareils extends Component {
         console.log(error);
         this.setState({
           compagniesOption: null,
-          compagniesList: null,
+          compagniesList: false,
         });
       });
   }
@@ -326,11 +411,17 @@ class Appareils extends Component {
     let appareilsTable, avionsTable, compagniesTable;
 
     if (this.state.appareilsList === null) {
+      appareilsTable = <CircularProgress />;
+    } else if (this.state.appareilsList === false) {
       appareilsTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.appareilsList.length === 0) {
+      appareilsTable = (
+        <Alerts type="warning" content="Il n'existe aucun appareil." />
       );
     } else {
       appareilsTable = (
@@ -348,11 +439,17 @@ class Appareils extends Component {
     }
 
     if (this.state.avionsList === null) {
+      avionsTable = <CircularProgress />;
+    } else if (this.state.avionsList === false) {
       avionsTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.avionsList.length === 0) {
+      avionsTable = (
+        <Alerts type="warning" content="Il n'existe aucun avion." />
       );
     } else {
       avionsTable = (
@@ -364,11 +461,17 @@ class Appareils extends Component {
     }
 
     if (this.state.compagniesList === null) {
+      compagniesTable = <CircularProgress />;
+    } else if (this.state.compagniesList === false) {
       compagniesTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.compagniesList.length === 0) {
+      compagniesTable = (
+        <Alerts type="warning" content="Il n'existe aucune compagnie." />
       );
     } else {
       compagniesTable = (
@@ -618,19 +721,56 @@ class Appareils extends Component {
       <div className="main col">
         <h1 className="title">Les appareils</h1>
 
+        <Modal
+          idModal={"remove-app-modal"}
+          title={"Supprimer un appareil"}
+          body={this.state.modalAppContent}
+          onClick={() => {
+            this.handleDeleteAppareil(this.state.idAppToRemove);
+          }}
+        />
+
         <div className="flights-table">{appareilsTable}</div>
         {errorDiv}
 
-        <div className="form-margin">{appareilForm}</div>
+        <div className="form-margin">
+          {this.state.appareilsList === null ||
+          this.state.appareilsList === false
+            ? null
+            : appareilForm}
+        </div>
+
+        <Modal
+          idModal={"remove-avn-modal"}
+          title={"Supprimer un avion"}
+          body={this.state.modalAvnContent}
+          onClick={() => {
+            this.handleDeleteAvion(this.state.idAvnToRemove);
+          }}
+        />
 
         <div className="form-margin">
           {avionsTable}
-          {avionForm}
+          {this.state.avionsList === null || this.state.avionsList === false
+            ? null
+            : avionForm}
         </div>
+
+        <Modal
+          idModal={"remove-cmp-modal"}
+          title={"Supprimer une compagnie"}
+          body={this.state.modalCmpContent}
+          onClick={() => {
+            this.handleDeleteCompagnie(this.state.idCmpToRemove);
+          }}
+        />
 
         <div className="form-margin">
           {compagniesTable}
-          {compagnieForm}
+          {this.state.compagniesList === null ||
+          this.state.compagniesList === false
+            ? null
+            : compagnieForm}
         </div>
       </div>
     );

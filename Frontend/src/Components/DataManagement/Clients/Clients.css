@@ -1,14 +1,22 @@
 .title {
-    padding:2%;
-  }
+  padding: 2%;
+}
 
 .container {
-    justify-content: center;
-    align-items: center;
-    align-self: center;
-    justify-self: center;
+  justify-content: center;
+  align-items: center;
+  align-self: center;
+  justify-self: center;
 }
 
 .form-margin {
-    margin-top:5%;
+  margin-top: 5%;
+}
+
+.bold-p {
+  font-weight: bold;
+}
+.modal-div {
+  align-items: flex-start;
+  text-align: start;
 }

@@ -94,6 +94,9 @@ class FlightBooking extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
+        this.setState({
+          dataBillet: false,
+        });
       });
   }
   render() {
@@ -111,6 +114,11 @@ class FlightBooking extends Component {
 
         {this.state.dataBillet === null ? (
           <CircularProgress />
+        ) : this.state.dataBillet === false ? (
+          <Alerts
+            type="danger"
+            content="Ce vol n'a pas été trouvé, veuillez nous excuser."
+          />
         ) : (
           <Billet dataBillet={this.state.dataBillet} />
         )}
