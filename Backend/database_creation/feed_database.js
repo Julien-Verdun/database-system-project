@@ -149,6 +149,29 @@ con.query(query, (err, results, fields) => {
       con
     );
 
+    // rattrapage des nombres de places libres par vol avec le nombre de place disponible dans les avions
+    // rattrapage avec les reservations effectuées
+
+    rattraPlaceLibre = [
+      `
+      UPDATE vols vol
+      JOIN appareils app ON app.id_app = vol.id_app
+      JOIN avions avn ON avn.id_avn = app.id_avn
+      SET vol.place_libre = avn.nb_place
+      WHERE 1 = 1;
+      `,
+      `
+      UPDATE vols vol
+      JOIN reservations res ON res.id_vol = vol.id_vol
+      JOIN clients cli ON cli.id_cli = res.id_cli
+      SET vol.place_libre = vol.place_libre - res.quantite
+      WHERE 1 = 1;
+      `,
+    ];
+    rattraPlaceLibre.forEach((query) => {
+      utils.updateTable(query, con);
+    });
+
     con.end(function (err) {
       if (err) return console.log("error:" + err.message);
       else console.log("Connection à la base de données fermée.");

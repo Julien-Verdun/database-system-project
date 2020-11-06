@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./MyReservations.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 
 class MyReservations extends Component {
   constructor(props) {
@@ -14,10 +14,7 @@ class MyReservations extends Component {
 
   componentDidMount() {
     axios
-      .get(
-        SERVERPATH + "/getAllReservations/" +
-          encodeURI(this.props.id_cli)
-      )
+      .get(SERVERPATH + "/getAllReservations/" + encodeURI(this.props.id_cli))
       .then((response) => {
         // handle success
         let listReservation = response.data.map((elt, index) => {
@@ -72,13 +69,18 @@ class MyReservations extends Component {
 
   render() {
     let table;
-    if (this.state.listReservation === "") {
-      table = this.state.listReservation;
-    } else if (this.state.listReservation === null) {
+    if (this.state.listReservation === null) {
       table = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else if (this.state.listReservation.length === 0) {
+      table = (
+        <Alerts
+          type="warning"
+          content="Vous n'avez réalisé aucune réservation."
         />
       );
     } else {

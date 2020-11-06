@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import "./Profil.css";
 import axios from "axios";
-import {SERVERPATH} from "../../serverParams.js";
-
+import { SERVERPATH } from "../../serverParams.js";
+import Table from "../ToolsComponent/Table/Table";
 
 class Profil extends Component {
   constructor(props) {
@@ -10,9 +10,14 @@ class Profil extends Component {
     this.state = {
       profil: null,
     };
+    this.getClient = this.getClient.bind(this);
   }
 
   componentDidMount() {
+    this.getClient();
+  }
+
+  getClient() {
     axios
       .get(SERVERPATH + "/getClient/" + encodeURI(this.props.id_cli))
       .then((response) => {
@@ -27,20 +32,37 @@ class Profil extends Component {
   }
 
   render() {
-    let profilDiv =
-      this.state.profil === null ? null : (
-        <div>
-          <p>{"id : " + this.props.id_cli}</p>
-          <p>{"nom : " + this.state.profil.nom}</p>
-          <p>{"prenom : " + this.state.profil.prenom}</p>
-          <p>{"mail : " + this.state.profil.mail}</p>
-          <p>{"telephone : " + this.state.profil.telephone}</p>
-        </div>
-      );
+    let listFeatures = [
+        "Identifiant client",
+        "Nom",
+        "Prenom",
+        "Mail",
+        "Telephone",
+      ],
+      table =
+        this.state.profil === null ? null : (
+          <Table
+            listHeaders={["User"]}
+            listItems={[
+              this.props.id_cli,
+              this.state.profil.nom,
+              this.state.profil.prenom,
+              this.state.profil.mail,
+              this.state.profil.telephone,
+            ].map((elt, index) => {
+              return (
+                <tr key={index}>
+                  <th scope="row">{listFeatures[index]}</th>
+                  <td>{elt}</td>
+                </tr>
+              );
+            })}
+          />
+        );
     return (
       <div className="main">
-        <h1>Profil</h1>
-        {profilDiv}
+        <h1>Mon profil</h1>
+        {table}
       </div>
     );
   }

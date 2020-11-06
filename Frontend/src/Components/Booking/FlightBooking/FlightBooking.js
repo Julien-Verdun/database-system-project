@@ -4,9 +4,8 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import Billet from "../Billet/Billet";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
-
 
 class FlightBooking extends Component {
   constructor(props) {
@@ -31,17 +30,17 @@ class FlightBooking extends Component {
       quantite: Number(document.getElementById("quantity-ticket").value),
     };
     console.log("data : ", data);
-    if (data.quantite > this.state.dataBillet.place_libre){
-      console.log("Pas assez de place")
-      this.setState({hasError:true});
+    if (data.quantite > this.state.dataBillet.place_libre) {
+      console.log("Pas assez de place");
+      this.setState({ hasError: true });
     } else {
       axios
         .post(SERVERPATH + "/addReservation", data)
         .then((response) => {
           // handle success
-          this.setState({hasError:false});
-          console.log("RESPONSE : ", response.data.insertId);
-          let id_res = response.data.insertId;
+          this.setState({ hasError: false });
+          console.log("RESPONSE : ", response.data.resultsRes.insertId);
+          let id_res = response.data.resultsRes.insertId;
           this.props.history.push("/reservation/" + id_res);
         })
         .catch((error) => {
@@ -98,7 +97,12 @@ class FlightBooking extends Component {
       });
   }
   render() {
-    let errorDiv = this.state.hasError ? <Alerts type="danger" content="Il n'y a pas assez de places disponibles dans ce vol"/> : null ;
+    let errorDiv = this.state.hasError ? (
+      <Alerts
+        type="danger"
+        content="Il n'y a pas assez de places disponibles dans ce vol"
+      />
+    ) : null;
     return (
       <div className="main col">
         <div className="row justify-content-center">

@@ -19,11 +19,19 @@ function createTable(sql, con) {
   });
 }
 
+function updateTable(sql, con) {
+  // cette fonction permet la modification d'une table via la requête sql dans la base via la connection con
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Table modifiée : ", result.affectedRows);
+  });
+}
+
 function insertElements(sql, values, con) {
   // inserer plusieurs elements dans une table
   con.query(sql, [values], function (err, result) {
     if (err) throw err;
-    console.log("Nombre de documents insérés : " + result.affectedRows);
+    console.log("Nombre de documents insérés : ", result.affectedRows);
   });
 }
 
@@ -35,4 +43,10 @@ function deleteTable(sql, con) {
   });
 }
 
-module.exports = { createDataBase, createTable, insertElements, deleteTable };
+module.exports = {
+  createDataBase,
+  createTable,
+  updateTable,
+  insertElements,
+  deleteTable,
+};

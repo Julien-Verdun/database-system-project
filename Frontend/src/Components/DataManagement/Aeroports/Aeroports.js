@@ -2,22 +2,24 @@ import React, { Component } from "react";
 import "./Aeroports.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 
 class Aeroports extends Component {
   constructor(props) {
     super(props);
     this.state = {
       aeroportsList: null,
-      nom: null,
-      code:null,
-      ville:null,
-      pays:null,
+      nameaer: null,
+      codeaer: null,
+      ville: null,
+      pays: null,
       hasError: false,
     };
     this.handleAddAeroport = this.handleAddAeroport.bind(this);
     this.getAeroports = this.getAeroports.bind(this);
+    this.resetInputs = this.resetInputs.bind(this);
     this.handleDeleteAeroport = this.handleDeleteAeroport.bind(this);
   }
 
@@ -29,23 +31,19 @@ class Aeroports extends Component {
         let aeroportsList = response.data.map((elt, index) => {
           return (
             <tr key={index}>
-            <th scope="row">{index}</th>
-            <td>
-              {elt.nom}
-            </td>
-            <td>
-              {elt.code}
-            </td>
-            <td>{elt.ville}</td>
-            <td>{elt.pays}</td>
-            <td>
-              <DeleteIcon
-                onClick={() => {
-                  this.handleDeleteAeroport(elt.id_aer);
-                }}
-              />
-            </td>
-          </tr>
+              <th scope="row">{index}</th>
+              <td>{elt.nom}</td>
+              <td>{elt.code}</td>
+              <td>{elt.ville}</td>
+              <td>{elt.pays}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteAeroport(elt.id_aer);
+                  }}
+                />
+              </td>
+            </tr>
           );
         });
         this.setState({
@@ -61,12 +59,19 @@ class Aeroports extends Component {
       });
   }
 
-
-
   componentDidMount() {
     // get the list of all clients
     this.getAeroports();
     console.log("CLIENTS PAGE LOADED");
+  }
+
+  resetInputs() {
+    document.getElementById("nameaer").value = "";
+    document.getElementById("codeaer").value = "";
+    document.getElementById("ville").value = "";
+    document.getElementById("pays").value = "";
+
+    this.setState({ nameaer: null, codeaer: null, ville: null, pays: null });
   }
 
   handleDeleteAeroport(id_aer) {
@@ -90,29 +95,32 @@ class Aeroports extends Component {
   handleAddAeroport(event) {
     event.preventDefault();
     let data = {
-      nom: this.state.nom,
-      code: this.state.code,
+      nom: this.state.nameaer,
+      code: this.state.codeaer,
       ville: this.state.ville,
       pays: this.state.pays,
     };
     console.log(data);
     if (
-      data.nom === null || data.code === null ||
-      data.ville === null || data.pays === null
+      data.nom === null ||
+      data.code === null ||
+      data.ville === null ||
+      data.pays === null
     ) {
       this.setState({ hasError: true });
     } else {
       axios
-      .post(SERVERPATH + "/addAirport", data)
-      .then((response) => {
-          this.setState({  hasError: false });
+        .post(SERVERPATH + "/addAirport", data)
+        .then((response) => {
+          this.setState({ hasError: false });
           // handle success
           this.getAeroports();
-      })
-      .catch((error) => {
+          this.resetInputs();
+        })
+        .catch((error) => {
           // handle error
           console.log(error);
-      });
+        });
     }
   }
 
@@ -130,102 +138,84 @@ class Aeroports extends Component {
       );
     } else {
       aeroportsTable = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Nom</th>
-              <th scope="col">Code</th>
-              <th scope="col">Ville</th>
-              <th scope="col">Pays</th>
-              <th scope="col">Supprimer</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.aeroportsList}</tbody>
-        </table>
+        <Table
+          listHeaders={["Nom", "Code", "Ville", "Pays", "Supprimer"]}
+          listItems={this.state.aeroportsList}
+        />
       );
     }
     let clientForm = (
       <div className="container">
-          <div className="row">
-            <div className="col">
+        <div className="row">
+          <div className="col">
             <h3>Ajouter un aéroport</h3>
-            </div>
+          </div>
         </div>
         <div className="row">
-            <div className="col">
+          <div className="col">
             <form className="form-main">
-                
-                <div className="form-group">
-                    <label htmlFor="nom">Nom</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="nom"
-                        name="nom"
-                        placeholder="Aéroport de Miami"
-                        onChange={() => {
-                        this.setState({
-                            nom: 
-                            document.getElementById("nom").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="code">Code</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="code"
-                        name="code"
-                        placeholder="ADM"
-                        onChange={() => {
-                        this.setState({
-                            code: 
-                            document.getElementById("code").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="ville">Ville</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="ville"
-                        name="ville"
-                        placeholder="Miami"
-                        onChange={() => {
-                        this.setState({
-                            ville: 
-                            document.getElementById("ville").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="pays">Pays</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="pays"
-                        name="pays"
-                        placeholder="USA"
-                        onChange={() => {
-                            this.setState({
-                            pays: 
-                            document.getElementById("pays").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
+              <div className="form-group">
+                <label htmlFor="nameaer">Nom</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="nameaer"
+                  name="nameaer"
+                  placeholder="Aéroport de Miami"
+                  onChange={() => {
+                    this.setState({
+                      nameaer: document.getElementById("nameaer").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="codeaer">Code</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="codeaer"
+                  name="codeaer"
+                  placeholder="ADM"
+                  onChange={() => {
+                    this.setState({
+                      codeaer: document.getElementById("codeaer").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="ville">Ville</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="ville"
+                  name="ville"
+                  placeholder="Miami"
+                  onChange={() => {
+                    this.setState({
+                      ville: document.getElementById("ville").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="pays">Pays</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="pays"
+                  name="pays"
+                  placeholder="USA"
+                  onChange={() => {
+                    this.setState({
+                      pays: document.getElementById("pays").value,
+                    });
+                  }}
+                />
+              </div>
             </form>
-            </div>
+          </div>
         </div>
         <div className="row">
           <div className="col">
@@ -252,7 +242,8 @@ class Aeroports extends Component {
             <div className="row">
               - vérifiez que l'ensemble des champs sont completés.
             </div>
-          </div>}
+          </div>
+        }
       />
     ) : null;
 
@@ -262,9 +253,7 @@ class Aeroports extends Component {
 
         <div className="flights-table">{aeroportsTable}</div>
         {errorDiv}
-        <div className="form-margin">
-        {clientForm}
-        </div>
+        <div className="form-margin">{clientForm}</div>
       </div>
     );
   }

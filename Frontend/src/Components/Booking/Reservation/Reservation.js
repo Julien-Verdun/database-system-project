@@ -4,8 +4,7 @@ import axios from "axios";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import Billet from "../Billet/Billet";
-import {SERVERPATH} from "../../../serverParams.js";
-
+import { SERVERPATH } from "../../../serverParams.js";
 
 class Reservation extends Component {
   constructor(props) {
@@ -22,6 +21,8 @@ class Reservation extends Component {
     event.preventDefault();
     let data = {
       id_res: this.state.id_res,
+      id_vol: this.state.dataBillet.id_vol,
+      quantite: this.state.dataBillet.quantite,
     };
     console.log("data : ", data);
     axios
@@ -39,7 +40,8 @@ class Reservation extends Component {
   componentDidMount() {
     axios
       .get(
-        SERVERPATH + "/getReservation/" +
+        SERVERPATH +
+          "/getReservation/" +
           encodeURI(this.props.id_cli) +
           "/" +
           encodeURI(this.state.id_res)
@@ -47,6 +49,7 @@ class Reservation extends Component {
       .then((response) => {
         // handle success
         let dataBillet = response.data[0];
+        console.log("dataBillet : ", dataBillet);
         let modalContent = (
           <div className="col">
             <div className="raw modal-div">

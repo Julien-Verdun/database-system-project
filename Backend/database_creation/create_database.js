@@ -28,7 +28,6 @@ Prener soin de renseigner votre mot de base
 
 */
 
-
 let databaseParams = require("./database_connection.js").databaseParams;
 
 // connection à l'instance MySQL
@@ -36,7 +35,6 @@ con = mysql.createConnection({
   host: databaseParams.host,
   user: databaseParams.user,
   password: databaseParams.databasePwd,
-  database: data.databaseName,
 });
 
 con.connect(function (err) {
