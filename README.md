@@ -54,10 +54,7 @@ Réaliser la même opération dans le répertoire `database-system-project/Backe
 
 Le gestionnaire de package **npm** va se charger d'installer la bonne version des packages nécessaires au bon fonctionnement de l'application.
 
-
-
 ### Création de la base de données
-
 
 Dans le repertoire `database-system-project/Backend/database_creation`, créez un fichier `database_connection.js` avec le contenu suivant :
 
@@ -76,9 +73,7 @@ module.exports = {
 
 Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et place de **votre_mot_de_passe**.
 
-
 /!\ /!\ /!\ Si votre instance MySQL n'a pas été créée avec les paramètres **host** et **user** localhost et root, prenez soin de les remplacer par leurs valeurs.
-
 
 Ces paramètres nous permettent de nous connecter à notre base de données locale.
 Nous allons maintenant nous y connecter et générer une base de données contenant quelques données.
@@ -97,17 +92,9 @@ node feed_database.js
 
 Une base de données MySQL portant le nom **mydb** est créée et contient les tables, les relations, et quelques données nécessaires à la manipulation de l'application.
 
-
-
-
-
-
 ---
 
 ## Lancement local de l'application
-
-
-
 
 Afin de lancer en local la partie back-end de l'application, ouvrez un invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend` et exécutez la ligne de commande :
 
@@ -129,7 +116,6 @@ Ouvrez ensuite un navigateur internet, de préférences **Google Chrome**, sur l
 
 ## Description de l'application
 
-
 ### Structure de la base de données
 
 La figure suivante, obtenue avec le logiciel **DBeaver**, représente les différentes tables de la base de données.
@@ -138,40 +124,35 @@ Les liens entre les tables, les clés primaires et les autres clés sont égalem
 
 ![Vue de la base de données](database_view.PNG)
 
-
 La **base de données** est composée de 7 tables.
 
-Les tables **avions** et **compagnies** contiennent les informations relatives aux avions (type d'avion, nombre de place) et aux compagnies aériennes. 
-Elles sont liées par la table **appareils** qui permet de connaître les avions possédés par chaque compagnie aérienne. 
-
+Les tables **avions** et **compagnies** contiennent les informations relatives aux avions (type d'avion, nombre de place) et aux compagnies aériennes.
+Elles sont liées par la table **appareils** qui permet de connaître les avions possédés par chaque compagnie aérienne.
 
 Une table **aeroports** contient les données des aéroports et une table **clients** les données des passagers.
 
 Les vols sont stockés dans une table **vols**. Elle est aux tables **appareils** et **aeroports** et permet ainsi de connaître avec quel appareil (avion et compagnie) le vol sera réalisé, de quel aéroport le vol partira et dans quel aéroport le vol atterira, mais également des informations relatives au prix du billet, au nombre de place disponible et aux horaires de départ et d'arrivée.
 
-Finalement, la table **reservations** fait le lien entre les tables **clients** et **avions** et permet de connaître les vols qu'ont réservé les clients, où les passagers de chaque vols, ainsi que le prix payé par chaque passager. 
-
-
-
+Finalement, la table **reservations** fait le lien entre les tables **clients** et **avions** et permet de connaître les vols qu'ont réservé les clients, où les passagers de chaque vols, ainsi que le prix payé par chaque passager.
 
 ### L'application
 
+![Demonstration de l'application](giphy.gif)
+
 #### Système de management des données
+
 #### Possibilité de choisir un utilisateur
+
 #### Pour chaque utilisateur, réservation d'un avion, annulation de réservation, etc
 
+# TODO
 
+- rendre les vols complets quand plus de place disponible (menu management et flightsearch)
 
+- ajouter des modals pour confirmer la suppression d'une donnée et prévenir des suppressions engendrées
+  dans le menu management
+  (ok pour Vol, reste Appareil, Avion, Compagnie, Client, Aeroport)
 
+- verifier l'application sans connection au back-end et mettre des gardes boux partout
 
-
-
-
-
-
-
-# TODO 
-
-- faire la gestion des places restantes (- 1 dès qu'une reservation est faite, +/- une si on ajoute supprimer une réservation)
-- rendre les vols complets quand plus de place disponible
-- possibilité d'annuler un vol
+- ajouter des circularProgressBar au chargement des données

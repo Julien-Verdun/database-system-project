@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 
 class FlightSearch extends Component {
   constructor(props) {
@@ -55,7 +55,8 @@ class FlightSearch extends Component {
     );
     axios
       .get(
-        SERVERPATH + "/getFlights/" +
+        SERVERPATH +
+          "/getFlights/" +
           encodeURI(travelDate) +
           "/" +
           encodeURI(departureAirportId) +
@@ -71,17 +72,15 @@ class FlightSearch extends Component {
             <tr
               key={index}
               onClick={() => {
-                this.props.history.push("/flightbooking/" + elt.id_vol);
+                this.props.history.push(
+                  "/flightbooking/" + encodeURI(elt.id_vol)
+                );
               }}
             >
               <th scope="row">{index}</th>
-              <td>
-                {elt.date_depart + " à " + elt.heure_depart}
-              </td>
+              <td>{elt.date_depart + " à " + elt.heure_depart}</td>
               <td>{elt.aeroport_depart}</td>
-              <td>
-                {elt.date_arrivee + " à " + elt.heure_arrivee}
-              </td>
+              <td>{elt.date_arrivee + " à " + elt.heure_arrivee}</td>
               <td>{elt.aeroport_arrivee}</td>
               <td>{elt.prix + " €"}</td>
             </tr>

@@ -1,9 +1,21 @@
 .main {
   width: 100%;
   height: 100%;
-  align-items: center;
-  text-align: center;
   margin: 2%;
+}
+
+.content {
+  margin: 2%;
+}
+
+.form-group {
+  margin: 3%;
+}
+
+#inputGroupSelectClients {
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .btn {

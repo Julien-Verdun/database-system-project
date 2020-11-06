@@ -26,7 +26,8 @@ Prener soin de renseigner votre mot de base
 
 */
 
-let databaseParams = require("./database_creation/database_connection.js").databaseParams;
+let databaseParams = require("./database_creation/database_connection.js")
+  .databaseParams;
 
 let data = require("./database_creation/data.js");
 
@@ -74,7 +75,35 @@ con.connect(function (err, db) {
         JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
         JOIN aeroports aer_arr ON aer_arr.id_aer = vol.id_aer_arr
         ORDER BY vol.date_depart, vol.heure_depart;      
-      `; 
+      `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query returns all the flights in the table vols from the database
+    app.get("/getAllFutureFlights", (req, res) => {
+      let query = `
+        SELECT vol.id_vol, 
+          DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart",
+          vol.heure_depart, 
+          DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
+          vol.heure_arrivee,
+          vol.prix, 
+          vol.place_libre, 
+          aer_arr.nom AS 'aer_arr_nom', 
+          aer_arr.ville AS 'aer_arr_ville', 
+          aer_arr.pays AS 'aer_arr_pays',
+          aer_dep.nom AS 'aer_dep_nom', 
+          aer_dep.ville AS 'aer_dep_ville', 
+          aer_dep.pays AS 'aer_dep_pays'
+        FROM vols vol
+        JOIN aeroports aer_dep ON aer_dep.id_aer = vol.id_aer_dep
+        JOIN aeroports aer_arr ON aer_arr.id_aer = vol.id_aer_arr
+        WHERE CONCAT(vol.date_depart, " "  ,vol.heure_depart) > NOW()
+        ORDER BY vol.date_depart, vol.heure_depart;      
+      `;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);
@@ -196,6 +225,7 @@ con.connect(function (err, db) {
         SELECT res.id_res, 
           res.prix as 'prix_res', 
           res.quantite, 
+          res.id_vol,
           cli.nom AS 'cli_nom', 
           cli.prenom, 
           cli.mail, 
@@ -320,20 +350,42 @@ con.connect(function (err, db) {
 
     // this query delete the reservation id_res in the table reservations
     app.post("/deleteReservation", (req, res) => {
-      let id_res = req.body.id_res;
+      let reqBody = req.body;
+
+      const id_vol = reqBody.id_vol,
+        id_res = reqBody.id_res,
+        quantite = reqBody.quantite;
       console.log("id_res : ", id_res);
-      let query =
+
+      let queryRes =
         `
-        DELETE FROM reservations res
+        DELETE res FROM reservations res
         WHERE res.id_res = 
       ` +
         id_res +
+        `;`;
+
+      let queryVol =
         `
-      LIMIT 1;
-      `;
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send(results);
+        UPDATE vols 
+        SET place_libre = place_libre + ` +
+        quantite +
+        `
+        WHERE id_vol = ` +
+        id_vol;
+
+      con.query(queryRes, (errRes, resultsRes, fieldsRes) => {
+        if (errRes) {
+          throw errRes;
+        } else {
+          con.query(queryVol, (errVol, resultsVol, fieldsVol) => {
+            if (errVol) throw errVol;
+            res.send({
+              resultsRes: resultsRes,
+              resultsVol: resultsVol,
+            });
+          });
+        }
       });
     });
 
@@ -341,19 +393,49 @@ con.connect(function (err, db) {
     app.post("/deleteAppareil", (req, res) => {
       let id_app = req.body.id_app;
       console.log("id_app : ", id_app);
-      let query =
+
+      let queryRes =
         `
-        DELETE FROM appareils app
+        DELETE res FROM reservations res
+        JOIN vols vol ON vol.id_vol = res.id_vol
+        WHERE vol.id_app = 
+        ` +
+        id_app +
+        `;`;
+
+      let queryVol =
+        `
+        DELETE vol FROM vols vol 
+        WHERE vol.id_app =
+        ` +
+        id_app +
+        `;`;
+
+      let queryApp =
+        `
+        DELETE app FROM appareils app
         WHERE app.id_app = 
         ` +
         id_app +
-        `
-        LIMIT 1;
-        `;
+        `;`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send( results );
+      con.query(queryRes, (errRes, resultsRes) => {
+        if (errRes) throw errRes;
+        else {
+          con.query(queryVol, (errVol, resultsVol) => {
+            if (errVol) throw errVol;
+            else {
+              con.query(queryApp, (errApp, resultsApp) => {
+                if (errApp) throw errApp;
+                res.send({
+                  resultsRes: resultsRes,
+                  resultsVol: resultsVol,
+                  resultsApp: resultsApp,
+                });
+              });
+            }
+          });
+        }
       });
     });
 
@@ -361,93 +443,217 @@ con.connect(function (err, db) {
     app.post("/deleteAvion", (req, res) => {
       let id_avn = req.body.id_avn;
       console.log("id_avn : ", id_avn);
-      let query =
+
+      let queryRes =
         `
-        DELETE FROM avions avn
+        DELETE res FROM reservations res
+        JOIN vols vol ON vol.id_vol = res.id_vol
+        JOIN appareils app ON app.id_app = vol.id_app 
+        WHERE app.id_avn = 
+        ` +
+        id_avn +
+        `;`;
+
+      let queryVol =
+        `
+        DELETE vol FROM vols vol
+        JOIN appareils app ON app.id_app = vol.id_app 
+        WHERE app.id_avn =
+        ` +
+        id_avn +
+        `;`;
+
+      let queryApp =
+        `
+          DELETE app FROM appareils app
+          WHERE app.id_avn = 
+          ` +
+        id_avn +
+        `;`;
+
+      let queryAvn =
+        `
+        DELETE avn FROM avions avn
         WHERE avn.id_avn = 
         ` +
         id_avn +
-        `
-        LIMIT 1;
-        `;
+        `;`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send( results );
+      con.query(queryRes, (errRes, resultsRes) => {
+        if (errRes) throw errRes;
+        con.query(queryVol, (errVol, resultsVol) => {
+          if (errVol) throw errVol;
+          con.query(queryApp, (errApp, resultsApp) => {
+            if (errApp) throw errApp;
+            con.query(queryAvn, (errAvn, resultsAvn) => {
+              if (errAvn) throw errAvn;
+              res.send({
+                resultsRes: resultsRes,
+                resultsVol: resultsVol,
+                resultsApp: resultsApp,
+                resultsAvn: resultsAvn,
+              });
+            });
+          });
+        });
       });
     });
-
-
 
     // this query delete the compagnie id_cmp in the table compagnies
     app.post("/deleteCompagnie", (req, res) => {
       let id_cmp = req.body.id_cmp;
       console.log("id_cmp : ", id_cmp);
-      let query =
+
+      let queryRes =
         `
-        DELETE FROM compagnies cmp
+        DELETE res FROM reservations res
+        JOIN vols vol ON vol.id_vol = res.id_vol
+        JOIN appareils app ON app.id_app = vol.id_app 
+        WHERE app.id_cmp = 
+        ` +
+        id_cmp +
+        `;`;
+
+      let queryVol =
+        `
+        DELETE vol FROM vols vol
+        JOIN appareils app ON app.id_app = vol.id_app 
+        WHERE app.id_cmp =
+        ` +
+        id_cmp +
+        `;`;
+
+      let queryApp =
+        `
+          DELETE app FROM appareils app
+          WHERE app.id_cmp = 
+          ` +
+        id_cmp +
+        `;`;
+
+      let queryCmp =
+        `
+        DELETE cmp FROM compagnies cmp
         WHERE cmp.id_cmp = 
         ` +
         id_cmp +
-        `
-        LIMIT 1;
-        `;
+        `;`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send( results );
+      con.query(queryRes, (errRes, resultsRes) => {
+        if (errRes) throw errRes;
+        con.query(queryVol, (errVol, resultsVol) => {
+          if (errVol) throw errVol;
+          con.query(queryApp, (errApp, resultsApp) => {
+            if (errApp) throw errApp;
+            con.query(queryCmp, (errcmp, resultsCmp) => {
+              if (errcmp) throw errcmp;
+              res.send({
+                resultsRes: resultsRes,
+                resultsVol: resultsVol,
+                resultsApp: resultsApp,
+                resultsCmp: resultsCmp,
+              });
+            });
+          });
+        });
       });
     });
 
-    
     // this query delete the airport id_aer in the table aeroports
     app.post("/deleteAirport", (req, res) => {
       let id_aer = req.body.id_aer;
       console.log("id_aer : ", id_aer);
-      let query =
+
+      let queryRes =
         `
-        DELETE FROM aeroports aer
+        DELETE res FROM reservations res
+        JOIN vols vol ON vol.id_vol = res.id_vol
+        JOIN aeroports aer ON (aer.id_aer = vol.id_aer_dep OR aer.id_aer = vol.id_aer_arr)
         WHERE aer.id_aer = 
         ` +
         id_aer +
-        `
-        LIMIT 1;
-        `;
+        `;`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send( results );
+      let queryVol =
+        `
+        DELETE vol FROM vols vol
+        WHERE vol.id_aer_dep =
+        ` +
+        id_aer +
+        ` OR vol.id_aer_arr = ` +
+        id_aer +
+        `;`;
+
+      let queryAer =
+        `
+          DELETE aer FROM aeroports aer
+          WHERE aer.id_aer = 
+          ` +
+        id_aer +
+        `;`;
+
+      con.query(queryRes, (errRes, resultsRes) => {
+        if (errRes) throw errRes;
+        con.query(queryVol, (errVol, resultsVol) => {
+          if (errVol) throw errVol;
+          con.query(queryAer, (errAer, resultsAer) => {
+            if (errAer) throw errAer;
+            res.send({
+              resultsRes: resultsRes,
+              resultsVol: resultsVol,
+              resultsAer: resultsAer,
+            });
+          });
+        });
       });
     });
-
-
-
-
 
     // this query delete the client id_cli in the table clients
     app.post("/deleteClient", (req, res) => {
       let id_cli = req.body.id_cli;
       console.log("id_cli : ", id_cli);
-      let query =
+      let queryCli =
         `
-        DELETE FROM clients cli
+        DELETE cli FROM clients cli
         WHERE cli.id_cli = 
         ` +
         id_cli +
-        `
-        LIMIT 1;
-        `;
+        `;`;
 
-      con.query(query, (err, results, fields) => {
-        if (err) throw err;
-        res.send( results );
+      let queryRes =
+        `
+        DELETE res FROM reservations res
+        WHERE res.id_cli = 
+        ` +
+        id_cli +
+        `;`;
+
+      let queryVol =
+        `
+        UPDATE vols vol
+        JOIN reservations res ON res.id_vol = vol.id_vol
+        JOIN clients cli ON cli.id_cli = res.id_cli
+        SET vol.place_libre = vol.place_libre - res.quantite
+        WHERE cli.id_cli = 
+        ` +
+        id_cli +
+        `;`;
+
+      con.query(queryVol, (errVol, resultsVol) => {
+        if (errVol) throw errVol;
+        con.query(queryRes, (errRes, resultsRes) => {
+          if (errRes) throw errRes;
+          con.query(queryCli, (errCli, resultsCli) => {
+            if (errCli) throw errCli;
+            res.send({
+              resultsRes: resultsRes,
+              resultsCli: resultsCli,
+              resultsVol: resultsVol,
+            });
+          });
+        });
       });
     });
-
-
-    
-
-
 
     // this query delete the vol id_vol in the table vols
     app.post("/deleteVol", (req, res) => {
@@ -456,7 +662,7 @@ con.connect(function (err, db) {
       console.log("id_vol : ", id_vol);
       let query_res =
         `
-        DELETE FROM reservations res
+        DELETE res FROM reservations res
         WHERE res.id_vol = 
         ` +
         id_vol +
@@ -464,13 +670,11 @@ con.connect(function (err, db) {
 
       let query_vol =
         `
-        DELETE FROM vols vol
+        DELETE vol FROM vols vol
         WHERE vol.id_vol = 
         ` +
         id_vol +
-        `
-        LIMIT 1;
-        `;
+        `;`;
       con.query(query_res, (err_res, results_res, fields_res) => {
         if (err_res) throw err_res;
         // res.send(results_res);
@@ -501,21 +705,24 @@ con.connect(function (err, db) {
         quantite +
         `);`;
 
-        let queryVol = 
+      let queryVol =
         `
         UPDATE vols 
-        SET place_libre = place_libre - ` + quantite +
+        SET place_libre = place_libre - ` +
+        quantite +
         `
-        WHERE id_vol = `+ id_vol;
+        WHERE id_vol = ` +
+        id_vol;
 
       con.query(queryRes, (errRes, resultsRes, fieldsRes) => {
-        if (errRes) {throw errRes}
-        else {
+        if (errRes) {
+          throw errRes;
+        } else {
           con.query(queryVol, (errVol, resultsVol, fieldsVol) => {
             if (errVol) throw errVol;
             res.send({
-              resultsRes: resultsRes, 
-              resultsVol : resultsVol
+              resultsRes: resultsRes,
+              resultsVol: resultsVol,
             });
           });
         }
@@ -564,9 +771,6 @@ con.connect(function (err, db) {
     });
   }
 
-
-
-
   // this query add an appareils with all information id_app in the table appareils
   app.post("/addAppareil", function (req, res) {
     let reqBody = req.body;
@@ -607,7 +811,6 @@ con.connect(function (err, db) {
     });
   });
 
-
   // this query add a compagnie with all information id_cmp in the table compagnies
   app.post("/addCompagnie", function (req, res) {
     let reqBody = req.body;
@@ -627,8 +830,6 @@ con.connect(function (err, db) {
       res.send(results);
     });
   });
-
-
 
   // this query add an airport with all information id_aer in the table aeroports
   app.post("/addAirport", function (req, res) {
@@ -656,9 +857,6 @@ con.connect(function (err, db) {
     });
   });
 
-
-
-
   // this query add a client with all information id_cli in the table clients
   app.post("/addClient", function (req, res) {
     let reqBody = req.body;
@@ -676,17 +874,14 @@ con.connect(function (err, db) {
       `", "` +
       mail +
       `", "` +
-      telephone + `");`;
+      telephone +
+      `");`;
 
     con.query(query, (err, results, fields) => {
       if (err) throw err;
       res.send(results);
     });
   });
-
-
-
-
 });
 
 app.listen(8080);

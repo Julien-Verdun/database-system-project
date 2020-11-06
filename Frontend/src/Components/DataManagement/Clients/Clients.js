@@ -4,15 +4,15 @@ import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 
 class Clients extends Component {
   constructor(props) {
     super(props);
     this.state = {
       clientsList: null,
-      namecli:null,
-      prenom:null,
+      namecli: null,
+      prenom: null,
       mail: null,
       telephone: null,
       hasError: false,
@@ -31,23 +31,19 @@ class Clients extends Component {
         let clientsList = response.data.map((elt, index) => {
           return (
             <tr key={index}>
-            <th scope="row">{index}</th>
-            <td>
-              {elt.nom}
-            </td>
-            <td>
-              {elt.prenom}
-            </td>
-            <td>{elt.mail}</td>
-            <td>{elt.telephone}</td>
-            <td>
-              <DeleteIcon
-                onClick={() => {
-                  this.handleDeleteClient(elt.id_cli);
-                }}
-              />
-            </td>
-          </tr>
+              <th scope="row">{index}</th>
+              <td>{elt.nom}</td>
+              <td>{elt.prenom}</td>
+              <td>{elt.mail}</td>
+              <td>{elt.telephone}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteClient(elt.id_cli);
+                  }}
+                />
+              </td>
+            </tr>
           );
         });
         this.setState({
@@ -64,31 +60,25 @@ class Clients extends Component {
       });
   }
 
-
-
   componentDidMount() {
     // get the list of all clients
     this.getClients();
     console.log("CLIENTS PAGE LOADED");
   }
 
-  resetInputs(){
+  resetInputs() {
     document.getElementById("namecli").value = "";
     document.getElementById("prenom").value = "";
     document.getElementById("mail").value = "";
     document.getElementById("telephone").value = "";
 
-    this.setState({namecli:null,
-      prenom:null,
-      mail: null,
-      telephone: null});
+    this.setState({ namecli: null, prenom: null, mail: null, telephone: null });
   }
 
   handleDeleteClient(id_cli) {
     let data = {
       id_cli: id_cli,
     };
-
     axios
       .post(SERVERPATH + "/deleteClient", data)
       .then((response) => {
@@ -112,25 +102,27 @@ class Clients extends Component {
     };
     console.log(data);
     if (
-      data.nom === null || data.prenom === null ||
-      data.mail === null || data.telephone === null 
+      data.nom === null ||
+      data.prenom === null ||
+      data.mail === null ||
+      data.telephone === null
     ) {
       this.setState({ hasError: true });
     } else {
       axios
-      .post(SERVERPATH + "/addClient", data)
-      .then((response) => {
-          this.setState({ 
+        .post(SERVERPATH + "/addClient", data)
+        .then((response) => {
+          this.setState({
             hasError: false,
-            });
+          });
           // handle success
           this.getClients();
           this.resetInputs();
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           // handle error
           console.log(error);
-      });
+        });
     }
   }
 
@@ -145,89 +137,85 @@ class Clients extends Component {
         />
       );
     } else {
-      clientsTable = <Table listHeaders = {["Nom","Prénom","Mail","Téléphone","Supprimer"]} listItems={this.state.clientsList}/>
+      clientsTable = (
+        <Table
+          listHeaders={["Nom", "Prénom", "Mail", "Téléphone", "Supprimer"]}
+          listItems={this.state.clientsList}
+        />
+      );
     }
     let clientForm = (
       <div className="container">
-          <div className="row">
-            <div className="col">
+        <div className="row">
+          <div className="col">
             <h3>Ajouter un client</h3>
-            </div>
+          </div>
         </div>
         <div className="row">
-            <div className="col">
+          <div className="col">
             <form className="form-main">
-                
-                <div className="form-group">
-                    <label htmlFor="namecli">Nom</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="namecli"
-                        name="namecli"
-                        placeholder="Raymond"
-                        onChange={() => {
-                        this.setState({
-                          namecli: 
-                            document.getElementById("namecli").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="prenom">Prénom</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="prenom"
-                        name="prenom"
-                        placeholder="Debaze"
-                        onChange={() => {
-                        this.setState({
-                            prenom: 
-                            document.getElementById("prenom").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="mail">Mail</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="mail"
-                        name="mail"
-                        placeholder="raymond.debaze@gmail.com"
-                        onChange={() => {
-                        this.setState({
-                            mail: 
-                            document.getElementById("mail").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
-                <div className="form-group">
-                    <label htmlFor="telephone">Téléphone</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="telephone"
-                        name="telephone"
-                        placeholder="0434564321"
-                        onChange={() => {
-                        this.setState({
-                            telephone: 
-                            document.getElementById("telephone").value
-                            ,
-                        });
-                        }}
-                    />
-                </div>
+              <div className="form-group">
+                <label htmlFor="namecli">Nom</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="namecli"
+                  name="namecli"
+                  placeholder="Raymond"
+                  onChange={() => {
+                    this.setState({
+                      namecli: document.getElementById("namecli").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="prenom">Prénom</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="prenom"
+                  name="prenom"
+                  placeholder="Debaze"
+                  onChange={() => {
+                    this.setState({
+                      prenom: document.getElementById("prenom").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="mail">Mail</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="mail"
+                  name="mail"
+                  placeholder="raymond.debaze@gmail.com"
+                  onChange={() => {
+                    this.setState({
+                      mail: document.getElementById("mail").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="telephone">Téléphone</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="telephone"
+                  name="telephone"
+                  placeholder="0434564321"
+                  onChange={() => {
+                    this.setState({
+                      telephone: document.getElementById("telephone").value,
+                    });
+                  }}
+                />
+              </div>
             </form>
-            </div>
+          </div>
         </div>
         <div className="row">
           <div className="col">
@@ -254,7 +242,8 @@ class Clients extends Component {
             <div className="row">
               - vérifiez que l'ensemble des champs sont completés.
             </div>
-          </div>}
+          </div>
+        }
       />
     ) : null;
 
@@ -264,9 +253,7 @@ class Clients extends Component {
 
         <div className="flights-table">{clientsTable}</div>
         {errorDiv}
-        <div className="form-margin">
-        {clientForm}
-        </div>
+        <div className="form-margin">{clientForm}</div>
       </div>
     );
   }

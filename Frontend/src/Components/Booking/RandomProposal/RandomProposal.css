@@ -1,0 +1,21 @@
+.card-proposal {
+  background-color: cornsilk;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 15px;
+  border-width: 5px;
+  border-style: double;
+  border-color: black;
+  padding: 10px;
+  margin-top: 1%;
+}
+.card-proposal:hover {
+  background-color: darkgrey;
+}
+
+.main {
+  width: 95%;
+  margin-left: auto;
+  margin-right: auto;
+}

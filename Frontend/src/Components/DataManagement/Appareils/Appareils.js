@@ -4,7 +4,7 @@ import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
-import {SERVERPATH} from "../../../serverParams.js";
+import { SERVERPATH } from "../../../serverParams.js";
 
 class Appareils extends Component {
   constructor(props) {
@@ -12,17 +12,17 @@ class Appareils extends Component {
     this.state = {
       appareilsList: null,
       id_avn: null,
-      id_cmp : null,
+      id_cmp: null,
 
       avionsList: null,
-      avionsOption : null,
-      typeavn:null,
-      nb_placeavn : null,
+      avionsOption: null,
+      typeavn: null,
+      nb_placeavn: null,
 
       compagniesList: null,
       compagniesOption: null,
-      nomcmp:null,
-      codecmp:null,
+      nomcmp: null,
+      codecmp: null,
 
       hasErrorAvn: false,
       hasErrorCmp: false,
@@ -50,23 +50,19 @@ class Appareils extends Component {
         let appareilsList = response.data.map((elt, index) => {
           return (
             <tr key={index}>
-            <th scope="row">{index}</th>
-            <td>
-              {elt.type_avion}
-            </td>
-            <td>
-              {elt.nb_place}
-            </td>
-            <td>{elt.nom_compagnie}</td>
-            <td>{elt.code_compagnie}</td>
-            <td>
-              <DeleteIcon
-                onClick={() => {
-                  this.handleDeleteAppareil(elt.id_app);
-                }}
-              />
-            </td>
-          </tr>
+              <th scope="row">{index}</th>
+              <td>{elt.type_avion}</td>
+              <td>{elt.nb_place}</td>
+              <td>{elt.nom_compagnie}</td>
+              <td>{elt.code_compagnie}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteAppareil(elt.id_app);
+                  }}
+                />
+              </td>
+            </tr>
           );
         });
         this.setState({
@@ -100,21 +96,17 @@ class Appareils extends Component {
         let avionsList = response.data.map((elt, index) => {
           return (
             <tr key={index}>
-            <th scope="row">{index}</th>
-            <td>
-              {elt.type}
-            </td>
-            <td>
-              {elt.nb_place}
-            </td>
-            <td>
-              <DeleteIcon
-                onClick={() => {
-                  this.handleDeleteAvion(elt.id_avn);
-                }}
-              />
-            </td>
-          </tr>
+              <th scope="row">{index}</th>
+              <td>{elt.type}</td>
+              <td>{elt.nb_place}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteAvion(elt.id_avn);
+                  }}
+                />
+              </td>
+            </tr>
           );
         });
 
@@ -129,11 +121,10 @@ class Appareils extends Component {
         console.log(error);
         this.setState({
           avionsOption: null,
-          avionsList:null
+          avionsList: null,
         });
       });
   }
-
 
   getCompagnies() {
     axios
@@ -152,17 +143,17 @@ class Appareils extends Component {
         let compagniesList = response.data.map((elt, index) => {
           return (
             <tr key={index}>
-            <th scope="row">{index}</th>
-            <td>{elt.nom}</td>
-            <td>{elt.code}</td>
-            <td>
-              <DeleteIcon
-                onClick={() => {
-                  this.handleDeleteCompagnie(elt.id_cmp);
-                }}
-              />
-            </td>
-          </tr>
+              <th scope="row">{index}</th>
+              <td>{elt.nom}</td>
+              <td>{elt.code}</td>
+              <td>
+                <DeleteIcon
+                  onClick={() => {
+                    this.handleDeleteCompagnie(elt.id_cmp);
+                  }}
+                />
+              </td>
+            </tr>
           );
         });
         this.setState({
@@ -176,12 +167,10 @@ class Appareils extends Component {
         console.log(error);
         this.setState({
           compagniesOption: null,
-          compagniesList:null
+          compagniesList: null,
         });
       });
   }
-
-  
 
   componentDidMount() {
     // get the list of all apparals
@@ -193,27 +182,22 @@ class Appareils extends Component {
     console.log("APPAREILS PAGE LOADED");
   }
 
-
-  resetInputsAvion(){
+  resetInputsAvion() {
     document.getElementById("typeavn").value = "";
     document.getElementById("nb-place-avn").value = 0;
 
-    this.setState({typeavn:null,
-      nb_placeavn : null,
-    });
+    this.setState({ typeavn: null, nb_placeavn: null });
   }
 
-  resetInputsCompagnie(){
+  resetInputsCompagnie() {
     document.getElementById("nomcmp").value = "";
     document.getElementById("codecmp").value = "";
 
     this.setState({
-      nomcmp:null,
-      codecmp:null,
+      nomcmp: null,
+      codecmp: null,
     });
   }
-
-
 
   handleDeleteAppareil(id_app) {
     let data = {
@@ -249,7 +233,6 @@ class Appareils extends Component {
       });
   }
 
-
   handleDeleteCompagnie(id_cmp) {
     let data = {
       id_cmp: id_cmp,
@@ -260,6 +243,7 @@ class Appareils extends Component {
         // handle success
         console.log(response);
         this.getCompagnies();
+        this.getAppareils();
       })
       .catch((error) => {
         // handle error
@@ -271,80 +255,77 @@ class Appareils extends Component {
     event.preventDefault();
     let data = {
       id_avn: this.state.id_avn,
-      id_cmp: this.state.id_cmp
+      id_cmp: this.state.id_cmp,
     };
     console.log(data);
     axios
-    .post(SERVERPATH + "/addAppareil", data)
-    .then((response) => {
-        this.setState({ hasErrorAvn: false, hasErrorCmp:false });
+      .post(SERVERPATH + "/addAppareil", data)
+      .then((response) => {
+        this.setState({ hasErrorAvn: false, hasErrorCmp: false });
         // handle success
         this.getAppareils();
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
         // handle error
         console.log(error);
-    });
+      });
   }
 
   handleAddAvion(event) {
     event.preventDefault();
     let data = {
       type: this.state.typeavn,
-      nb_place: this.state.nb_placeavn
+      nb_place: this.state.nb_placeavn,
     };
     console.log(data);
-    if (
-      data.type === null || data.nb_place === null
-    ) {
-      this.setState({ hasErrorAvn: true, hasErrorCmp:false });
+    if (data.type === null || data.nb_place === null || data.nb_place < 0) {
+      this.setState({ hasErrorAvn: true, hasErrorCmp: false });
     } else {
       axios
-      .post(SERVERPATH + "/addAvion", data)
-      .then((response) => {
-          this.setState({ hasErrorAvn: false, hasErrorCmp:false });
+        .post(SERVERPATH + "/addAvion", data)
+        .then((response) => {
+          this.setState({ hasErrorAvn: false, hasErrorCmp: false });
           // handle success
           this.getAvions();
+          this.getAppareils();
           this.resetInputsAvion();
-      })
-      .catch((error) => {
+        })
+        .catch((error) => {
           // handle error
           console.log(error);
-      });
+        });
+    }
   }
-  }
-
 
   handleAddCompagnie(event) {
     event.preventDefault();
     let data = {
       nom: this.state.nomcmp,
-      code: this.state.codecmp
+      code: this.state.codecmp,
     };
     console.log(data);
-    if (
-      data.nom === null || data.code === null
-    ) {
-      this.setState({ hasErrorAvn: false, hasErrorCmp:true });
+    if (data.nom === null || data.code === null) {
+      this.setState({ hasErrorAvn: false, hasErrorCmp: true });
     } else {
       axios
-      .post(SERVERPATH + "/addCompagnie", data)
-      .then((response) => {
-          this.setState({ hasErrorAvn: false, hasErrorCmp:false });
+        .post(SERVERPATH + "/addCompagnie", data)
+        .then((response) => {
+          this.setState({ hasErrorAvn: false, hasErrorCmp: false });
           // handle success
-          this.getCompagnies();this.resetInputsCompagnie();
-      })
-      .catch((error) => {
+          this.getCompagnies();
+          this.resetInputsCompagnie();
+        })
+        .catch((error) => {
           // handle error
           console.log(error);
-      });
+        });
     }
   }
 
   render() {
     let appareilsTable, avionsTable, compagniesTable;
 
-     if (this.state.appareilsList === null) {
+    if (this.state.appareilsList === null) {
       appareilsTable = (
         <Alerts
           type="danger"
@@ -352,9 +333,19 @@ class Appareils extends Component {
         />
       );
     } else {
-      appareilsTable = <Table listHeaders = {["Type avion","Capacité","Compagnie","Code compagnie","Supprimer"]} listItems={this.state.appareilsList}/>;
+      appareilsTable = (
+        <Table
+          listHeaders={[
+            "Type avion",
+            "Capacité",
+            "Compagnie",
+            "Code compagnie",
+            "Supprimer",
+          ]}
+          listItems={this.state.appareilsList}
+        />
+      );
     }
-
 
     if (this.state.avionsList === null) {
       avionsTable = (
@@ -364,11 +355,13 @@ class Appareils extends Component {
         />
       );
     } else {
-      avionsTable = <Table listHeaders = {["Type avion","Nombre de places","Supprimer"]} listItems={this.state.avionsList}/>;
+      avionsTable = (
+        <Table
+          listHeaders={["Type avion", "Nombre de places", "Supprimer"]}
+          listItems={this.state.avionsList}
+        />
+      );
     }
-
-
-
 
     if (this.state.compagniesList === null) {
       compagniesTable = (
@@ -378,57 +371,59 @@ class Appareils extends Component {
         />
       );
     } else {
-      compagniesTable = <Table listHeaders = {["Compagnie","Code compagnie","Supprimer"]} listItems={this.state.compagniesList}/>;
+      compagniesTable = (
+        <Table
+          listHeaders={["Compagnie", "Code compagnie", "Supprimer"]}
+          listItems={this.state.compagniesList}
+        />
+      );
     }
 
     let appareilForm = (
       <div className="container">
-          <div className="row">
-            <div className="col">
+        <div className="row">
+          <div className="col">
             <h3>Ajouter un appareil</h3>
-            </div>
+          </div>
         </div>
         <div className="row">
-            <div className="col">
+          <div className="col">
             <form className="form-main">
-                
-                <div className="form-group">
+              <div className="form-group">
                 <label htmlFor="avion-select">Avion</label>
                 <select
-                    className="form-control"
-                    id="avion-select"
-                    onChange={() => {
+                  className="form-control"
+                  id="avion-select"
+                  onChange={() => {
                     this.setState({
-                        id_avn: Number(
+                      id_avn: Number(
                         document.getElementById("avion-select").value
-                        ),
+                      ),
                     });
-                    }}
+                  }}
                 >
-                    {this.state.avionsOption}
+                  {this.state.avionsOption}
                 </select>
-                </div>
-                
-                <div className="form-group">
-                <label htmlFor="compagnie-select">
-                    Compagnie
-                </label>
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="compagnie-select">Compagnie</label>
                 <select
-                    className="form-control"
-                    id="compagnie-select"
-                    onChange={() => {
+                  className="form-control"
+                  id="compagnie-select"
+                  onChange={() => {
                     this.setState({
-                        id_cmp: Number(
+                      id_cmp: Number(
                         document.getElementById("compagnie-select").value
-                        ),
+                      ),
                     });
-                    }}
+                  }}
                 >
-                    {this.state.compagniesOption}
+                  {this.state.compagniesOption}
                 </select>
-                </div>
+              </div>
             </form>
-            </div>
+          </div>
         </div>
         <div className="row">
           <div className="col">
@@ -444,188 +439,180 @@ class Appareils extends Component {
       </div>
     );
 
-
     let avionForm = (
-        <div className="container">
-            <div className="row">
-              <div className="col">
-              <h3>Ajouter un avion</h3>
-              </div>
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <h3>Ajouter un avion</h3>
           </div>
-          <div className="row">
-              <div className="col">
-              <form className="form-main">
-                  
+        </div>
+        <div className="row">
+          <div className="col">
+            <form className="form-main">
               <div className="form-group">
                 <label htmlFor="typeavn">Type d'appareil</label>
                 <input
-                    type="input"
-                    className="form-control"
-                    id="typeavn"
-                    name="typeavn"
-                    placeholder="A321"
-                    onChange={() => {
+                  type="input"
+                  className="form-control"
+                  id="typeavn"
+                  name="typeavn"
+                  placeholder="A321"
+                  onChange={() => {
                     this.setState({
-                      typeavn: 
-                        document.getElementById("typeavn").value
-                        ,
+                      typeavn: document.getElementById("typeavn").value,
                     });
-                    }}
+                  }}
                 />
-                </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="nb-place-avn">Nombre de places</label>
-                    <input
-                        type="number"
-                        className="form-control"
-                        id="nb-place-avn"
-                        name="nb-place-avn"
-                        placeholder="0"
-                        min="0"
-                        max="1000"
-                        onChange={() => {
-                        this.setState({
-                            nb_placeavn: Number(
-                            document.getElementById("nb-place-avn").value
-                            ),
-                        });
-                        }}
-                    />
-                    </div>
-
-
-              </form>
               </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={this.handleAddAvion}
-              >
-                Ajouter cet avion
-              </button>
-            </div>
+
+              <div className="form-group">
+                <label htmlFor="nb-place-avn">Nombre de places</label>
+                <input
+                  type="number"
+                  className="form-control"
+                  id="nb-place-avn"
+                  name="nb-place-avn"
+                  placeholder="0"
+                  min="0"
+                  max="1000"
+                  onChange={() => {
+                    this.setState({
+                      nb_placeavn: Number(
+                        document.getElementById("nb-place-avn").value
+                      ),
+                    });
+                  }}
+                />
+              </div>
+            </form>
           </div>
         </div>
-      );
-
-
-
-
-
-      let compagnieForm = (
-        <div className="container">
-            <div className="row">
-              <div className="col">
-              <h3>Ajouter une compagnie</h3>
-              </div>
+        <div className="row">
+          <div className="col">
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={this.handleAddAvion}
+            >
+              Ajouter cet avion
+            </button>
           </div>
-          <div className="row">
-              <div className="col">
-              <form className="form-main">
-                  
+        </div>
+      </div>
+    );
+
+    let compagnieForm = (
+      <div className="container">
+        <div className="row">
+          <div className="col">
+            <h3>Ajouter une compagnie</h3>
+          </div>
+        </div>
+        <div className="row">
+          <div className="col">
+            <form className="form-main">
               <div className="form-group">
                 <label htmlFor="nomcmp">Nom de la compagnie</label>
                 <input
-                    type="input"
-                    className="form-control"
-                    id="nomcmp"
-                    name="nomcmp"
-                    placeholder="EasyJet"
-                    onChange={() => {
+                  type="input"
+                  className="form-control"
+                  id="nomcmp"
+                  name="nomcmp"
+                  placeholder="EasyJet"
+                  onChange={() => {
                     this.setState({
-                      nomcmp:document.getElementById("nomcmp").value
-                        ,
+                      nomcmp: document.getElementById("nomcmp").value,
                     });
-                    }}
+                  }}
                 />
-                </div>
-                  
-                  <div className="form-group">
-                    <label htmlFor="codecmp">Code compagnie (trigramme)</label>
-                    <input
-                        type="input"
-                        className="form-control"
-                        id="codecmp"
-                        name="codecmp"
-                        placeholder="EAJ"
-                        onChange={() => {
-                        this.setState({
-                          codecmp: document.getElementById("codecmp").value
-                            ,
-                        });
-                        }}
-                    />
-                    </div>
-
-
-              </form>
               </div>
-          </div>
-          <div className="row">
-            <div className="col">
-              <button
-                type="button"
-                className="btn btn-success"
-                onClick={this.handleAddCompagnie}
-              >
-                Ajouter cette compagnie
-              </button>
-            </div>
+
+              <div className="form-group">
+                <label htmlFor="codecmp">Code compagnie (trigramme)</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="codecmp"
+                  name="codecmp"
+                  placeholder="EAJ"
+                  onChange={() => {
+                    this.setState({
+                      codecmp: document.getElementById("codecmp").value,
+                    });
+                  }}
+                />
+              </div>
+            </form>
           </div>
         </div>
-      );
+        <div className="row">
+          <div className="col">
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={this.handleAddCompagnie}
+            >
+              Ajouter cette compagnie
+            </button>
+          </div>
+        </div>
+      </div>
+    );
 
-
-    let errorDiv = this.state.hasErrorAvn 
-      ? (this.state.hasErrorCmp 
-        ? <Alerts
+    let errorDiv = this.state.hasErrorAvn ? (
+      this.state.hasErrorCmp ? (
+        <Alerts
+          type="danger"
+          content={
+            <div className="col">
+              <div className="row">
+                Les données soumises ne sont pas cohérentes :
+              </div>
+              <div className="row">
+                - vérifiez que l'ensemble des champs sont completés.
+              </div>
+            </div>
+          }
+        />
+      ) : (
+        <Alerts
+          type="danger"
+          content={
+            <div className="col">
+              <div className="row">
+                Les données soumises ne sont pas cohérentes avec l'ajout d'un
+                avion :
+              </div>
+              <div className="row">
+                - vérifiez que l'ensemble des champs sont completés
+              </div>
+              <div className="row">
+                - vérifiez que le nombre de place est un nombre entier.
+              </div>
+            </div>
+          }
+        />
+      )
+    ) : this.state.hasErrorCmp ? (
+      <Alerts
         type="danger"
         content={
           <div className="col">
             <div className="row">
-              Les données soumises ne sont pas cohérentes :
+              Les données soumises ne sont pas cohérentes avec l'ajout d'une
+              compagnie :
             </div>
             <div className="row">
-              - vérifiez que l'ensemble des champs sont completés.
+              - vérifiez que l'ensemble des champs sont completés
             </div>
-          </div>}
+            <div className="row">
+              - vérifiez que le code compagnie est un trigramme composé de 3
+              lettres (exemple : CDG).
+            </div>
+          </div>
+        }
       />
-        : <Alerts
-        type="danger"
-        content={
-          <div className="col">
-            <div className="row">
-              Les données soumises ne sont pas cohérentes avec l'ajout d'un avion :
-            </div>
-            <div className="row">
-              - vérifiez que l'ensemble des champs sont completés
-            </div>
-            <div className="row">
-              - vérifiez que le nombre de place est un nombre entier.
-            </div>
-          </div>}
-      />) 
-      : (this.state.hasErrorCmp 
-        ? <Alerts
-        type="danger"
-        content={
-          <div className="col">
-            <div className="row">
-              Les données soumises ne sont pas cohérentes avec l'ajout d'une compagnie :
-            </div>
-            <div className="row">
-              - vérifiez que l'ensemble des champs sont completés
-            </div>
-            <div className="row">
-              - vérifiez que le code compagnie est un trigramme composé de 3 lettres (exemple : CDG).
-            </div>
-          </div>}
-      /> 
-        : null);
+    ) : null;
 
     return (
       <div className="main col">
@@ -634,13 +621,11 @@ class Appareils extends Component {
         <div className="flights-table">{appareilsTable}</div>
         {errorDiv}
 
-        <div className="form-margin">
-        {appareilForm}
-        </div>
+        <div className="form-margin">{appareilForm}</div>
 
         <div className="form-margin">
           {avionsTable}
-          {avionForm} 
+          {avionForm}
         </div>
 
         <div className="form-margin">

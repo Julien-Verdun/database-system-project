@@ -11,18 +11,22 @@ import FlightBooking from "./Components/Booking/FlightBooking/FlightBooking";
 import MyReservations from "./Components/Booking/MyReservations/MyReservations";
 import Reservation from "./Components/Booking/Reservation/Reservation";
 import DataManagement from "./Components/DataManagement/DataManagement";
+import RandomProposal from "./Components/Booking/RandomProposal/RandomProposal";
+import ls from "local-storage";
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      id_cli: 100,
+      id_cli: ls.get("id_cli") === null ? 100 : Number(ls.get("id_cli")),
     };
     this.changeCli = this.changeCli.bind(this);
   }
 
   changeCli(id_cli) {
     this.setState({ id_cli: id_cli });
+    // storage of the id on the local storage
+    ls.set("id_cli", id_cli);
   }
 
   render() {
@@ -52,11 +56,19 @@ class App extends Component {
               />
             )}
           />
-          <Route exact path="/flightsearch" component={FlightSearch} />
           <Route
             exact
-            path="/flightbooking/:id_cli/:id_vol"
-            component={FlightBooking}
+            path="/flightsearch"
+            component={(props) => (
+              <FlightSearch id_cli={this.state.id_cli} {...props} />
+            )}
+          />
+          <Route
+            exact
+            path="/flightbooking/:id_vol"
+            component={(props) => (
+              <FlightBooking id_cli={this.state.id_cli} {...props} />
+            )}
           />
           <Route
             exact
@@ -72,11 +84,13 @@ class App extends Component {
               <Profil id_cli={this.state.id_cli} {...props} />
             )}
           />
-           {/* <Route
+          <Route
             exact
-            path="/aeroports"
-            component={Aeroports}
-          /> */}
+            path="/randomproposal"
+            component={(props) => (
+              <RandomProposal id_cli={this.state.id_cli} {...props} />
+            )}
+          />
           <Route
             exact
             path="/reservation/:id_res"
