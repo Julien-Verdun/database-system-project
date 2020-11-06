@@ -148,11 +148,10 @@ Finalement, la table **reservations** fait le lien entre les tables **clients** 
 # TODO
 
 - rendre les vols complets quand plus de place disponible (menu management et flightsearch)
+- faire une page de connection
 
-- ajouter des modals pour confirmer la suppression d'une donnée et prévenir des suppressions engendrées
-  dans le menu management
-  (ok pour Vol, reste Appareil, Avion, Compagnie, Client, Aeroport)
+BDD:
 
-- verifier l'application sans connection au back-end et mettre des gardes boux partout
-
-- ajouter des circularProgressBar au chargement des données
+- géré les permissions des utilisateurs : tout pour l'admin, uniquement reservation, vol pour les autres
+- ajouter une procédure à la base de donneés
+- ajouter un trigger à la base de donneés

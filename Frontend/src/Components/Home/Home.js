@@ -1,8 +1,10 @@
 import React, { Component } from "react";
 import "./Home.css";
 import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
 import { SERVERPATH } from "../../serverParams.js";
 import RandomProposal from "../Booking/RandomProposal/RandomProposal";
+import Alerts from "../ToolsComponent/Alerts/Alerts";
 
 class Home extends Component {
   constructor(props) {
@@ -11,6 +13,7 @@ class Home extends Component {
       result: "",
       nom_client: null,
       listeClientOptions: null,
+      hasError: null,
     };
     this.handleChangeClient = this.handleChangeClient.bind(this);
     this.getClient = this.getClient.bind(this);
@@ -79,7 +82,7 @@ class Home extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
-        this.setState({ listeClientOptions: null });
+        this.setState({ listeClientOptions: false });
       });
   }
 
@@ -97,28 +100,40 @@ class Home extends Component {
           </button>
         </div>
       ) : null;
+
+    let selectGroup =
+      this.state.listeClientOptions === null ? (
+        <CircularProgress />
+      ) : this.state.listeClientOptions === false ? (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      ) : (
+        <div className="form-group">
+          <label htmlFor="inputGroupSelectClients">
+            Choix de l'utilisateur
+          </label>
+          <select
+            className="form-control"
+            id="inputGroupSelectClients"
+            onChange={this.handleChangeClient}
+          >
+            {this.state.listeClientOptions}
+          </select>
+        </div>
+      );
     return (
       <div className="main">
         <h1>Projet informatique : Système de base de données</h1>
         <div className="content">
-          Cette application web a été développé en ReactJS (front-end) et en
+          Cette application web a été développée en ReactJS (front-end) et en
           NodeJS (back-end).
           <br />
           La base de données est une base MySQL.
           <br />
           L'application simule une plateforme de réservation de billet d'avion.
-          <div className="form-group">
-            <label htmlFor="inputGroupSelectClients">
-              Choix de l'utilisateur
-            </label>
-            <select
-              className="form-control"
-              id="inputGroupSelectClients"
-              onChange={this.handleChangeClient}
-            >
-              {this.state.listeClientOptions}
-            </select>
-          </div>
+          <div className="row  justify-content-center">{selectGroup}</div>
           <div className="col">
             <button
               className="btn btn-primary"
@@ -131,7 +146,9 @@ class Home extends Component {
           </div>
           {managementButton}
         </div>
-        <RandomProposal nbProposal={4} {...this.props} />
+        {this.state.listeClientOptions === null ? null : (
+          <RandomProposal nbProposal={4} {...this.props} />
+        )}
       </div>
     );
   }

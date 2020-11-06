@@ -5,6 +5,8 @@ import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { SERVERPATH } from "../../../serverParams.js";
+import Modal from "../../ToolsComponent/Modal/Modal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Aeroports extends Component {
   constructor(props) {
@@ -16,6 +18,8 @@ class Aeroports extends Component {
       ville: null,
       pays: null,
       hasError: false,
+      modalAerContent: "",
+      idAerToRemove: null,
     };
     this.handleAddAeroport = this.handleAddAeroport.bind(this);
     this.getAeroports = this.getAeroports.bind(this);
@@ -38,8 +42,35 @@ class Aeroports extends Component {
               <td>{elt.pays}</td>
               <td>
                 <DeleteIcon
+                  data-toggle="modal"
+                  data-target="#remove-aer-modal"
                   onClick={() => {
-                    this.handleDeleteAeroport(elt.id_aer);
+                    this.setState({
+                      idAerToRemove: elt.id_aer,
+                      modalAerContent: (
+                        <div className="col">
+                          <div className="raw modal-div">
+                            {"Vous vous apprêtez à supprimer l'aéroport :"}
+                            <p className="bold-p">
+                              {elt.nom +
+                                " (" +
+                                elt.code +
+                                "), " +
+                                elt.ville +
+                                ", " +
+                                elt.pays}
+                            </p>
+                          </div>
+                          <div className="raw modal-div">
+                            {"Cette opération est irréversible."}
+                          </div>
+                          <div className="raw modal-div">
+                            {" "}
+                            &Ecirc;tes-vous sûr de vouloir continuer ?
+                          </div>
+                        </div>
+                      ),
+                    });
                   }}
                 />
               </td>
@@ -54,7 +85,7 @@ class Aeroports extends Component {
         // handle error
         console.log(error);
         this.setState({
-          aeroportsList: null,
+          aeroportsList: false,
         });
       });
   }
@@ -127,14 +158,18 @@ class Aeroports extends Component {
   render() {
     let aeroportsTable;
 
-    if (this.state.aeroportsList === "") {
-      aeroportsTable = this.state.aeroportsList;
-    } else if (this.state.aeroportsList === null) {
+    if (this.state.aeroportsList === null) {
+      aeroportsTable = <CircularProgress />;
+    } else if (this.state.aeroportsList === false) {
       aeroportsTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.aeroportsList.length === 0) {
+      aeroportsTable = (
+        <Alerts type="warning" content="Il n'existe aucun aéroport." />
       );
     } else {
       aeroportsTable = (
@@ -144,7 +179,7 @@ class Aeroports extends Component {
         />
       );
     }
-    let clientForm = (
+    let aeroportForm = (
       <div className="container">
         <div className="row">
           <div className="col">
@@ -251,9 +286,23 @@ class Aeroports extends Component {
       <div className="main col">
         <h1 className="title">Les aéroports</h1>
 
+        <Modal
+          idModal={"remove-aer-modal"}
+          title={"Supprimer un aéroport"}
+          body={this.state.modalAerContent}
+          onClick={() => {
+            this.handleDeleteAeroport(this.state.idAerToRemove);
+          }}
+        />
+
         <div className="flights-table">{aeroportsTable}</div>
         {errorDiv}
-        <div className="form-margin">{clientForm}</div>
+        <div className="form-margin">
+          {this.state.aeroportsList === null ||
+          this.state.aeroportsList === false
+            ? null
+            : aeroportForm}
+        </div>
       </div>
     );
   }

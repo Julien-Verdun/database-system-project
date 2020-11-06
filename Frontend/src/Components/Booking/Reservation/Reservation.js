@@ -5,6 +5,7 @@ import CircularProgress from "@material-ui/core/CircularProgress";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import Billet from "../Billet/Billet";
 import { SERVERPATH } from "../../../serverParams.js";
+import Alerts from "../../ToolsComponent/Alerts/Alerts";
 
 class Reservation extends Component {
   constructor(props) {
@@ -82,6 +83,9 @@ class Reservation extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
+        this.setState({
+          dataBillet: false,
+        });
       });
   }
   render() {
@@ -91,20 +95,27 @@ class Reservation extends Component {
 
         {this.state.dataBillet === null ? (
           <CircularProgress />
+        ) : this.state.dataBillet === false ? (
+          <Alerts
+            type="danger"
+            content="Cette réservation n'a pas été trouvée, veuillez nous excuser."
+          />
         ) : (
           <Billet dataBillet={this.state.dataBillet} />
         )}
-        <button
-          type="button"
-          className="btn btn-danger"
-          data-toggle="modal"
-          data-target="#annulation-modal"
-          onClick={() => {
-            console.log("Annuler le téléchargement");
-          }}
-        >
-          Annuler cette réservation
-        </button>
+        <div className="row  justify-content-center">
+          <button
+            type="button"
+            className="btn btn-danger"
+            data-toggle="modal"
+            data-target="#annulation-modal"
+            onClick={() => {
+              console.log("Annuler le téléchargement");
+            }}
+          >
+            Annuler cette réservation
+          </button>
+        </div>
         <Modal
           idModal={"annulation-modal"}
           title={"Annuler la réservation"}

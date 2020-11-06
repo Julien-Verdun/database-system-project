@@ -3,12 +3,13 @@ import "./MyReservations.css";
 import axios from "axios";
 import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import { SERVERPATH } from "../../../serverParams.js";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class MyReservations extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      listReservation: "",
+      listReservation: null,
     };
   }
 
@@ -62,7 +63,7 @@ class MyReservations extends Component {
         // handle error
         console.log(error);
         this.setState({
-          listReservation: null,
+          listReservation: false,
         });
       });
   }
@@ -70,6 +71,8 @@ class MyReservations extends Component {
   render() {
     let table;
     if (this.state.listReservation === null) {
+      table = <CircularProgress />;
+    } else if (this.state.listReservation === false) {
       table = (
         <Alerts
           type="danger"

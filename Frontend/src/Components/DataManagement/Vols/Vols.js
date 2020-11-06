@@ -8,6 +8,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { SERVERPATH } from "../../../serverParams.js";
 import { reverseDate } from "./../../ToolsComponent/utils";
 import Modal from "../../ToolsComponent/Modal/Modal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Vols extends Component {
   constructor(props) {
@@ -115,7 +116,7 @@ class Vols extends Component {
         // handle error
         console.log(error);
         this.setState({
-          allFlights: null,
+          allFlights: false,
         });
       });
   }
@@ -269,12 +270,16 @@ class Vols extends Component {
     let flightsTable;
 
     if (this.state.allFlights === null) {
+      flightsTable = <CircularProgress />;
+    } else if (this.state.allFlights === false) {
       flightsTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
       );
+    } else if (this.state.allFlights.length === 0) {
+      flightsTable = <Alerts type="warning" content="Il n'existe aucun vol." />;
     } else {
       flightsTable = (
         <Table
@@ -491,7 +496,11 @@ class Vols extends Component {
 
         <div className="flights-table">{flightsTable}</div>
         {errorDiv}
-        <div className="form-margin">{reservation_table}</div>
+        <div className="form-margin">
+          {this.state.allFlights === null || this.state.allFlights === false
+            ? null
+            : reservation_table}
+        </div>
       </div>
     );
   }

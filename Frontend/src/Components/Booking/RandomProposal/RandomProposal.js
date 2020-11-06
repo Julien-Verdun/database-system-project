@@ -5,9 +5,6 @@ import { SERVERPATH } from "../../../serverParams.js";
 // import MoreVertIcon from "@material-ui/icons/MoreVert";
 
 class Card extends Component {
-  constructor(props) {
-    super(props);
-  }
   render() {
     return (
       <div
@@ -92,11 +89,11 @@ class RandomProposal extends Component {
       indexArray.push(i);
     }
     // Math.floor(Math.random() * this.state.flightsList.length);
-    for (var i = 0; i < nbProposal; i++) {
+    for (var j = 0; j < nbProposal; j++) {
       var index = Math.floor(Math.random() * indexArray.length);
       proposalsList.push(
         <Card
-          key={i}
+          key={j}
           flight={this.state.flightsList[indexArray[index]]}
           {...this.props}
         />

@@ -5,6 +5,8 @@ import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import Table from "../../ToolsComponent/Table/Table";
 import DeleteIcon from "@material-ui/icons/Delete";
 import { SERVERPATH } from "../../../serverParams.js";
+import Modal from "../../ToolsComponent/Modal/Modal";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class Clients extends Component {
   constructor(props) {
@@ -16,6 +18,8 @@ class Clients extends Component {
       mail: null,
       telephone: null,
       hasError: false,
+      modalCliContent: "",
+      idCliToRemove: null,
     };
     this.handleAddClient = this.handleAddClient.bind(this);
     this.getClients = this.getClients.bind(this);
@@ -38,8 +42,33 @@ class Clients extends Component {
               <td>{elt.telephone}</td>
               <td>
                 <DeleteIcon
+                  data-toggle="modal"
+                  data-target="#remove-cli-modal"
                   onClick={() => {
-                    this.handleDeleteClient(elt.id_cli);
+                    this.setState({
+                      idCliToRemove: elt.id_cli,
+                      modalCliContent: (
+                        <div className="col">
+                          <div className="raw modal-div">
+                            {"Vous vous apprêtez à supprimer le client :"}
+                            <p className="bold-p">
+                              {elt.prenom + " " + elt.nom}
+                            </p>
+                            {"Telephone : "}
+                            <p className="bold-p">{elt.telephone}</p>
+                            {"Mail : "}
+                            <p className="bold-p">{elt.mail}</p>
+                          </div>
+                          <div className="raw modal-div">
+                            {"Cette opération est irréversible."}
+                          </div>
+                          <div className="raw modal-div">
+                            {" "}
+                            &Ecirc;tes-vous sûr de vouloir continuer ?
+                          </div>
+                        </div>
+                      ),
+                    });
                   }}
                 />
               </td>
@@ -55,7 +84,7 @@ class Clients extends Component {
         // handle error
         console.log(error);
         this.setState({
-          clientsList: null,
+          clientsList: false,
         });
       });
   }
@@ -130,11 +159,17 @@ class Clients extends Component {
     let clientsTable;
 
     if (this.state.clientsList === null) {
+      clientsTable = <CircularProgress />;
+    } else if (this.state.clientsList === false) {
       clientsTable = (
         <Alerts
           type="danger"
           content="Aucun résultat, vérifier votre connection"
         />
+      );
+    } else if (this.state.clientsList.length === 0) {
+      clientsTable = (
+        <Alerts type="warning" content="Il n'existe aucun client." />
       );
     } else {
       clientsTable = (
@@ -251,9 +286,22 @@ class Clients extends Component {
       <div className="main col">
         <h1 className="title">Les clients</h1>
 
+        <Modal
+          idModal={"remove-cli-modal"}
+          title={"Supprimer un client"}
+          body={this.state.modalCliContent}
+          onClick={() => {
+            this.handleDeleteClient(this.state.idCliToRemove);
+          }}
+        />
+
         <div className="flights-table">{clientsTable}</div>
         {errorDiv}
-        <div className="form-margin">{clientForm}</div>
+        <div className="form-margin">
+          {this.state.clientsList === false || this.state.clientsList === null
+            ? null
+            : clientForm}
+        </div>
       </div>
     );
   }
