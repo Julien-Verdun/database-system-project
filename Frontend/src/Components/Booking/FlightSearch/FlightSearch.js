@@ -16,7 +16,7 @@ class FlightSearch extends Component {
       heure_depart: date.split("T")[1],
       id_aer_dep: null,
       id_aer_arr: null,
-      nb_places: null,
+      nb_places: 1,
       hasError: false,
     };
     this.handleClickSearch = this.handleClickSearch.bind(this);
@@ -46,76 +46,70 @@ class FlightSearch extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
-        this.setState({ listeAirportsOptions: null });
+        this.setState({ listeAirportsOptions: null, result: null });
       });
   }
 
   handleClickSearch(event) {
     event.preventDefault();
-    console.log("Search");
     let travelDate = this.state.date_depart;
     let departureAirportId = this.state.id_aer_dep;
     let arrivalAirportId = this.state.id_aer_arr;
     let nbPassengers = this.state.nb_places;
-    if (nbPassengers <= 0) {
-      this.setState({ hasError: true });
-    } else {
-      axios
-        .get(
-          SERVERPATH +
-            "/getFlights/" +
-            encodeURI(travelDate) +
-            "/" +
-            encodeURI(departureAirportId) +
-            "/" +
-            encodeURI(arrivalAirportId) +
-            "/" +
-            encodeURI(nbPassengers)
-        )
-        .then((response) => {
-          // handle success
-          if (response.data.length === 0) {
-            this.setState({ result: "Pas de résultats" });
-          } else {
-            let flightsList = response.data.map((elt, index) => {
-              return (
-                <tr
-                  key={index}
-                  onClick={() => {
-                    this.props.history.push(
-                      "/flightbooking/" + encodeURI(elt.id_vol)
-                    );
-                  }}
-                >
-                  <th scope="row">{index}</th>
-                  <td>{elt.date_depart + " à " + elt.heure_depart}</td>
-                  <td>{elt.aeroport_depart}</td>
-                  <td>{elt.date_arrivee + " à " + elt.heure_arrivee}</td>
-                  <td>{elt.aeroport_arrivee}</td>
-                  <td>{elt.prix + " €"}</td>
-                </tr>
-              );
-            });
-            this.setState({ result: flightsList });
-          }
-        })
-        .catch((error) => {
-          // handle error
-          console.log(error);
-        });
-    }
+    axios
+      .get(
+        SERVERPATH +
+          "/getFlights/" +
+          encodeURI(travelDate) +
+          "/" +
+          encodeURI(departureAirportId) +
+          "/" +
+          encodeURI(arrivalAirportId) +
+          "/" +
+          encodeURI(nbPassengers)
+      )
+      .then((response) => {
+        // handle success
+        if (response.data.length === 0) {
+          this.setState({ result: "Pas de résultats" });
+        } else {
+          let flightsList = response.data.map((elt, index) => {
+            return (
+              <tr
+                key={index}
+                onClick={() => {
+                  this.props.history.push(
+                    "/flightbooking/" + encodeURI(elt.id_vol)
+                  );
+                }}
+              >
+                <th scope="row">{index}</th>
+                <td>{elt.date_depart + " à " + elt.heure_depart}</td>
+                <td>{elt.aeroport_depart}</td>
+                <td>{elt.date_arrivee + " à " + elt.heure_arrivee}</td>
+                <td>{elt.aeroport_arrivee}</td>
+                <td>{elt.prix + " €"}</td>
+              </tr>
+            );
+          });
+          this.setState({ result: flightsList });
+        }
+      })
+      .catch((error) => {
+        // handle error
+        this.setState({ result: "Error" });
+      });
   }
   render() {
     let table;
-
     if (this.state.result === "") {
       table = this.state.result;
     } else if (this.state.result === null) {
       table = (
-        <Alerts
-          type="danger"
-          content="Aucun résultat, vérifier votre connection"
-        />
+        <div className="alert alert-danger">
+          <strong>Erreur !</strong> Il semble que votre connexion au serveur ne
+          soit pas établie. Vérifiez votre connexion.
+        </div>
       );
     } else if (this.state.result === "Pas de résultats") {
       table = (
@@ -219,7 +213,7 @@ class FlightSearch extends Component {
               className="form-control"
               type="number"
               id="nb-passengers-input"
-              placeholder="0"
+              placeholder="1"
               min="1"
               max="20"
               onChange={() => {
