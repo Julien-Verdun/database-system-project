@@ -43,7 +43,6 @@ class RandomProposal extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      flightsList: null,
       proposalsList: null,
     };
     this.getFlights = this.getFlights.bind(this);
@@ -52,7 +51,7 @@ class RandomProposal extends Component {
 
   componentDidMount() {
     this.getFlights().then((flightsList) => {
-      this.createProposals();
+      this.createProposals(flightsList);
     });
   }
 
@@ -62,41 +61,32 @@ class RandomProposal extends Component {
         .get(SERVERPATH + "/getAllFutureFlights")
         .then((response) => {
           // handle success
-          this.setState({
-            flightsList: response.data,
-          });
           resolve(response.data);
         })
         .catch((error) => {
           // handle error
           console.log(error);
-          this.setState({
-            flightsList: null,
-          });
+          resolve([]);
         });
     });
   }
 
-  createProposals() {
+  createProposals(flightsList) {
     let proposalsList = [],
       nbProposal =
         this.props.nbProposal === undefined ? 10 : this.props.nbProposal,
       indexArray = [];
 
-    nbProposal = Math.min(nbProposal, this.state.flightsList.length);
+    nbProposal = Math.min(nbProposal, flightsList.length);
 
-    for (var i = 0; i < this.state.flightsList.length; i++) {
+    for (var i = 0; i < flightsList.length; i++) {
       indexArray.push(i);
     }
-    // Math.floor(Math.random() * this.state.flightsList.length);
+    // Math.floor(Math.random() * flightsList.length);
     for (var j = 0; j < nbProposal; j++) {
       var index = Math.floor(Math.random() * indexArray.length);
       proposalsList.push(
-        <Card
-          key={j}
-          flight={this.state.flightsList[indexArray[index]]}
-          {...this.props}
-        />
+        <Card key={j} flight={flightsList[indexArray[index]]} {...this.props} />
       );
       indexArray.splice(index, 1);
     }

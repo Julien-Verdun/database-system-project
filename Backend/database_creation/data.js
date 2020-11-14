@@ -163,9 +163,27 @@ const vols = [
 ];
 
 const clients = [
-  ["Julien", "Verdun", "julien.verdun@ecl17.ec-lyon.fr", "0678987656"],
-  ["Maxime", "Peter", "maxime.peter@ecl17.ec-lyon.fr", "0678657612"],
-  ["superuser", "admin", "superuser@admin", "xxxxxxxxxx"],
+  [
+    "Julien",
+    "Verdun",
+    "julien.verdun@ecl17.ec-lyon.fr",
+    "0678987656",
+    "sha1$b506264e$1$9260cc65156f4c2c90b5c5cbde28b91e7bbbb756",
+  ],
+  [
+    "Maxime",
+    "Peter",
+    "maxime.peter@ecl17.ec-lyon.fr",
+    "0678657612",
+    "sha1$b506264e$1$9260cc65156f4c2c90b5c5cbde28b91e7bbbb756",
+  ],
+  [
+    "superuser",
+    "admin",
+    "superuser@admin",
+    "xxxxxxxxxx",
+    "sha1$b506264e$1$9260cc65156f4c2c90b5c5cbde28b91e7bbbb756",
+  ],
 ];
 
 const reservations = [

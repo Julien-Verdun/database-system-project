@@ -82,7 +82,7 @@ con.query(query, (err, results, fields) => {
       "CREATE TABLE avions (id_avn INT AUTO_INCREMENT PRIMARY KEY, type VARCHAR(255), nb_place INT)  AUTO_INCREMENT = 100;",
       "CREATE TABLE compagnies (id_cmp INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE aeroports (id_aer INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255), ville VARCHAR(255), pays VARCHAR(255)) AUTO_INCREMENT = 100;",
-      "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255)) AUTO_INCREMENT = 100;",
+      "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255), hashpassword VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix FLOAT, quantite INT) AUTO_INCREMENT = 100;",
     ];
 
@@ -138,7 +138,7 @@ con.query(query, (err, results, fields) => {
     );
 
     utils.insertElements(
-      "INSERT INTO clients (nom, prenom, mail, telephone) VALUES ?",
+      "INSERT INTO clients (nom, prenom, mail, telephone, hashpassword) VALUES ?",
       data.clients,
       con
     );

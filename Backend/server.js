@@ -55,6 +55,23 @@ con.connect(function (err, db) {
   else {
     console.log("Connected ! ");
 
+    // this query returns the user if the email and hash correspond to one user in the database or False otherwise
+    app.get("/login/:email", (req, res) => {
+      let email = decodeURI(req.params.email);
+      let query =
+        `
+        SELECT * FROM clients cli
+        WHERE cli.mail = '` +
+        email +
+        `'
+        LIMIT 1;
+      `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
     // this query returns all the flights in the table vols from the database
     app.get("/getAllFlights", (req, res) => {
       let query = `
@@ -863,11 +880,12 @@ con.connect(function (err, db) {
     const nom = reqBody.nom,
       prenom = reqBody.prenom,
       mail = reqBody.mail,
-      telephone = reqBody.telephone;
+      telephone = reqBody.telephone,
+      hashpassword = reqBody.password;
 
     console.log("reqBody : ", reqBody);
     let query =
-      `INSERT INTO clients (nom, prenom, mail, telephone) VALUES ("` +
+      `INSERT INTO clients (nom, prenom, mail, telephone, hashpassword) VALUES ("` +
       nom +
       `", "` +
       prenom +
@@ -875,6 +893,8 @@ con.connect(function (err, db) {
       mail +
       `", "` +
       telephone +
+      `", "` +
+      hashpassword +
       `");`;
 
     con.query(query, (err, results, fields) => {

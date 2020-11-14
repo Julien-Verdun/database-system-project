@@ -7,6 +7,7 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import { SERVERPATH } from "../../../serverParams.js";
 import Modal from "../../ToolsComponent/Modal/Modal";
 import CircularProgress from "@material-ui/core/CircularProgress";
+import passwordHash from "password-hash";
 
 class Clients extends Component {
   constructor(props) {
@@ -17,6 +18,7 @@ class Clients extends Component {
       prenom: null,
       mail: null,
       telephone: null,
+      password: null,
       hasError: false,
       modalCliContent: "",
       idCliToRemove: null,
@@ -128,16 +130,19 @@ class Clients extends Component {
       prenom: this.state.prenom,
       mail: this.state.mail,
       telephone: this.state.telephone,
+      password: this.state.password,
     };
     console.log(data);
     if (
       data.nom === null ||
       data.prenom === null ||
       data.mail === null ||
-      data.telephone === null
+      data.telephone === null ||
+      data.password === null
     ) {
       this.setState({ hasError: true });
     } else {
+      data.password = passwordHash.generate(data.password);
       axios
         .post(SERVERPATH + "/addClient", data)
         .then((response) => {
@@ -245,6 +250,21 @@ class Clients extends Component {
                   onChange={() => {
                     this.setState({
                       telephone: document.getElementById("telephone").value,
+                    });
+                  }}
+                />
+              </div>
+              <div className="form-group">
+                <label htmlFor="password">Mot de passe</label>
+                <input
+                  type="input"
+                  className="form-control"
+                  id="password"
+                  name="password"
+                  placeholder="sbdmdpapp**"
+                  onChange={() => {
+                    this.setState({
+                      password: document.getElementById("password").value,
                     });
                   }}
                 />

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
-import Alerts from "../../ToolsComponent/Alerts/Alerts";
+// import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import { dateToDateTimeLocal } from "../../ToolsComponent/utils.js";
 import { SERVERPATH } from "../../../serverParams.js";
 
