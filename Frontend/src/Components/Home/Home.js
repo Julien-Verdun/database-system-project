@@ -21,7 +21,7 @@ class Home extends Component {
                 this.props.history.push("/flightsearch");
               }}
             >
-              Flight Search
+              Réserver un vol
             </button>
           </div>
         </div>

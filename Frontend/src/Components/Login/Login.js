@@ -54,7 +54,9 @@ class Login extends Component {
               />
             </div>
             <div className="form-group">
-              <label htmlFor="exampleInputPassword1">Mot de passe</label>
+              <label htmlFor="exampleInputPassword1">
+                Mot de passe ( sbdappmdp** )
+              </label>
               <input
                 type="password"
                 className="form-control"

@@ -46,7 +46,8 @@ class Vols extends Component {
         // handle success
         let allFlights = response.data.map((elt, index) => {
           let backgroundColor =
-            new Date(reverseDate(elt.date_depart)) < new Date()
+            new Date(reverseDate(elt.date_depart) + " " + elt.heure_depart) <
+            new Date()
               ? "bisque"
               : null;
 

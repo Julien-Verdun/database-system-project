@@ -3,6 +3,8 @@ import "./Header.css";
 import axios from "axios";
 import { SERVERPATH } from "../../serverParams.js";
 import AccountCircleIcon from "@material-ui/icons/AccountCircle";
+import ExitToAppIcon from "@material-ui/icons/ExitToApp";
+import SettingsIcon from "@material-ui/icons/Settings";
 
 class Header extends Component {
   constructor(props) {
@@ -35,15 +37,20 @@ class Header extends Component {
     let datamanagement =
       this.state.nomClient === "admin" ? (
         <div className="profil-div">
-          <a href="/datamanagement">
-            <button className="btn btn-warning">Management</button>
+          <a
+            href="/datamanagement"
+            data-toggle="tooltip"
+            title="Data Management"
+          >
+            <SettingsIcon fontSize={"large"} style={{ color: "green" }} />
+            {/* <button className="btn btn-warning">Management</button> */}
           </a>
         </div>
       ) : null;
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <a className="navbar-brand" href="/home">
-          Barre de navigation
+          Accueil
         </a>
         <button
           className="navbar-toggler"
@@ -60,11 +67,6 @@ class Header extends Component {
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <ul className="navbar-nav mr-auto">
             <li className="nav-item">
-              <a className="nav-link" href="/home">
-                Accueil <span className="sr-only">(current)</span>
-              </a>
-            </li>
-            <li className="nav-item">
               <a className="nav-link" href="/myreservations">
                 Mes réservations
               </a>
@@ -77,20 +79,22 @@ class Header extends Component {
             </li>
           </ul>
           <div className="profil-div">
-            <a href="/profil">
-              <AccountCircleIcon fontSize={"large"} color={"inherit"} />
+            <a href="/profil" data-toggle="tooltip" title="Profil">
+              <AccountCircleIcon fontSize={"large"} style={{ color: "blue" }} />
             </a>
           </div>
           {datamanagement}
           <div className="profil-div">
             <button
-              className="btn btn-danger"
+              className="btn"
+              data-toggle="tooltip"
+              title="Deconnexion"
               onClick={() => {
                 console.log("Deconnexion");
                 this.props.logout();
               }}
             >
-              Déconnexion
+              <ExitToAppIcon fontSize={"large"} style={{ color: "red" }} />
             </button>
           </div>
         </div>

@@ -16,11 +16,15 @@ Application permettant la réservation d'un billet d'avion.
 
 Le projet a été développé avec des technologies récentes.
 
-Le front-end de l'application est basé sur le framework **ReactJS**.
+Le front-end de l'application est basé sur le framework [ReactJS](https://fr.reactjs.org/).
 
-Le back-end de l'appication a été réalisé en **NodeJS**.
+Le back-end de l'appication a été réalisé en [NodeJS](https://nodejs.org/en/).
 
-Pour respecter le sujet, la base de données est une base **MySQL**.
+Pour respecter le sujet, la base de données est une base [MySQL](https://www.mysql.com/fr/).
+
+En plus de cela, pour simplifier le développement, la librairie [Bootstrap](https://getbootstrap.com/) a été utilisée. Elle fournit un grand nombre d'outils de design simplifiant grandement la création du style de l'application.
+
+Un certain nombre de package Node JS ont été utilisés via le manager de package [npm](https://www.npmjs.com/) ([axios](https://www.npmjs.com/package/axios) pour la liaison entre le front-end et le back-end, etc).
 
 ---
 
@@ -135,23 +139,57 @@ Les vols sont stockés dans une table **vols**. Elle est aux tables **appareils*
 
 Finalement, la table **reservations** fait le lien entre les tables **clients** et **avions** et permet de connaître les vols qu'ont réservé les clients, où les passagers de chaque vols, ainsi que le prix payé par chaque passager.
 
-### L'application
+### Génération de la base de données
+
+La base de données est générée et remplie de manière automatique, afin de fournir une base suffisament fournit pour manipuler l'application.
+
+Pour ce faire, les tables **avions**, **compagnies**, **appareils** et **aeroports** sont remplies avec un certain nombre de données.
+
+Les tables **vols**, **clients** puis **reservations** sont ensuite remplies avec des données générées aléatoirement, et ce, avec un minimum de cohérence.
+Ainsi, il est probable des incohérences dans les données mais cela n'a que peu d'importance puisqu'elles sont là uniquement à titre démonstratif.
+
+## L'application
+
+On accède à l'application par une **page de connexion**. L'utilisateur doit fournir un identifiant de connexion (une adresse email) ainsi qu'un mot de passe de connexion.
+
+Il n'est pas possible de créer un compte, cette fonctionnalité n'a pas été ajoutée au projet.
+
+La **sécurité de l'application** est assurée par le hashage des mots de passe. Le mot de passe n'est jamais stocké en clair dans la base de données, seul le hash du mot de passe est stocké pour chaque utilisateur. Pour des raisons de simplicité, les mots de passes de tout les utilisateurs sont les mêmes : **sbdappmdp\*\***.
+Ainsi, lorsque l'utilisateur soumet son mot de passe pour se connecter, celui-ci est hashé et le hash du mot de passe soumis est comparé au hash du mot de passe en base, ainsi, à aucun moment le mot de passe ne circule sur le réseau, pour assurer l'intégrité du mot de passe de l'utilisateur.
+
+Une fois l'utilisateur connecté, celui-ci peut accéder aux différentes pages de l'application et naviguer entre elles.
+
+L'application est structurée de la sorte :
+
+- un **header** : il contient la barre de naviagtion de l'application avec la possibilité de se rendre sur la page d'accueil, d'accéder aux réservations de l'utilisateur, de réserver un vol, d'accéder au profil de l'utilisateur, d'accéder au menu de management des données pour l'utilisateur admin et finalement de se déconnecter
+
+- la **page principale** : c'est l'endroit où les différentes pages de l'application sont affichées et permettent à l'utilisateur de naviguer
+
+- un **footer** : il contient des informations inutiles pour l'application.
 
 ![Demonstration de l'application](giphy.gif)
 
-#### Système de management des données
+Les pages principales de l'application sont les suivantes :
 
-#### Possibilité de choisir un utilisateur
-
-#### Pour chaque utilisateur, réservation d'un avion, annulation de réservation, etc
+- la **page d'accueil** :
+- le **système de management des données** : accesssible uniquement par l'administrateur, cette page permet de visualiser le contenu des différentes tables vols, appareils, avions, compagnies, aeroports et clients. L'administrateur peut insérer des élèments dans ces tables ou en supprimer
+- la page **mes réservations** : l'utilisateur accède sur cette page aux réservations qu'il a pu effectuer
+- la page de **réservation d'un vol** : l'utilisateur peut choisir la date de son voyage et les aéroports de départ et d'arrivée, et voir les vols correspondant à sa rechercher, puis choisir un vol pour le réserver
+- le **profil utilisateur** : cette page contient les informations de l'utilisateur
+- la page **réservation** : elle représente le détail d'un vol et permet selon son utilisation de le réserver avec une quantité choisie ou d'annuler la réservation.
 
 # TODO
 
 - rendre les vols complets quand plus de place disponible (menu management et flightsearch)
-- faire une page de connection
+- dans les recherches de vol, proposer aussi les vols précédents ou suivants
+  et ajouter la ville et le pays dans le choix de l'aeroport (Maxime)
 
-BDD:
+BDD :
 
-- géré les permissions des utilisateurs : tout pour l'admin, uniquement reservation, vol pour les autres
-- ajouter une procédure à la base de donneés
+- ajouter une procédure à la base de donneés (Maxime)
 - ajouter un trigger à la base de donneés
+
+Compte-rendu (MaximePeter_JulienVerdun_gr2.zip)
+
+- description du cahier des charges (a l'image de celui dans la description des projets), cahier des charges (Maxime)
+- infrastructure proposée: machines, logiciel, réseau; (Maxime)
