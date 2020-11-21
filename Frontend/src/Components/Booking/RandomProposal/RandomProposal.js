@@ -6,9 +6,15 @@ import { SERVERPATH } from "../../../serverParams.js";
 
 class Card extends Component {
   render() {
+    let backgroundColor =
+      this.props.flight.place_libre === 0
+              ? "bisque"
+              : null;
     return (
+
       <div
         className="row card-proposal"
+        style={{ backgroundColor: backgroundColor }}
         onClick={() => {
           this.props.history.push(
             "/flightbooking/" + encodeURI(this.props.flight.id_vol)
@@ -47,6 +53,7 @@ class RandomProposal extends Component {
     };
     this.getFlights = this.getFlights.bind(this);
     this.createProposals = this.createProposals.bind(this);
+
   }
 
   componentDidMount() {
@@ -100,7 +107,8 @@ class RandomProposal extends Component {
           <h3>Une envie de voyage ?</h3>
         </div>
         <div>
-          Nous avons concocté quelques voyages pour vous, alors intéressez ?
+          Nous avons concocté quelques voyages pour vous, alors intéressé(é) ?
+          {console.log(this.state.proposalsList)}
         </div>
         <div className="col">{this.state.proposalsList}</div>
       </div>

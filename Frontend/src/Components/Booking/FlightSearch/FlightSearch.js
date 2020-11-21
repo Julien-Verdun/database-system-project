@@ -33,7 +33,7 @@ class FlightSearch extends Component {
         let listeAirportsOptions = response.data.map((elt, index) => {
           return (
             <option value={elt.id_aer} key={elt.id_aer}>
-              {elt.nom}
+              {elt.nom + " " +  elt.code + ", " + elt.ville + ", " + elt.pays}
             </option>
           );
         });
@@ -46,7 +46,7 @@ class FlightSearch extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
-        this.setState({ listeAirportsOptions: null, result: null });
+        this.setState({ listeAirportsOptions: null, result: null, hasError: true });
       });
   }
 
@@ -74,15 +74,20 @@ class FlightSearch extends Component {
           this.setState({ result: "Pas de résultats" });
         } else {
           let flightsList = response.data.map((elt, index) => {
+          let backgroundColor =
+             elt.nb_places_dispo === 0
+              ? "bisque"
+              : null;
             return (
               <tr
                 key={index}
+                style={{ backgroundColor: backgroundColor }}
                 onClick={() => {
                   this.props.history.push(
                     "/flightbooking/" + encodeURI(elt.id_vol)
                   );
                 }}
-              >
+               >
                 <th scope="row">{index}</th>
                 <td>{elt.date_depart + " à " + elt.heure_depart}</td>
                 <td>{elt.aeroport_depart}</td>
@@ -90,51 +95,58 @@ class FlightSearch extends Component {
                 <td>{elt.aeroport_arrivee}</td>
                 <td>{elt.prix + " €"}</td>
               </tr>
-            );
+              );
           });
           this.setState({ result: flightsList });
         }
       })
       .catch((error) => {
         // handle error
-        this.setState({ result: "Error" });
+        let errorMsg = 
+        <div className="alert alert-danger">
+        <strong>Pas de résultats !</strong> Il semble que votre connexion au serveur ne
+        soit pas établie. Vérifiez votre connexion.
+        </div>
+        this.setState({ result: errorMsg});
       });
   }
   render() {
     let table;
-    if (this.state.result === "") {
-      table = this.state.result;
-    } else if (this.state.result === null) {
+    if (this.state.hasError) {
       table = (
         <div className="alert alert-danger">
           <strong>Erreur !</strong> Il semble que votre connexion au serveur ne
           soit pas établie. Vérifiez votre connexion.
         </div>
       );
-    } else if (this.state.result === "Pas de résultats") {
-      table = (
-        <div className="alert alert-warning">
-          <strong>Attention !</strong> Aucuns vols ne correspondent à vos
-          critères. Essayez une autre date ou un autre voyage.
-        </div>
-      );
-    } else {
-      table = (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col">Date d'arrivée</th>
-              <th scope="col">Aéroport de départ</th>
-              <th scope="col">Date d'arrivée</th>
-              <th scope="col">Aéroport d'arrivée</th>
-              <th scope="col">Prix</th>
-            </tr>
-          </thead>
-          <tbody>{this.state.result}</tbody>
-        </table>
-      );
     }
+    else{
+      if (this.state.result === "Pas de résultats") {
+        table = (
+          <div className="alert alert-warning">
+            <strong>Attention !</strong> Aucuns vols ne correspondent à vos
+            critères. Essayez une autre date ou un autre voyage.
+          </div>
+        );
+      } else {
+        table = (
+          <table className="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">Date d'arrivée</th>
+                <th scope="col">Aéroport de départ</th>
+                <th scope="col">Date d'arrivée</th>
+                <th scope="col">Aéroport d'arrivée</th>
+                <th scope="col">Prix</th>
+              </tr>
+            </thead>
+            <tbody>{this.state.result}</tbody>
+          </table>
+        );
+      }
+    }
+    
     return (
       <div className="main">
         <h1>Bienvenue sur la page de recherche</h1>

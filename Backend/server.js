@@ -210,7 +210,8 @@ con.connect(function (err, db) {
             v.prix, 
             v.id_vol, 
             a_dep.nom AS aeroport_depart, 
-            a_arr.nom AS aeroport_arrivee
+            a_arr.nom AS aeroport_arrivee,
+            v.place_libre AS nb_places_dispo
         FROM vols v
         JOIN aeroports a_dep ON v.id_aer_dep = a_dep.id_aer
         JOIN aeroports a_arr ON v.id_aer_dep = a_arr.id_aer
@@ -222,9 +223,6 @@ con.connect(function (err, db) {
           `
           AND id_aer_arr = ` +
           arrivalAirportId +
-          `
-          AND place_libre >= ` +
-          nbPassengers +
           `;`;
         con.query(query, (err, results, fields) => {
           if (err) throw err;
