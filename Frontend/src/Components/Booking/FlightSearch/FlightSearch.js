@@ -152,7 +152,7 @@ class FlightSearch extends Component {
       );
     } else {
       form = (
-        <div>
+        <div className="form-div">
           <form>
             <div className="form-group">
               <label>Date de départ</label>
@@ -234,7 +234,7 @@ class FlightSearch extends Component {
           />
         </div>
         {form}
-        <div className="result">{table}</div>
+        <div className="table">{table}</div>
       </div>
     );
   }
