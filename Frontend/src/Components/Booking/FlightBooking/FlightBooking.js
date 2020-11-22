@@ -13,12 +13,20 @@ class FlightBooking extends Component {
     this.state = {
       id_vol: Number(window.location.pathname.split("/")[2]),
       dataBillet: null,
-      modalContent: "",
       prix: null,
       quantite: 1,
       hasError: null,
     };
     this.handleBookFlight = this.handleBookFlight.bind(this);
+    this.changeQuantite = this.changeQuantite.bind(this);
+  }
+
+  changeQuantite(event) {
+    event.preventDefault();
+    console.log(Number(document.getElementById("quantity-ticket").value));
+    this.setState({
+      quantite: Number(document.getElementById("quantity-ticket").value),
+    });
   }
 
   handleBookFlight(event) {
@@ -27,7 +35,7 @@ class FlightBooking extends Component {
       id_cli: this.props.id_cli,
       id_vol: this.state.id_vol,
       prix: this.state.prix,
-      quantite: Number(document.getElementById("quantity-ticket").value),
+      quantite: this.state.quantite,
     };
     console.log("data : ", data);
     if (data.quantite > this.state.dataBillet.place_libre) {
@@ -56,38 +64,8 @@ class FlightBooking extends Component {
       .then((response) => {
         // handle success
         let dataBillet = response.data[0];
-
-        // console.log(dataBillet)
-        let modalContent = (
-          <div className="col">
-            <div className="raw modal-div">
-              {"Vous vous apprêtez à réserver le vol du " +
-                dataBillet.date_depart +
-                " à " +
-                dataBillet.heure_depart +
-                " au départ de : "}
-              <p className="bold-p">
-                {dataBillet.aer_dep_nom + ", " + dataBillet.aer_dep_pays}
-              </p>
-              {"à destination de : "}
-              <p className="bold-p">
-                {dataBillet.aer_arr_nom + ", " + dataBillet.aer_arr_pays + "."}
-              </p>
-            </div>
-            <div className="raw modal-div">
-              {"Cette opération est irréversible et vous sera facturée " +
-                dataBillet.prix_vol +
-                " €."}
-            </div>
-            <div className="raw modal-div">
-              {" "}
-              &Ecirc;tes-vous sûr de vouloir continuer ?
-            </div>
-          </div>
-        );
         this.setState({
           dataBillet,
-          modalContent,
           prix: dataBillet.prix_vol,
         });
       })
@@ -100,6 +78,42 @@ class FlightBooking extends Component {
       });
   }
   render() {
+    let modalContent =
+      this.state.dataBillet !== null ? (
+        <div className="col">
+          <div className="raw modal-div">
+            {"Vous vous apprêtez à réserver " +
+              this.state.quantite +
+              " billets pour le vol du " +
+              this.state.dataBillet.date_depart +
+              " à " +
+              this.state.dataBillet.heure_depart +
+              " au départ de : "}
+            <p className="bold-p">
+              {this.state.dataBillet.aer_dep_nom +
+                ", " +
+                this.state.dataBillet.aer_dep_pays}
+            </p>
+            {"à destination de : "}
+            <p className="bold-p">
+              {this.state.dataBillet.aer_arr_nom +
+                ", " +
+                this.state.dataBillet.aer_arr_pays +
+                "."}
+            </p>
+          </div>
+          <div className="raw modal-div">
+            {"Cette opération est irréversible et vous sera facturée " +
+              this.state.dataBillet.prix_vol * this.state.quantite +
+              " €."}
+          </div>
+          <div className="raw modal-div">
+            {" "}
+            &Ecirc;tes-vous sûr de vouloir continuer ?
+          </div>
+        </div>
+      ) : null;
+
     let errorDiv = this.state.hasError ? (
       <Alerts
         type="danger"
@@ -131,6 +145,7 @@ class FlightBooking extends Component {
             type="number"
             id="quantity-ticket"
             name="quantity-ticket"
+            onChange={this.changeQuantite}
             min="1"
             max="100"
             defaultValue="1"
@@ -153,7 +168,7 @@ class FlightBooking extends Component {
         <Modal
           idModal={"annulation-modal"}
           title={"Annuler la réservation"}
-          body={this.state.modalContent}
+          body={modalContent}
           onClick={this.handleBookFlight}
         />
       </div>
