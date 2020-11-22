@@ -148,6 +148,16 @@ Pour ce faire, les tables **avions**, **compagnies**, **appareils** et **aeropor
 Les tables **vols**, **clients** puis **reservations** sont ensuite remplies avec des données générées aléatoirement, et ce, avec un minimum de cohérence.
 Ainsi, il est probable des incohérences dans les données mais cela n'a que peu d'importance puisqu'elles sont là uniquement à titre démonstratif.
 
+### Les liens entre les tables
+
+La modification, l'ajout ou la suppression de données dans la base nécessite de prendre certaines précautions.
+
+En effet, si par exemple on réserve un vol avec un passager, il faut penser à modifier plusieurs tables. Il faut tout d'abord ajouter une ligne dans la table réservation qui va lier le passager et le vol qu'il a réservé. Il faut dans le même temps penser à retrancher au vol le nombre de places réservées.
+
+De même, si l'on décide de supprimer un avion avec l'administrateur pour une quelconque raison, cela implique plusieurs tables. L'avion est sans doute relié à plusieurs appareils (avion et compagnie), et ces appareils sont peut-être assignés à des vols, que des clients auraient déjà réservés. Il faut prendre soin de supprimer les réservations, puis les vols, puis les appareils puis finalement l'avion concerné.
+
+Un dernier exemple, lorsque l'on souhaite supprimer un aéroport, il faut prendre soin de supprimer, en premier lieu, l'ensemble des vols dont l'aéroport de départ ou l'aéroport d'arrivée sont l'aéroport en question.
+
 ## L'application
 
 On accède à l'application par une **page de connexion**. L'utilisateur doit fournir un identifiant de connexion (une adresse email) ainsi qu'un mot de passe de connexion.
@@ -193,3 +203,5 @@ Compte-rendu (MaximePeter_JulienVerdun_gr2.zip)
 
 - description du cahier des charges (a l'image de celui dans la description des projets), cahier des charges (Maxime)
 - infrastructure proposée: machines, logiciel, réseau; (Maxime)
+
+- creation BDD : verifier que la somme des nb places ne depasse pas le total

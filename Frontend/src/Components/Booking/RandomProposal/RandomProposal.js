@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import "./RandomProposal.css";
 import axios from "axios";
+import CircularProgress from "@material-ui/core/CircularProgress";
+import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import { SERVERPATH } from "../../../serverParams.js";
 // import MoreVertIcon from "@material-ui/icons/MoreVert";
 
@@ -66,45 +68,73 @@ class RandomProposal extends Component {
         .catch((error) => {
           // handle error
           console.log(error);
-          resolve([]);
+          resolve(false);
         });
     });
   }
 
   createProposals(flightsList) {
-    let proposalsList = [],
-      nbProposal =
-        this.props.nbProposal === undefined ? 10 : this.props.nbProposal,
-      indexArray = [];
+    if (flightsList === false) {
+      this.setState({ proposalsList: false });
+    } else {
+      let proposalsList = [],
+        nbProposal =
+          this.props.nbProposal === undefined ? 10 : this.props.nbProposal,
+        indexArray = [];
 
-    nbProposal = Math.min(nbProposal, flightsList.length);
+      nbProposal = Math.min(nbProposal, flightsList.length);
 
-    for (var i = 0; i < flightsList.length; i++) {
-      indexArray.push(i);
+      for (var i = 0; i < flightsList.length; i++) {
+        indexArray.push(i);
+      }
+      // Math.floor(Math.random() * flightsList.length);
+      for (var j = 0; j < nbProposal; j++) {
+        var index = Math.floor(Math.random() * indexArray.length);
+        proposalsList.push(
+          <Card
+            key={j}
+            flight={flightsList[indexArray[index]]}
+            {...this.props}
+          />
+        );
+        indexArray.splice(index, 1);
+      }
+      this.setState({ proposalsList });
     }
-    // Math.floor(Math.random() * flightsList.length);
-    for (var j = 0; j < nbProposal; j++) {
-      var index = Math.floor(Math.random() * indexArray.length);
-      proposalsList.push(
-        <Card key={j} flight={flightsList[indexArray[index]]} {...this.props} />
-      );
-      indexArray.splice(index, 1);
-    }
-    this.setState({ proposalsList });
   }
 
   render() {
-    return (
-      <div className="main">
+    let propositions;
+    if (this.state.proposalsList === null) {
+      propositions = <CircularProgress />;
+    } else if (this.state.proposalsList === false) {
+      propositions = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else if (this.state.proposalsList.length === 0) {
+      propositions = (
+        <Alerts
+          type="warning"
+          content="Vous n'avez réalisé aucune réservation."
+        />
+      );
+    } else {
+      propositions = (
         <div>
-          <h3>Une envie de voyage ?</h3>
+          <div>
+            <h3>Une envie de voyage ?</h3>
+          </div>
+          <div>
+            Nous avons concocté quelques voyages pour vous, alors intéressez ?
+          </div>
+          <div className="col">{this.state.proposalsList}</div>
         </div>
-        <div>
-          Nous avons concocté quelques voyages pour vous, alors intéressez ?
-        </div>
-        <div className="col">{this.state.proposalsList}</div>
-      </div>
-    );
+      );
+    }
+    return <div className="main">{propositions}</div>;
   }
 }
 
