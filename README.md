@@ -37,7 +37,7 @@ Afin d'utiliser l'application les deux outils suivants devront être installés,
 - [Node.JS](https://nodejs.org/en/download/)
 - [Git](https://git-scm.com/downloads)
 
-Cloner le répertoire [GitHub](https://github.com/Julien-Verdun/database-system-project) dans un répertoire local.
+Cloner le répertoire [GitHub](https://github.com/Julien-Verdun/database-system-project) dans un répertoire local, appelé par la suite `database-system-project`.
 
 ### Installation des dépendances
 
@@ -63,16 +63,16 @@ Le gestionnaire de package **npm** va se charger d'installer la bonne version de
 Dans le repertoire `database-system-project/Backend/database_creation`, créez un fichier `database_connection.js` avec le contenu suivant :
 
 ```
-const databasePwd = "votre_mot_de_passe",
-  host = "localhost",
-  user = "root";
+const databaseParams =
+  {
+    databasePwd : "votre_mot_de_passe",
+    host : "localhost",
+    user : "root"
+  };
 
 module.exports = {
-  databasePwd,
-  host,
-  user
+  databaseParams
 };
-
 ```
 
 Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et place de **votre_mot_de_passe**.
@@ -82,7 +82,7 @@ Prenez soin de renseigner le mot de passe de votre instance mysql en lieu et pla
 Ces paramètres nous permettent de nous connecter à notre base de données locale.
 Nous allons maintenant nous y connecter et générer une base de données contenant quelques données.
 
-Pour ce faire, ouvrez une invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend/database_creation` et exécutez successivement les lignes de commande :
+Pour ce faire, ouvrez un invité de commande, placez-vous au niveau du répertoire `database-system-project/Backend/database_creation` et exécutez successivement les lignes de commande :
 
 ```
 node create_database.js
@@ -114,7 +114,7 @@ Afin de lancer en local la partie front-end de l'application, ouvrez un invité 
 npm start
 ```
 
-Ouvrez ensuite un navigateur internet, de préférences **Google Chrome**, sur le port `http://localhost:3000/`.
+Si cela ne se fait pas de manière automatique, ouvrez ensuite un navigateur internet, de préférences **Google Chrome**, sur le port `http://localhost:3000/`. L'application est prête à utilisation.
 
 ---
 
