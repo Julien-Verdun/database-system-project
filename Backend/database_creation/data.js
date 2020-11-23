@@ -1,3 +1,11 @@
+function randomG(v) {
+  var r = 0;
+  for (var i = v; i > 0; i--) {
+    r += Math.random();
+  }
+  return 2 * Math.abs(r / v - 0.5);
+}
+
 const liste_tables = [
   "vols",
   "appareils",
@@ -77,7 +85,7 @@ function createVol(nbAppareil, nbAeroport) {
     id_aer_dep = 100 + app1,
     id_aer_arr = 100 + app2,
     prix = 100 + parseInt(Math.random() * 90000) / 100,
-    place_libre = 120 + parseInt(Math.random() * 201);
+    place_libre = 120 + parseInt(randomG(4) * 201);
   return [
     id_app,
     date_depart,
@@ -381,13 +389,20 @@ let reservations = [
 function createReservation(nbClients, nbVol) {
   let id_cli = 100 + parseInt(Math.random() * nbClients),
     id_vol = 100 + parseInt(Math.random() * nbVol),
-    prix = 100 + parseInt(Math.random() * 80000) / 100,
-    quantite = 1 + parseInt(Math.random() * 15);
+    prix = 100 + parseInt(randomG(4) * 80000) / 100,
+    quantite = 1 + parseInt(randomG(4) * 15);
   return [id_cli, id_vol, prix, quantite];
 }
 
-for (var i = 0; i <= 30; i++) {
-  reservations.push(createReservation(clients.length, vols.length));
+let nbPlaceVols = vols.map((array) => array[array.length - 1]);
+
+let newRes;
+for (var i = 0; i <= 60; i++) {
+  newRes = createReservation(clients.length, vols.length);
+  if (nbPlaceVols[newRes[0] - 100] >= newRes[3]) {
+    nbPlaceVols[newRes[0] - 100] -= newRes[3];
+    reservations.push(newRes);
+  }
 }
 
 module.exports = {

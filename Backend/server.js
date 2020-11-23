@@ -192,38 +192,67 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query edit the client id_cli in the table clients
+    app.post("/editClient", (req, res) => {
+      let reqBody = req.body;
+
+      let query =
+        `
+        UPDATE clients 
+        SET nom = '` +
+        reqBody.nom +
+        `', prenom = '` +
+        reqBody.prenom +
+        `', mail = '` +
+        reqBody.mail +
+        `', telephone = '` +
+        reqBody.telephone +
+        `'
+        WHERE id_cli =      
+      ` +
+        reqBody.id_cli +
+        `;`;
+
+      con.query(query, (err, result) => {
+        if (err) {
+          throw err;
+        } else {
+          res.send({
+            result: result,
+          });
+        }
+      });
+    });
+
     app.get(
-      "/getFlights/:travelDate/:departureAirportId/:arrivalAirportId/:nbPassengers",
+      "/getFlights/:travelDate/:departureAirportId/:arrivalAirportId",
       (req, res) => {
         let travelDate = decodeURI(req.params.travelDate);
         let departureAirportId = Number(
           decodeURI(req.params.departureAirportId)
         );
         let arrivalAirportId = Number(decodeURI(req.params.arrivalAirportId));
-        let nbPassengers = Number(decodeURI(req.params.nbPassengers));
         let query =
           `
-        SELECT DATE_FORMAT(v.date_depart, "%d-%m-%Y") AS "date_depart",
-            v.heure_depart,
-            DATE_FORMAT(v.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
-            v.heure_arrivee, 
-            v.prix, 
-            v.id_vol, 
-            a_dep.nom AS aeroport_depart, 
-            a_arr.nom AS aeroport_arrivee,
-            v.place_libre AS nb_places_dispo
-        FROM vols v
-        JOIN aeroports a_dep ON v.id_aer_dep = a_dep.id_aer
-        JOIN aeroports a_arr ON v.id_aer_dep = a_arr.id_aer
+        SELECT DATE_FORMAT(vol.date_depart, "%d-%m-%Y") AS "date_depart",
+            vol.heure_depart,
+            DATE_FORMAT(vol.date_arrivee, "%d-%m-%Y") AS "date_arrivee",
+            vol.heure_arrivee, 
+            vol.prix, 
+            vol.id_vol, 
+            aer_dep.nom AS aeroport_depart, 
+            aer_arr.nom AS aeroport_arrivee,
+            vol.place_libre AS nb_places_dispo
+        FROM vols vol
+        JOIN aeroports aer_dep ON (aer_dep.id_aer = vol.id_aer_dep AND aer_dep.id_aer = ` +
+          departureAirportId +
+          `) 
+        JOIN aeroports aer_arr ON (aer_arr.id_aer = vol.id_aer_arr AND aer_arr.id_aer = ` +
+          arrivalAirportId +
+          ` ) 
         WHERE date_depart = '` +
           travelDate +
-          `'
-          AND id_aer_dep = ` +
-          departureAirportId +
-          `
-          AND id_aer_arr = ` +
-          arrivalAirportId +
-          `;`;
+          `';`;
         con.query(query, (err, results, fields) => {
           if (err) throw err;
           res.send(results);

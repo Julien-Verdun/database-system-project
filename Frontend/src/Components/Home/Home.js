@@ -6,14 +6,9 @@ class Home extends Component {
   render() {
     return (
       <div className="main">
-        <h1>Projet informatique : Système de base de données</h1>
+        <h1>Plateforme de réservation</h1>
         <div className="content">
-          Cette application web a été développée en ReactJS (front-end) et en
-          NodeJS (back-end).
-          <br />
-          La base de données est une base MySQL.
-          <br />
-          L'application simule une plateforme de réservation de billet d'avion.
+          Bienvenu sur votre plateforme de réservation de billet d'avion.
           <div className="col">
             <button
               className="btn btn-primary"

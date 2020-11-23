@@ -7,13 +7,14 @@ class Footer extends Component {
       <footer className="page-footer font-small mdb-color lighten-3 pt-4 main-footer">
         <div className="container text-center text-md-left">
           <div className="row">
-            <div className="col-md-4 col-lg-3 mr-auto my-md-4 my-0 mt-4 mb-1">
+            <div className="col-md-4 col-lg-5 mr-auto my-md-4 my-0 mt-4 mb-1">
               <h5 className="font-weight-bold text-uppercase mb-4">
                 &Agrave; propos
               </h5>
               <p>
                 Cette application a été développée dans le cadre du MOD 4.6
-                Systèmes de bases de données.
+                Systèmes de bases de données. Elle a été développée en ReactJS
+                (front-end), NodeJS (back-end) et MySQL (base de données)
               </p>
               <p></p>
             </div>

@@ -1,23 +1,22 @@
 import React, { Component } from "react";
 import "./FlightSearch.css";
 import axios from "axios";
-// import Alerts from "../../ToolsComponent/Alerts/Alerts";
+import Alerts from "../../ToolsComponent/Alerts/Alerts";
 import { dateToDateTimeLocal } from "../../ToolsComponent/utils.js";
 import { SERVERPATH } from "../../../serverParams.js";
+import CircularProgress from "@material-ui/core/CircularProgress";
 
 class FlightSearch extends Component {
   constructor(props) {
     super(props);
     let date = dateToDateTimeLocal(new Date());
     this.state = {
-      result: "",
+      flightsList: null,
       listeAirportsOptions: null,
       date_depart: date.split("T")[0],
       heure_depart: date.split("T")[1],
       id_aer_dep: null,
       id_aer_arr: null,
-      nb_places: 1,
-      hasError: false,
     };
     this.handleClickSearch = this.handleClickSearch.bind(this);
   }
@@ -33,7 +32,7 @@ class FlightSearch extends Component {
         let listeAirportsOptions = response.data.map((elt, index) => {
           return (
             <option value={elt.id_aer} key={elt.id_aer}>
-              {elt.nom + " " +  elt.code + ", " + elt.ville + ", " + elt.pays}
+              {elt.nom + " " + elt.code + ", " + elt.ville + ", " + elt.pays}
             </option>
           );
         });
@@ -46,7 +45,9 @@ class FlightSearch extends Component {
       .catch((error) => {
         // handle error
         console.log(error);
-        this.setState({ listeAirportsOptions: null, result: null, hasError: true });
+        this.setState({
+          listeAirportsOptions: false,
+        });
       });
   }
 
@@ -55,7 +56,6 @@ class FlightSearch extends Component {
     let travelDate = this.state.date_depart;
     let departureAirportId = this.state.id_aer_dep;
     let arrivalAirportId = this.state.id_aer_arr;
-    let nbPassengers = this.state.nb_places;
     axios
       .get(
         SERVERPATH +
@@ -64,20 +64,15 @@ class FlightSearch extends Component {
           "/" +
           encodeURI(departureAirportId) +
           "/" +
-          encodeURI(arrivalAirportId) +
-          "/" +
-          encodeURI(nbPassengers)
+          encodeURI(arrivalAirportId)
       )
       .then((response) => {
         // handle success
         if (response.data.length === 0) {
-          this.setState({ result: "Pas de résultats" });
+          this.setState({ flightsList: response.data });
         } else {
           let flightsList = response.data.map((elt, index) => {
-          let backgroundColor =
-             elt.nb_places_dispo === 0
-              ? "bisque"
-              : null;
+            let backgroundColor = elt.nb_places_dispo === 0 ? "bisque" : null;
             return (
               <tr
                 key={index}
@@ -87,7 +82,7 @@ class FlightSearch extends Component {
                     "/flightbooking/" + encodeURI(elt.id_vol)
                   );
                 }}
-               >
+              >
                 <th scope="row">{index}</th>
                 <td>{elt.date_depart + " à " + elt.heure_depart}</td>
                 <td>{elt.aeroport_depart}</td>
@@ -95,58 +90,137 @@ class FlightSearch extends Component {
                 <td>{elt.aeroport_arrivee}</td>
                 <td>{elt.prix + " €"}</td>
               </tr>
-              );
+            );
           });
-          this.setState({ result: flightsList });
+          this.setState({ flightsList: flightsList });
         }
       })
       .catch((error) => {
         // handle error
-        let errorMsg = 
-        <div className="alert alert-danger">
-        <strong>Pas de résultats !</strong> Il semble que votre connexion au serveur ne
-        soit pas établie. Vérifiez votre connexion.
-        </div>
-        this.setState({ result: errorMsg});
+        this.setState({ flightsList: false });
       });
   }
   render() {
     let table;
-    if (this.state.hasError) {
+    if (this.state.flightsList === null) {
+      table = null;
+    } else if (this.state.flightsList === false) {
       table = (
-        <div className="alert alert-danger">
-          <strong>Erreur !</strong> Il semble que votre connexion au serveur ne
-          soit pas établie. Vérifiez votre connexion.
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else if (this.state.flightsList.length === 0) {
+      table = (
+        <Alerts
+          type="warning"
+          content="Aucun vol ne correspond à votre recherche. Essayez une autre date ou un autre voyage."
+        />
+      );
+    } else {
+      table = (
+        <table className="table table-striped">
+          <thead>
+            <tr>
+              <th scope="col"></th>
+              <th scope="col">Date d'arrivée</th>
+              <th scope="col">Aéroport de départ</th>
+              <th scope="col">Date d'arrivée</th>
+              <th scope="col">Aéroport d'arrivée</th>
+              <th scope="col">Prix</th>
+            </tr>
+          </thead>
+          <tbody>{this.state.flightsList}</tbody>
+        </table>
+      );
+    }
+
+    let form;
+    if (this.state.listeAirportsOptions === null) {
+      form = <CircularProgress />;
+    } else if (this.state.listeAirportsOptions === false) {
+      form = (
+        <Alerts
+          type="danger"
+          content="Aucun résultat, vérifier votre connection"
+        />
+      );
+    } else if (this.state.listeAirportsOptions.length === 0) {
+      form = (
+        <Alerts type="warning" content="Les données semblent corrompues." />
+      );
+    } else {
+      form = (
+        <div className="form-div">
+          <form>
+            <div className="form-group">
+              <label>Date de départ</label>
+              <input
+                className="form-control"
+                type="datetime-local"
+                id="departure-input"
+                placeholder="Enter a departure date"
+                defaultValue={
+                  this.state.date_depart + "T" + this.state.heure_depart
+                }
+                min={dateToDateTimeLocal(new Date())}
+                max={dateToDateTimeLocal(
+                  new Date(new Date().getTime() + 365 * 3600 * 24 * 1000)
+                )}
+                onChange={() => {
+                  let dateDepart = document
+                    .getElementById("departure-input")
+                    .value.split("T");
+                  this.setState({
+                    date_depart: dateDepart[0],
+                    heure_depart: dateDepart[1],
+                  });
+                }}
+              ></input>
+            </div>
+            <div className="form-group">
+              <label>Depuis </label>
+              <select
+                name="from-airports"
+                id="from-airport"
+                className="custom-select"
+                onChange={() => {
+                  this.setState({
+                    id_aer_dep: Number(
+                      document.getElementById("from-airport").value
+                    ),
+                  });
+                }}
+              >
+                {this.state.listeAirportsOptions}
+              </select>
+            </div>
+            <div className="form-group">
+              <label>Vers </label>
+              <select
+                name="to-airports"
+                id="to-airport"
+                className="custom-select"
+                onChange={() => {
+                  this.setState({
+                    id_aer_arr: Number(
+                      document.getElementById("to-airport").value
+                    ),
+                  });
+                }}
+              >
+                {this.state.listeAirportsOptions}
+              </select>
+            </div>
+          </form>
+          <button className="btn btn-primary" onClick={this.handleClickSearch}>
+            Recherche
+          </button>
         </div>
       );
     }
-    else{
-      if (this.state.result === "Pas de résultats") {
-        table = (
-          <div className="alert alert-warning">
-            <strong>Attention !</strong> Aucuns vols ne correspondent à vos
-            critères. Essayez une autre date ou un autre voyage.
-          </div>
-        );
-      } else {
-        table = (
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th scope="col"></th>
-                <th scope="col">Date d'arrivée</th>
-                <th scope="col">Aéroport de départ</th>
-                <th scope="col">Date d'arrivée</th>
-                <th scope="col">Aéroport d'arrivée</th>
-                <th scope="col">Prix</th>
-              </tr>
-            </thead>
-            <tbody>{this.state.result}</tbody>
-          </table>
-        );
-      }
-    }
-    
+
     return (
       <div className="main">
         <h1>Bienvenue sur la page de recherche</h1>
@@ -159,98 +233,8 @@ class FlightSearch extends Component {
             style={{ margin: "20px" }}
           />
         </div>
-        <form>
-          <div className="form-group">
-            <label>Date de départ</label>
-            <input
-              className="form-control"
-              type="datetime-local"
-              id="departure-input"
-              placeholder="Enter a departure date"
-              defaultValue={
-                this.state.date_depart + "T" + this.state.heure_depart
-              }
-              min={dateToDateTimeLocal(new Date())}
-              max={dateToDateTimeLocal(
-                new Date(new Date().getTime() + 365 * 3600 * 24 * 1000)
-              )}
-              onChange={() => {
-                let dateDepart = document
-                  .getElementById("departure-input")
-                  .value.split("T");
-                this.setState({
-                  date_depart: dateDepart[0],
-                  heure_depart: dateDepart[1],
-                });
-              }}
-            ></input>
-          </div>
-          <div className="form-group">
-            <label>Depuis </label>
-            <select
-              name="from-airports"
-              id="from-airport"
-              className="custom-select"
-              onChange={() => {
-                this.setState({
-                  id_aer_dep: Number(
-                    document.getElementById("from-airport").value
-                  ),
-                });
-              }}
-            >
-              {this.state.listeAirportsOptions}
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Vers </label>
-            <select
-              name="to-airports"
-              id="to-airport"
-              className="custom-select"
-              onChange={() => {
-                this.setState({
-                  id_aer_arr: Number(
-                    document.getElementById("to-airport").value
-                  ),
-                });
-              }}
-            >
-              {this.state.listeAirportsOptions}
-            </select>
-          </div>
-          <div className="form-group">
-            <label>Nombre de passagers </label>
-            <input
-              className="form-control"
-              type="number"
-              id="nb-passengers-input"
-              placeholder="1"
-              min="1"
-              max="20"
-              onChange={() => {
-                this.setState({
-                  nb_places: Number(
-                    document.getElementById("nb-passengers-input").value
-                  ),
-                });
-              }}
-            ></input>
-          </div>
-        </form>
-        <div className="container">
-          <div className="row justify-content-md-center">
-            <div className="col">
-              <button
-                className="btn btn-primary"
-                onClick={this.handleClickSearch}
-              >
-                Recherche
-              </button>
-            </div>
-          </div>
-        </div>
-        <div className="result">{table}</div>
+        {form}
+        <div className="table">{table}</div>
       </div>
     );
   }
