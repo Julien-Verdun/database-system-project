@@ -35,7 +35,7 @@ class App extends Component {
     // });
     const { cookies } = props;
     this.cookies = cookies;
-    console.log("cookies : ", this.cookies.cookies);
+
     if (this.cookies.get("isAuth") === undefined) {
       this.cookies.set("isAuth", false, { path: "/" });
     }
@@ -52,8 +52,8 @@ class App extends Component {
 
   authentification(isAuth, id_cli) {
     this.setState({ isAuth: isAuth, id_cli: id_cli });
-    this.cookies.set("isAuth", isAuth, { path: "/" });
-    this.cookies.set("idCli", id_cli, { path: "/" });
+    this.cookies.set("isAuth", isAuth, { path: "/", maxAge: 1800 });
+    this.cookies.set("idCli", id_cli, { path: "/", maxAge: 1800 });
     console.log(this.cookies.cookies);
   }
 

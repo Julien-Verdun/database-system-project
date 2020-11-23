@@ -192,6 +192,38 @@ con.connect(function (err, db) {
       });
     });
 
+    // this query edit the client id_cli in the table clients
+    app.post("/editClient", (req, res) => {
+      let reqBody = req.body;
+
+      let query =
+        `
+        UPDATE clients 
+        SET nom = '` +
+        reqBody.nom +
+        `', prenom = '` +
+        reqBody.prenom +
+        `', mail = '` +
+        reqBody.mail +
+        `', telephone = '` +
+        reqBody.telephone +
+        `'
+        WHERE id_cli =      
+      ` +
+        reqBody.id_cli +
+        `;`;
+
+      con.query(query, (err, result) => {
+        if (err) {
+          throw err;
+        } else {
+          res.send({
+            result: result,
+          });
+        }
+      });
+    });
+
     app.get(
       "/getFlights/:travelDate/:departureAirportId/:arrivalAirportId",
       (req, res) => {

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./Login.css";
 import isAuthorise from "./Auth";
 import Footer from "../Footer/Footer";
+import Alerts from "../ToolsComponent/Alerts/Alerts";
 
 class Login extends Component {
   constructor(props) {
@@ -9,6 +10,7 @@ class Login extends Component {
     this.state = {
       email: "",
       password: "",
+      errorConnection: false,
     };
 
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -18,10 +20,12 @@ class Login extends Component {
   handleSubmit(event) {
     event.preventDefault();
     if (this.state.email === "" || this.state.password === "") {
-      console.log("Veuillez saisir des données");
+      this.setState({ errorConnection: true });
     } else {
-      console.log("Submit connection form");
       isAuthorise(this.state.email, this.state.password).then((value) => {
+        if (!value[0]) {
+          this.setState({ errorConnection: true });
+        }
         this.props.authentification(value[0], value[1]);
       });
     }
@@ -37,6 +41,12 @@ class Login extends Component {
   }
 
   render() {
+    let errorConnection = this.state.errorConnection ? (
+      <Alerts
+        type="danger"
+        content="Les identifiants fournies ne sont pas les bons."
+      />
+    ) : null;
     return (
       <div>
         <div className="login-div">
@@ -65,6 +75,7 @@ class Login extends Component {
                 onChange={this.handleClick}
               />
             </div>
+            {errorConnection}
             <button
               type="submit"
               className="btn btn-primary"
