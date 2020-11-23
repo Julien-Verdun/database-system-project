@@ -100,9 +100,20 @@ con.query(query, (err, results, fields) => {
       "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES vols(id_vol);",
     ];
 
+
     // create link beetwen tables
     liste_frg_key.forEach((query) => {
       utils.createTable(query, con);
+    });
+
+    // create procedures
+    liste_procedures = [
+      "DROP PROCEDURE IF EXISTS procedure_add_avion",
+      "CREATE PROCEDURE procedure_add_avion (IN model CHAR(20), IN nb_places INT) INSERT INTO avions (type, nb_place) VALUES (model, nb_places);"
+    ]
+
+    liste_procedures.forEach((query) => {
+      utils.createProcedure(query, con);
     });
 
     // remplissages des tables avions, compagnies et aeroports

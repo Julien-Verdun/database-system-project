@@ -43,10 +43,19 @@ function deleteTable(sql, con) {
   });
 }
 
+function createProcedure(sql, con) {
+  // cette fonction permet de supprimer
+  con.query(sql, function (err, result) {
+    if (err) throw err;
+    console.log("Mise en place procédure : ", sql);
+  });
+}
+
 module.exports = {
   createDataBase,
   createTable,
   updateTable,
   insertElements,
   deleteTable,
+  createProcedure,
 };
