@@ -788,7 +788,7 @@ con.connect(function (err, db) {
 
       console.log("reqBody : ", reqBody);
       let query =
-        `INSERT INTO vols ((id_app), date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES (` +
+        `INSERT INTO vols (id_app, date_depart, heure_depart, date_arrivee, heure_arrivee, id_aer_dep, id_aer_arr, prix, place_libre) VALUES (` +
         id_app +
         `, "` +
         date_depart +
@@ -842,12 +842,7 @@ con.connect(function (err, db) {
       nb_place = reqBody.nb_place;
 
     console.log("reqBody : ", reqBody);
-    let query =
-      `CALL procedure_add_avion("` +
-      type +
-      `", ` +
-      nb_place +
-      `);`;
+    let query = `CALL procedure_add_avion("` + type + `", ` + nb_place + `);`;
 
     con.query(query, (err, results, fields) => {
       if (err) throw err;
