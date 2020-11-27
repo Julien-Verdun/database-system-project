@@ -317,20 +317,34 @@ let fonctions = {
   HDA: "Hôtesse de l'air",
 };
 
-function createPersonnels(noms, prenoms, fonctions) {
+let salaires = {
+  CDB: [3500, 15000],
+  OPL: [2500, 10000],
+  OMN: [2000, 2000],
+  CCP: [2000, 3000],
+  STW: [1800, 2000],
+  HDA: [1800, 2000],
+};
+
+function createPersonnels(noms, prenoms, fonctions, salaires) {
+  let trgFonction = Object.keys(fonctions)[
+    parseInt(Math.random() * Object.keys(fonctions).length)
+  ];
   let nom = noms[parseInt(Math.random() * noms.length)],
     prenom = prenoms[parseInt(Math.random() * prenoms.length)],
-    fonction = Object.values(fonctions)[
-      parseInt(Math.random() * Object.values(fonctions).length)
-    ],
-    adresse = parseInt(Math.random() * 200) + " rue de l'arbre sec",
-    numero_securite_sociale = parseInt(Math.random() * 9 * 10 ** 12 + 10 ** 12),
-    salaire = 1200 + parseInt(randomG(4) * 2000),
-    nombre_heure_vol = parseInt(randomG(4) * 200),
-    numero_licence =
-      fonction === "Commandant de bord" || fonction === "Copilote"
+    fonction = fonctions[trgFonction];
+  (adresse = parseInt(Math.random() * 200) + " rue de l'arbre sec"),
+    (numero_securite_sociale = parseInt(
+      Math.random() * 9 * 10 ** 12 + 10 ** 12
+    )),
+    (salaire =
+      salaires[trgFonction][0] +
+      parseInt(randomG(4) * salaires[trgFonction][0])),
+    (nombre_heure_vol = parseInt(randomG(4) * 200)),
+    (numero_licence =
+      trgFonction === "CDB" || trgFonction === "OPL"
         ? parseInt(Math.random() * 9 * 10 ** 5 + 10 ** 5)
-        : null;
+        : null);
   return [
     nom,
     prenom,
@@ -342,21 +356,14 @@ function createPersonnels(noms, prenoms, fonctions) {
     numero_licence,
   ];
 }
-
 let personnels = [];
 
 for (var i = 0; i < nbPersonnels; i++) {
-  personnels.push(createPersonnels(noms, prenoms, fonctions));
+  personnels.push(createPersonnels(noms, prenoms, fonctions, salaires));
 }
 
+console.log(personnels);
 let equipages = [];
-
-// CDB: "Commandant de bord",
-// OPL: "Copilote",
-// OMN: "Officier Mécanicien Navigant",
-// CCP: "Chef de Cabine",
-// STW: "Steward",
-// HDA: "Hôtesse de l'air",
 
 let repartitions = {
   CDB: 1,
