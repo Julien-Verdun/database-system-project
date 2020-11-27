@@ -10,31 +10,19 @@ class Personnel extends Component {
   render() {
     return (
       <tr>
-        <th scope="row">{this.props.personnel.id_per}</th>
+        <th scope="row">{this.props.index + 1}</th>
+        <td>{this.props.personnel.fonction}</td>
+        <td>{this.props.personnel.adresse}</td>
+        <td>{this.props.personnel.nom}</td>
+        <td>{this.props.personnel.prenom}</td>
         <td>
-          {this.props.personnel.fonction}
+          {this.props.personnel.numero_licence
+            ? this.props.personnel.numero_licence
+            : "-"}
         </td>
-        <td>
-          {this.props.personnel.adresse}
-        </td>
-        <td>
-          {this.props.personnel.nom}
-        </td>
-        <td>
-          {this.props.personnel.prenom}
-        </td>
-        <td>
-          {this.props.personnel.numero_licence}
-        </td>
-        <td>
-          {this.props.personnel.numero_securite_sociale}
-        </td>
-        <td>
-          {this.props.personnel.salaire + " €"}
-        </td>
-        <td>
-          {this.props.personnel.nombre_heure_vol + " h"}
-        </td>
+        <td>{this.props.personnel.numero_securite_sociale}</td>
+        <td>{this.props.personnel.salaire + " €"}</td>
+        <td>{this.props.personnel.nombre_heure_vol + " h"}</td>
       </tr>
     );
   }
@@ -129,7 +117,9 @@ class VolDetails extends Component {
                 </thead>
                 <tbody>
                   {this.state.dataEqp.map((per, index) => {
-                    return <Personnel key={index} personnel={per} style={"cyan"} />;
+                    return (
+                      <Personnel key={index} index={index} personnel={per} />
+                    );
                   })}
                 </tbody>
               </table>

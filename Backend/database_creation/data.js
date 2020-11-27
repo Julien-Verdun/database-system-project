@@ -326,14 +326,50 @@ let salaires = {
   HDA: [1800, 2000],
 };
 
-function createPersonnels(noms, prenoms, fonctions, salaires) {
+let rues = [
+  "Rue de l'arbre sec",
+  "Place du 22 Novembre 1943",
+  "Place des 44 enfants d'Izieu",
+  "Place du 8 Février 1962",
+  "Rue du 8 mai 1945",
+  "Place du 8 novembre 1942",
+  "Esplanade du 9 novembre 1989",
+  "Rue de l'Abbaye",
+  "Place de l'Abbé-Basset",
+  "Rue de l'Abbé-Carton",
+  "Rue de l'Abbé-de-l'Épée",
+  "Place de l'Abbé-Franz-Stock",
+  "Place de l'Abbé-Georges-Hénocque",
+  "Rue de l'Abbé-Gillet",
+  "Rue de l'Abbé-Grégoire",
+  "Rue de l'Abbé-Groult",
+  "Place de l'Abbé-Jean-Lebeuf",
+  "Rue de l'Abbé-Migne",
+  "Rue de l'Abbé-Patureau",
+  "Rue de l'Abbé-Roger-Derry",
+  "Avenue de l'Abbé-Roussel",
+  "Rue de l'Abbé-Rousselot",
+  "Rue de l'Abbé-Soulange-Bodin",
+  "Rue des Abbesses",
+  "Rue d'Abbeville",
+  "Rue Abel",
+  "Rue Abel-Ferry",
+  "Rue Abel-Gance",
+  "Rue Abel-Hovelacque",
+  "Passage Abel-Leblanc",
+];
+
+function createPersonnels(noms, prenoms, fonctions, salaires, rues) {
   let trgFonction = Object.keys(fonctions)[
     parseInt(Math.random() * Object.keys(fonctions).length)
   ];
-  let nom = noms[parseInt(Math.random() * noms.length)],
+  let nom = noms[parseInt(Math.random() * noms.length)].toUpperCase(),
     prenom = prenoms[parseInt(Math.random() * prenoms.length)],
     fonction = fonctions[trgFonction];
-  (adresse = parseInt(Math.random() * 200) + " rue de l'arbre sec"),
+  (adresse =
+    parseInt(Math.random() * 200) +
+    " " +
+    rues[parseInt(Math.random() * rues.length)]),
     (numero_securite_sociale = parseInt(
       Math.random() * 9 * 10 ** 12 + 10 ** 12
     )),
@@ -345,6 +381,9 @@ function createPersonnels(noms, prenoms, fonctions, salaires) {
       trgFonction === "CDB" || trgFonction === "OPL"
         ? parseInt(Math.random() * 9 * 10 ** 5 + 10 ** 5)
         : null);
+  prenom =
+    prenom.slice(0, 1).toUpperCase() +
+    prenom.slice(1, prenom.length).toLowerCase();
   return [
     nom,
     prenom,
@@ -356,13 +395,13 @@ function createPersonnels(noms, prenoms, fonctions, salaires) {
     numero_licence,
   ];
 }
+
 let personnels = [];
 
 for (var i = 0; i < nbPersonnels; i++) {
-  personnels.push(createPersonnels(noms, prenoms, fonctions, salaires));
+  personnels.push(createPersonnels(noms, prenoms, fonctions, salaires, rues));
 }
 
-console.log(personnels);
 let equipages = [];
 
 let repartitions = {
