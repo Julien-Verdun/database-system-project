@@ -9,44 +9,33 @@ import Alerts from "../../ToolsComponent/Alerts/Alerts";
 class Personnel extends Component {
   render() {
     return (
-      <div
-        className="col personnel"
-        style={{ backgroundColor: this.props.style }}
-      >
-        <div className="row">
-          <p className="bold-p">Fonction : </p>
-          {" " + this.props.personnel.fonction}
-        </div>
-        <div className="row">
-          <p className="bold-p">Adresse : </p>
-          {" " + this.props.personnel.adresse}
-        </div>
-        <div className="row">
-          <p className="bold-p">Nom : </p>
-          {" " + this.props.personnel.nom}
-        </div>
-        <div className="row">
-          <p className="bold-p">Prénom : </p>
-          {" " + this.props.personnel.prenom}
-        </div>
-        <div className="row">
-          <p className="bold-p">Numéro de licence : </p>
-          {" " + this.props.personnel.numero_licence}
-        </div>
-        <div className="row">
-          <p className="bold-p">Numéro de sécurité sociale : </p>
-
-          {" " + this.props.personnel.numero_securite_sociale}
-        </div>
-        <div className="row">
-          <p className="bold-p">Salaire : </p>
-          {" " + this.props.personnel.salaire}
-        </div>
-        <div className="row">
-          <p className="bold-p">Nombre d'heure de vol : </p>
-          {" " + this.props.personnel.nombre_heure_vol}
-        </div>
-      </div>
+      <tr>
+        <th scope="row">{this.props.personnel.id_per}</th>
+        <td>
+          {this.props.personnel.fonction}
+        </td>
+        <td>
+          {this.props.personnel.adresse}
+        </td>
+        <td>
+          {this.props.personnel.nom}
+        </td>
+        <td>
+          {this.props.personnel.prenom}
+        </td>
+        <td>
+          {this.props.personnel.numero_licence}
+        </td>
+        <td>
+          {this.props.personnel.numero_securite_sociale}
+        </td>
+        <td>
+          {this.props.personnel.salaire + " €"}
+        </td>
+        <td>
+          {this.props.personnel.nombre_heure_vol + " h"}
+        </td>
+      </tr>
     );
   }
 }
@@ -122,10 +111,28 @@ class VolDetails extends Component {
         ) : (
           <div>
             <Billet dataBillet={this.state.dataVol} />
-            <div id="container">
-              {this.state.dataEqp.map((per, index) => {
-                return <Personnel key={index} personnel={per} style={"cyan"} />;
-              })}
+            <div>
+              <h2>Equipage</h2>
+              <table className="table table-striped table-bordered table-hover">
+                <thead id="table-header">
+                  <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Fonction</th>
+                    <th scope="col">Adresse </th>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Prénom</th>
+                    <th scope="col">License</th>
+                    <th scope="col">Sécurité sociale</th>
+                    <th scope="col">Salaire</th>
+                    <th scope="col">Heures de vol</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {this.state.dataEqp.map((per, index) => {
+                    return <Personnel key={index} personnel={per} style={"cyan"} />;
+                  })}
+                </tbody>
+              </table>
             </div>
           </div>
         )}
