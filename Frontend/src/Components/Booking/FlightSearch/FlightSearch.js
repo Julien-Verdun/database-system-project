@@ -120,7 +120,7 @@ class FlightSearch extends Component {
       );
     } else {
       table = (
-        <table className="table table-striped">
+        <table className="table table-striped table-hover">
           <thead>
             <tr>
               <th scope="col"></th>
