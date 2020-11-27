@@ -308,22 +308,29 @@ for (var i = 0; i <= nbReservations; i++) {
   }
 }
 
-let fonctions = [
-  "Chef de bord",
-  "Pilote de ligne",
-  "Stewart",
-  "Hôtesse de l'air",
-];
+let fonctions = {
+  CDB: "Commandant de bord",
+  OPL: "Copilote",
+  OMN: "Officier Mécanicien Navigant",
+  CCP: "Chef de Cabine",
+  STW: "Steward",
+  HDA: "Hôtesse de l'air",
+};
 
 function createPersonnels(noms, prenoms, fonctions) {
   let nom = noms[parseInt(Math.random() * noms.length)],
     prenom = prenoms[parseInt(Math.random() * prenoms.length)],
-    fonction = fonctions[parseInt(Math.random() * fonctions.length)],
+    fonction = Object.values(fonctions)[
+      parseInt(Math.random() * Object.values(fonctions).length)
+    ],
     adresse = parseInt(Math.random() * 200) + " rue de l'arbre sec",
     numero_securite_sociale = parseInt(Math.random() * 9 * 10 ** 12 + 10 ** 12),
     salaire = 1200 + parseInt(randomG(4) * 2000),
     nombre_heure_vol = parseInt(randomG(4) * 200),
-    numero_licence = parseInt(Math.random() * 9 * 10 ** 5 + 10 ** 5);
+    numero_licence =
+      fonction === "Commandant de bord" || fonction === "Copilote"
+        ? parseInt(Math.random() * 9 * 10 ** 5 + 10 ** 5)
+        : null;
   return [
     nom,
     prenom,
@@ -342,20 +349,41 @@ for (var i = 0; i < nbPersonnels; i++) {
   personnels.push(createPersonnels(noms, prenoms, fonctions));
 }
 
-function createEquipages(nbPer, id_vol) {
-  let id_per = 100 + parseInt(Math.random() * nbPer);
+let equipages = [];
+
+// CDB: "Commandant de bord",
+// OPL: "Copilote",
+// OMN: "Officier Mécanicien Navigant",
+// CCP: "Chef de Cabine",
+// STW: "Steward",
+// HDA: "Hôtesse de l'air",
+
+let repartitions = {
+  CDB: 1,
+  OPL: 1,
+  OMN: 1,
+  CCP: 1,
+  STW: 1,
+  HDA: 1,
+};
+
+function createEquipages(pers, id_vol) {
+  let id_per = pers[parseInt(Math.random() * pers.length)];
   return [id_vol, id_per];
 }
 
-let equipages = [];
-
-for (var i = 0; i < nbVols; i++) {
-  for (var j = 0; j < fonctions.length; j++) {
-    // RECHERCHER ICI LES FONCTIONS
-    // METTRE 1 PILOTE 2A3 STEWARTS OU HOTESSE
-    equipages.push(createEquipages(personnels.length, 100 + i));
+Object.keys(fonctions).forEach((fonction, j) => {
+  let pers = personnels
+    .map((personnel, index) => {
+      return personnel[2] === fonctions[fonction] ? 100 + index : null;
+    })
+    .filter((value) => value !== null);
+  for (var i = 0; i < nbVols; i++) {
+    for (var k = 0; k < repartitions[fonction]; k++) {
+      equipages.push(createEquipages(pers, 100 + i));
+    }
   }
-}
+});
 
 module.exports = {
   liste_tables,
