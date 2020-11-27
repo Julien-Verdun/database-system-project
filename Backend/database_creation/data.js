@@ -1,3 +1,8 @@
+const nbReservations = 60,
+  nbClients = 10,
+  nbPersonnels = 100,
+  nbVols = 100;
+
 function randomG(v) {
   var r = 0;
   for (var i = v; i > 0; i--) {
@@ -14,6 +19,8 @@ const liste_tables = [
   "aeroports",
   "clients",
   "reservations",
+  "equipages",
+  "personnels",
 ];
 
 const databaseName = "mydb";
@@ -100,113 +107,9 @@ function createVol(nbAppareil, nbAeroport) {
 }
 
 let vols = [];
-for (var i = 0; i < 100; i++) {
+for (var i = 0; i < nbVols; i++) {
   vols.push(createVol(appareils.length, aeroports.length));
 }
-
-// console.log(vols);
-
-// const vols = [
-//   [
-//     100,
-//     "2020-11-15",
-//     "09:34:21",
-//     "2020-11-15",
-//     "11:34:21",
-//     109,
-//     100,
-//     245.42,
-//     130,
-//   ],
-//   [
-//     101,
-//     "2020-11-16",
-//     "11:42:21",
-//     "2020-11-15",
-//     "21:34:00",
-//     104,
-//     102,
-//     125.42,
-//     104,
-//   ],
-//   [
-//     102,
-//     "2020-10-15",
-//     "19:40:00",
-//     "2020-10-16",
-//     "20:34:23",
-//     108,
-//     109,
-//     235.0,
-//     56,
-//   ],
-//   [
-//     103,
-//     "2020-11-01",
-//     "02:49:21",
-//     "2020-11-01",
-//     "09:34:27",
-//     101,
-//     103,
-//     456.2,
-//     23,
-//   ],
-//   [
-//     104,
-//     "2020-11-15",
-//     "14:34:21",
-//     "2020-11-15",
-//     "16:32:31",
-//     106,
-//     107,
-//     22.42,
-//     130,
-//   ],
-//   [
-//     107,
-//     "2020-12-05",
-//     "12:34:21",
-//     "2020-12-05",
-//     "16:56:24",
-//     100,
-//     107,
-//     1224.92,
-//     200,
-//   ],
-//   [
-//     101,
-//     "2020-12-13",
-//     "23:54:41",
-//     "2020-11-14",
-//     "04:22:13",
-//     103,
-//     102,
-//     145.02,
-//     20,
-//   ],
-//   [
-//     100,
-//     "2020-11-30",
-//     "17:34:21",
-//     "2020-12-01",
-//     "00:32:31",
-//     109,
-//     101,
-//     230.12,
-//     120,
-//   ],
-//   [
-//     103,
-//     "2021-01-01",
-//     "16:34:21",
-//     "2021-01-01",
-//     "20:32:31",
-//     104,
-//     105,
-//     204.93,
-//     100,
-//   ],
-// ];
 
 let noms = [
   "Martin",
@@ -373,7 +276,7 @@ let clients = [
   ],
 ];
 
-for (var i = 0; i <= 10; i++) {
+for (var i = 0; i <= nbClients; i++) {
   clients.push(createClient(noms, prenoms, mailExtensions));
 }
 
@@ -386,8 +289,8 @@ let reservations = [
   [100, 100, 91.2, 10],
 ];
 
-function createReservation(nbClients, nbVol) {
-  let id_cli = 100 + parseInt(Math.random() * nbClients),
+function createReservation(nbClient, nbVol) {
+  let id_cli = 100 + parseInt(Math.random() * nbClient),
     id_vol = 100 + parseInt(Math.random() * nbVol),
     prix = 100 + parseInt(randomG(4) * 80000) / 100,
     quantite = 1 + parseInt(randomG(4) * 15);
@@ -397,11 +300,60 @@ function createReservation(nbClients, nbVol) {
 let nbPlaceVols = vols.map((array) => array[array.length - 1]);
 
 let newRes;
-for (var i = 0; i <= 60; i++) {
+for (var i = 0; i <= nbReservations; i++) {
   newRes = createReservation(clients.length, vols.length);
   if (nbPlaceVols[newRes[0] - 100] >= newRes[3]) {
     nbPlaceVols[newRes[0] - 100] -= newRes[3];
     reservations.push(newRes);
+  }
+}
+
+let fonctions = [
+  "Chef de bord",
+  "Pilote de ligne",
+  "Stewart",
+  "Hôtesse de l'air",
+];
+
+function createPersonnels(noms, prenoms, fonctions) {
+  let nom = noms[parseInt(Math.random() * noms.length)],
+    prenom = prenoms[parseInt(Math.random() * prenoms.length)],
+    fonction = fonctions[parseInt(Math.random() * fonctions.length)],
+    adresse = parseInt(Math.random() * 200) + " rue de l'arbre sec",
+    numero_securite_sociale = parseInt(Math.random() * 9 * 10 ** 12 + 10 ** 12),
+    salaire = 1200 + parseInt(randomG(4) * 2000),
+    nombre_heure_vol = parseInt(randomG(4) * 200),
+    numero_licence = parseInt(Math.random() * 9 * 10 ** 5 + 10 ** 5);
+  return [
+    nom,
+    prenom,
+    fonction,
+    adresse,
+    numero_securite_sociale,
+    salaire,
+    nombre_heure_vol,
+    numero_licence,
+  ];
+}
+
+let personnels = [];
+
+for (var i = 0; i < nbPersonnels; i++) {
+  personnels.push(createPersonnels(noms, prenoms, fonctions));
+}
+
+function createEquipages(nbPer, id_vol) {
+  let id_per = 100 + parseInt(Math.random() * nbPer);
+  return [id_vol, id_per];
+}
+
+let equipages = [];
+
+for (var i = 0; i < nbVols; i++) {
+  for (var j = 0; j < fonctions.length; j++) {
+    // RECHERCHER ICI LES FONCTIONS
+    // METTRE 1 PILOTE 2A3 STEWARTS OU HOTESSE
+    equipages.push(createEquipages(personnels.length, 100 + i));
   }
 }
 
@@ -415,4 +367,6 @@ module.exports = {
   vols,
   clients,
   reservations,
+  personnels,
+  equipages,
 };

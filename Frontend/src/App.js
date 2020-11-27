@@ -12,6 +12,7 @@ import FlightBooking from "./Components/Booking/FlightBooking/FlightBooking";
 import MyReservations from "./Components/Booking/MyReservations/MyReservations";
 import Reservation from "./Components/Booking/Reservation/Reservation";
 import DataManagement from "./Components/DataManagement/DataManagement";
+import VolDetails from "./Components/DataManagement/VolDetails/VolDetails";
 import Login from "./Components/Login/Login";
 import { instanceOf } from "prop-types";
 import { withCookies, Cookies } from "react-cookie";
@@ -121,6 +122,14 @@ class App extends Component {
               )}
             />
             <Route exact path="/datamanagement" component={DataManagement} />
+            <Route
+              exact
+              path="/voldetails/:id_vol"
+              component={(props) => (
+                <VolDetails id_cli={this.state.id_cli} {...props} />
+              )}
+            />
+
             <Route path="/*" component={Error} />
           </Switch>
           <Footer />

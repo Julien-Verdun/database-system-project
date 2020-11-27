@@ -1,0 +1,29 @@
+.bold-p {
+    font-weight:bold;
+}
+.modal-div {
+    align-items: flex-start;
+    text-align: start;
+}
+
+#quantity-ticket {
+    margin-left:5%;
+    padding-left: 1%;
+}
+
+.personnel {
+    border-radius: 5px;
+    border-color: black;
+    border-style: groove;
+    border-radius:10px;
+    padding-left:10%;
+}
+
+#container{
+    display: grid;
+    grid: repeat(2, 50%) / auto-flow 50%;
+    column-gap: 1%;
+    row-gap: 1%;
+}
+
+

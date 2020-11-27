@@ -4,7 +4,7 @@ import Vols from "./Vols/Vols";
 import Appareils from "./Appareils/Appareils";
 import Clients from "./Clients/Clients";
 import Aeroports from "./Aeroports/Aeroports";
- 
+
 class DataManagement extends Component {
   constructor(props) {
     super(props);
@@ -39,7 +39,7 @@ class DataManagement extends Component {
               data-parent="#managementAccordion"
             >
               <div className="card-body">
-                <Vols />
+                <Vols {...this.props} />
               </div>
             </div>
           </div>
@@ -91,7 +91,7 @@ class DataManagement extends Component {
               data-parent="#managementAccordion"
             >
               <div className="card-body">
-                <Aeroports/>
+                <Aeroports />
               </div>
             </div>
           </div>
@@ -117,7 +117,7 @@ class DataManagement extends Component {
               data-parent="#managementAccordion"
             >
               <div className="card-body">
-                <Clients/>
+                <Clients />
               </div>
             </div>
           </div>

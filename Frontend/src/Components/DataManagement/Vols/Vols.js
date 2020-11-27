@@ -52,7 +52,13 @@ class Vols extends Component {
               : null;
 
           return (
-            <tr key={index} style={{ backgroundColor: backgroundColor }}>
+            <tr
+              key={index}
+              style={{ backgroundColor: backgroundColor }}
+              onClick={() => {
+                this.props.history.push("/voldetails/" + encodeURI(elt.id_vol));
+              }}
+            >
               <th scope="row">{index}</th>
               <td>
                 {elt.date_depart +

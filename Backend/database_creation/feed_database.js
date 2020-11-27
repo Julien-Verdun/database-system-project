@@ -63,6 +63,8 @@ con.query(query, (err, results, fields) => {
         "ALTER TABLE appareils DROP FOREIGN KEY appareils_ibfk_2;",
         "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_1;",
         "ALTER TABLE reservations DROP FOREIGN KEY reservations_ibfk_2;",
+        "ALTER TABLE equipages DROP FOREIGN KEY equipages_ibfk_1;",
+        "ALTER TABLE equipages DROP FOREIGN KEY equipages_ibfk_2;",
       ];
 
       liste_frg_key_drop.forEach((query) => {
@@ -84,6 +86,8 @@ con.query(query, (err, results, fields) => {
       "CREATE TABLE aeroports (id_aer INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), code VARCHAR(255), ville VARCHAR(255), pays VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE clients (id_cli INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), mail VARCHAR(255), telephone VARCHAR(255), hashpassword VARCHAR(255)) AUTO_INCREMENT = 100;",
       "CREATE TABLE reservations (id_res INT AUTO_INCREMENT PRIMARY KEY, id_cli INT, id_vol INT, prix FLOAT, quantite INT) AUTO_INCREMENT = 100;",
+      "CREATE TABLE equipages (id_eqp INT AUTO_INCREMENT PRIMARY KEY, id_vol INT, id_per INT) AUTO_INCREMENT = 100;",
+      "CREATE TABLE personnels (id_per INT AUTO_INCREMENT PRIMARY KEY, nom VARCHAR(255), prenom VARCHAR(255), fonction VARCHAR(255), adresse VARCHAR(255), numero_securite_sociale VARCHAR(255), salaire FLOAT, nombre_heure_vol INT, numero_licence INT) AUTO_INCREMENT = 100;",
     ];
 
     liste_tables.forEach((query) => {
@@ -98,8 +102,9 @@ con.query(query, (err, results, fields) => {
       "ALTER TABLE appareils ADD CONSTRAINT appareils_ibfk_2 FOREIGN KEY (id_avn) REFERENCES avions(id_avn);",
       "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_1 FOREIGN KEY (id_cli) REFERENCES clients(id_cli);",
       "ALTER TABLE reservations ADD CONSTRAINT reservations_ibfk_2 FOREIGN KEY (id_vol) REFERENCES vols(id_vol);",
+      "ALTER TABLE equipages ADD CONSTRAINT equipages_ibfk_1 FOREIGN KEY (id_per) REFERENCES personnels(id_per);",
+      "ALTER TABLE equipages ADD CONSTRAINT equipages_ibfk_2 FOREIGN KEY (id_vol) REFERENCES vols(id_vol);",
     ];
-
 
     // create link beetwen tables
     liste_frg_key.forEach((query) => {
@@ -109,8 +114,8 @@ con.query(query, (err, results, fields) => {
     // create procedures
     liste_procedures = [
       "DROP PROCEDURE IF EXISTS procedure_add_avion",
-      "CREATE PROCEDURE procedure_add_avion (IN model CHAR(20), IN nb_places INT) INSERT INTO avions (type, nb_place) VALUES (model, nb_places);"
-    ]
+      "CREATE PROCEDURE procedure_add_avion (IN model CHAR(20), IN nb_places INT) INSERT INTO avions (type, nb_place) VALUES (model, nb_places);",
+    ];
 
     liste_procedures.forEach((query) => {
       utils.createProcedure(query, con);
@@ -157,6 +162,18 @@ con.query(query, (err, results, fields) => {
     utils.insertElements(
       "INSERT INTO reservations (id_cli, id_vol, prix, quantite) VALUES ?",
       data.reservations,
+      con
+    );
+
+    utils.insertElements(
+      "INSERT INTO personnels (nom, prenom, fonction, adresse, numero_securite_sociale, salaire,nombre_heure_vol,numero_licence) VALUES ?",
+      data.personnels,
+      con
+    );
+
+    utils.insertElements(
+      "INSERT INTO equipages (id_vol, id_per) VALUES ?",
+      data.equipages,
       con
     );
 

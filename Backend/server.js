@@ -355,7 +355,7 @@ con.connect(function (err, db) {
       });
     });
 
-    // this query returns the flight in the database for the given client and the given flight id
+    // this query returns the flight in the database for the given flight id
     app.get("/getVol/:id_vol", (req, res) => {
       let id_vol = Number(decodeURI(req.params.id_vol));
       let query =
@@ -386,6 +386,24 @@ con.connect(function (err, db) {
         `
         LIMIT 1
         `;
+      con.query(query, (err, results, fields) => {
+        if (err) throw err;
+        res.send(results);
+      });
+    });
+
+    // this query returns the flight and equipages in the database for the given flight id
+    app.get("/getVolEquipage/:id_vol", (req, res) => {
+      let id_vol = Number(decodeURI(req.params.id_vol));
+      let query =
+        `
+        SELECT per.*
+        FROM vols vol
+        LEFT JOIN equipages eqp ON eqp.id_vol = vol.id_vol
+        LEFT JOIN personnels per ON per.id_per = eqp.id_per
+        WHERE vol.id_vol = ` +
+        id_vol +
+        `;`;
       con.query(query, (err, results, fields) => {
         if (err) throw err;
         res.send(results);
